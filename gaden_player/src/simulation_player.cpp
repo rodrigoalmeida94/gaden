@@ -6,6 +6,7 @@
  --------------------------------------------------------------------------------*/
 
 #include "simulation_player.h"
+#include <boost/format.hpp>
 
 //--------------- SERVICES CALLBACKS----------------------//
 bool get_gas_value_srv(gaden_player::GasPosition::Request  &req, gaden_player::GasPosition::Response &res)
@@ -58,8 +59,8 @@ int main( int argc, char** argv )
     ros::NodeHandle pn("~");
 
     //Read Node Parameters
-    loadNodeParameters(pn);	
-	
+    loadNodeParameters(pn);
+
     //Publishers
     marker_pub = n.advertise<visualization_msgs::Marker>("Gas_Distribution", 1);
 
@@ -67,7 +68,7 @@ int main( int argc, char** argv )
     ros::ServiceServer serviceGas = n.advertiseService("odor_value", get_gas_value_srv);
     ros::ServiceServer serviceWind = n.advertiseService("wind_value", get_wind_value_srv);
 
-    //Init variables        
+    //Init variables
     init_all_simulation_instances();
     ros::Time time_last_loaded_file = ros::Time::now();
     srand(time(NULL));// initialize random seed
@@ -85,11 +86,11 @@ int main( int argc, char** argv )
     mkr_gas_points.pose.orientation.w = 1.0;
 
 
-    // Loop	
+    // Loop
     ros::Rate r(100); //Set max rate at 100Hz (for handling services - Top Speed!!)
     int iteration_counter = initial_iteration;
     while (ros::ok())
-    {        
+    {
         if( (ros::Time::now() - time_last_loaded_file).toSec() >= 1/player_freq )
         {
             if (verbose)
@@ -114,7 +115,7 @@ void loadNodeParameters(ros::NodeHandle private_nh)
 {
     //player_freq
     private_nh.param<bool>("verbose", verbose, false);
-    
+
     //player_freq
     private_nh.param<double>("player_freq", player_freq, 1);  //Hz
 
@@ -138,7 +139,7 @@ void loadNodeParameters(ros::NodeHandle private_nh)
         if (verbose)
             ROS_INFO("[Player] simulation_data_%i:  %s", i, simulation_data[i].c_str());
     }
-    
+
     // Initial iteration
      private_nh.param<int>("initial_iteration", initial_iteration, 1);
 }
@@ -168,7 +169,7 @@ void init_all_simulation_instances()
 
 //Load new Iteration of the Gas&Wind State on the 3d environment
 void load_all_data_from_logfiles(int sim_iteration)
-{    
+{
     //Load corresponding data for each instance (i.e for every gas source)
     for (int i=0;i<num_simulators;i++)
     {
@@ -223,7 +224,7 @@ void sim_obj::load_data_from_logfile(int sim_iteration)
     myfile.open(filename.c_str());
     if (myfile.is_open())
     {
-        size_t pos;        
+        size_t pos;
         double conc,u,v,w;
         int x, y, z;
 
@@ -268,7 +269,7 @@ void sim_obj::load_data_from_logfile(int sim_iteration)
                 line.erase(0, pos+1);
                 pos = line.find(" ");
                 environment_cells_y = atoi(line.substr(0, pos).c_str());
-                environment_cells_z = atoi(line.substr(pos+1).c_str());                
+                environment_cells_z = atoi(line.substr(pos+1).c_str());
             }
             else if (first_reading && (line_counter==4))
             {
@@ -460,7 +461,7 @@ void sim_obj::get_concentration_as_markers(visualization_msgs::Marker &mkr_point
                 geometry_msgs::Point p; //Location of point
                 std_msgs::ColorRGBA color;  //Color of point
 
-                double gas_value = C[i][j][k]*1;
+                double gas_value = C[i][j][k]*1000;
 
                 for (int N=0;N<(int)round(gas_value/2);N++)
                 {
@@ -527,5 +528,3 @@ void sim_obj::get_concentration_as_markers(visualization_msgs::Marker &mkr_point
     }
 
 }
-
-

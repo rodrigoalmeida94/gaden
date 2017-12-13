@@ -29,6 +29,7 @@
 
 
 #include "filament_simulator/filament_simulator.h"
+#include <boost/format.hpp>
 
 
 
@@ -90,6 +91,7 @@ CFilamentSimulator::CFilamentSimulator()
     SpecificGravity[1] = 0.5537;	  //methane   (lighter than air)
 	SpecificGravity[2] = 0.0696;	  //hydrogen  (lighter than air)
 	SpecificGravity[6] = 1.4529;	  //acetone   (heavier than air)
+    SpecificGravity[10] = 0.974;     //ethylene
 
 	//To be updated
 	SpecificGravity[3] = 58.124;	 //propanol   //gases heavier then air
@@ -98,6 +100,7 @@ CFilamentSimulator::CFilamentSimulator()
 	SpecificGravity[7] = 20.179;	 //neon	   //gases lighter than air
 	SpecificGravity[8] = 4.002602;   //helium
 	SpecificGravity[9] = 26.966;	 //hot_air
+    
 
 
 	//Init visualization

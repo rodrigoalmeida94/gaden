@@ -31,6 +31,6 @@ catkin_package(
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 add_executable(gaden_player  ${MYFILES_CPP})
-#add_dependencies(gaden_player msgs_and_srvs_generate_messages_cpp)
+add_dependencies(gaden_player gaden_player_generate_messages_cpp)
 
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${catkin_LIBRARIES})
