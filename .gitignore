@@ -11,3 +11,6 @@ sim_emission_*
 *.Rhistory
 orchard_demo/launch/gaden_simulator_demo.launch
 orchard_demo/launch/gaden_player_demo.launch
+*/CADmodels
+*.pgm
+*.dae
