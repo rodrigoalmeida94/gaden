@@ -1,0 +1,269 @@
+<!-- DEMO mission file for GADEN PLAYER in a 3D environment-->
+
+<launch>
+    <arg name="FixedFrame" default="/map" />
+
+    ### NODE environment (for RVIZ visualization) ###
+    <node pkg="gaden_environment" type="environment" name="environment" output="screen">
+
+      <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+
+      # Plot source positions (0-43)
+      <param name="/number_of_sources" value="44"/>
+
+	    <param name="/source_0_position_x" value="4.7"/>
+	    <param name="/source_0_position_y" value="5"/>
+	    <param name="/source_0_position_z" value="1.3"/>
+
+      <param name="/source_1_position_x" value="10"/>
+      <param name="/source_1_position_y" value="5.3"/>
+      <param name="/source_1_position_z" value="1.9"/>
+
+      <param name="/source_2_position_x" value="15.3"/>
+      <param name="/source_2_position_y" value="5"/>
+      <param name="/source_2_position_z" value="1.1"/>
+
+      <param name="/source_3_position_x" value="20.3"/>
+      <param name="/source_3_position_y" value="5"/>
+      <param name="/source_3_position_z" value="1.6"/>
+
+      <param name="/source_4_position_x" value="5.3"/>
+      <param name="/source_4_position_y" value="6.1"/>
+      <param name="/source_4_position_z" value="0.5"/>
+
+      <param name="/source_5_position_x" value="10"/>
+      <param name="/source_5_position_y" value="5.8"/>
+      <param name="/source_5_position_z" value="1.8"/>
+
+      <param name="/source_6_position_x" value="15"/>
+      <param name="/source_6_position_y" value="6.4"/>
+      <param name="/source_6_position_z" value="1.6"/>
+
+      <param name="/source_7_position_x" value="20"/>
+      <param name="/source_7_position_y" value="6.4"/>
+      <param name="/source_7_position_z" value="1.7"/>
+
+      <param name="/source_8_position_x" value="5.3"/>
+      <param name="/source_8_position_y" value="7.2"/>
+      <param name="/source_8_position_z" value="1.6"/>
+
+      <param name="/source_9_position_x" value="10.3"/>
+      <param name="/source_9_position_y" value="7.2"/>
+      <param name="/source_9_position_z" value="1.8"/>
+
+      <param name="/source_10_position_x" value="15"/>
+      <param name="/source_10_position_y" value="7.5"/>
+      <param name="/source_10_position_z" value="2"/>
+
+      <param name="/source_11_position_x" value="19.7"/>
+      <param name="/source_11_position_y" value="7.2"/>
+      <param name="/source_11_position_z" value="1.1"/>
+
+      <param name="/source_12_position_x" value="5.3"/>
+      <param name="/source_12_position_y" value="8.3"/>
+      <param name="/source_12_position_z" value="1.1"/>
+
+      <param name="/source_13_position_x" value="10"/>
+      <param name="/source_13_position_y" value="8"/>
+      <param name="/source_13_position_z" value="1.8"/>
+
+      <param name="/source_14_position_x" value="15"/>
+      <param name="/source_14_position_y" value="8.6"/>
+      <param name="/source_14_position_z" value="1.2"/>
+
+      <param name="/source_15_position_x" value="19.7"/>
+      <param name="/source_15_position_y" value="8.3"/>
+      <param name="/source_15_position_z" value="0.4"/>
+
+      <param name="/source_16_position_x" value="4.7"/>
+      <param name="/source_16_position_y" value="9.4"/>
+      <param name="/source_16_position_z" value="1.1"/>
+
+      <param name="/source_17_position_x" value="10"/>
+      <param name="/source_17_position_y" value="9.7"/>
+      <param name="/source_17_position_z" value="0.9"/>
+
+      <param name="/source_18_position_x" value="14.7"/>
+      <param name="/source_18_position_y" value="9.4"/>
+      <param name="/source_18_position_z" value="0.8"/>
+
+      <param name="/source_19_position_x" value="20"/>
+      <param name="/source_19_position_y" value="9.7"/>
+      <param name="/source_19_position_z" value="1.4"/>
+
+      <param name="/source_20_position_x" value="5.3"/>
+      <param name="/source_20_position_y" value="10.5"/>
+      <param name="/source_20_position_z" value="1.4"/>
+
+      <param name="/source_21_position_x" value="10"/>
+      <param name="/source_21_position_y" value="10.2"/>
+      <param name="/source_21_position_z" value="1.3"/>
+
+      <param name="/source_22_position_x" value="15"/>
+      <param name="/source_22_position_y" value="10.8"/>
+      <param name="/source_22_position_z" value="2"/>
+
+      <param name="/source_23_position_x" value="20"/>
+      <param name="/source_23_position_y" value="10.2"/>
+      <param name="/source_23_position_z" value="0.9"/>
+
+      <param name="/source_24_position_x" value="5"/>
+	    <param name="/source_24_position_y" value="11.9"/>
+	    <param name="/source_24_position_z" value="1.4"/>
+
+      <param name="/source_25_position_x" value="9.7"/>
+      <param name="/source_25_position_y" value="11.6"/>
+      <param name="/source_25_position_z" value="1.6"/>
+
+      <param name="/source_26_position_x" value="14.7"/>
+      <param name="/source_26_position_y" value="11.6"/>
+      <param name="/source_26_position_z" value="1.4"/>
+
+      <param name="/source_27_position_x" value="19.7"/>
+      <param name="/source_27_position_y" value="11.6"/>
+      <param name="/source_27_position_z" value="1.4"/>
+
+      <param name="/source_28_position_x" value="5"/>
+      <param name="/source_28_position_y" value="12.4"/>
+      <param name="/source_28_position_z" value="1.2"/>
+
+      <param name="/source_29_position_x" value="10.3"/>
+      <param name="/source_29_position_y" value="12.7"/>
+      <param name="/source_29_position_z" value="0.9"/>
+
+      <param name="/source_30_position_x" value="15.3"/>
+      <param name="/source_30_position_y" value="12.7"/>
+      <param name="/source_30_position_z" value="0.7"/>
+
+      <param name="/source_31_position_x" value="19.7"/>
+      <param name="/source_31_position_y" value="12.7"/>
+      <param name="/source_31_position_z" value="2"/>
+
+      <param name="/source_32_position_x" value="4.7"/>
+      <param name="/source_32_position_y" value="13.8"/>
+      <param name="/source_32_position_z" value="1.4"/>
+
+      <param name="/source_33_position_x" value="10"/>
+      <param name="/source_33_position_y" value="13.5"/>
+      <param name="/source_33_position_z" value="1.6"/>
+
+      <param name="/source_34_position_x" value="15.3"/>
+      <param name="/source_34_position_y" value="13.8"/>
+      <param name="/source_34_position_z" value="1.2"/>
+
+      <param name="/source_35_position_x" value="20"/>
+      <param name="/source_35_position_y" value="14.1"/>
+      <param name="/source_35_position_z" value="1.8"/>
+
+      <param name="/source_36_position_x" value="5.3"/>
+	    <param name="/source_36_position_y" value="14.9"/>
+	    <param name="/source_36_position_z" value="1.6"/>
+
+      <param name="/source_37_position_x" value="10"/>
+      <param name="/source_37_position_y" value="15.2"/>
+      <param name="/source_37_position_z" value="0.9"/>
+
+      <param name="/source_38_position_x" value="15"/>
+      <param name="/source_38_position_y" value="14.6"/>
+      <param name="/source_38_position_z" value="1.6"/>
+
+      <param name="/source_39_position_x" value="20"/>
+      <param name="/source_39_position_y" value="14.6"/>
+      <param name="/source_39_position_z" value="1"/>
+
+      <param name="/source_40_position_x" value="5"/>
+      <param name="/source_40_position_y" value="15.7"/>
+      <param name="/source_40_position_z" value="1"/>
+
+      <param name="/source_41_position_x" value="10"/>
+      <param name="/source_41_position_y" value="15.7"/>
+      <param name="/source_41_position_z" value="1.1"/>
+
+      <param name="/source_42_position_x" value="14.7"/>
+      <param name="/source_42_position_y" value="16"/>
+      <param name="/source_42_position_z" value="0.6"/>
+
+      <param name="/source_43_position_x" value="20"/>
+      <param name="/source_43_position_y" value="15.7"/>
+      <param name="/source_43_position_z" value="2"/>
+
+	    # Plot CAD models
+      <param name="/occupancy3D_data" value="$(find orchard_demo)/demo/OccupancyGrid3D.csv"/>
+	    <param name="/number_of_CAD" value="1"/>
+      <param name="/CAD_0" value="package://orchard_demo/demo/CADmodels/orchard.dae"/>
+    </node>
+
+    ### NODE PLAYER ###
+    #-------------------
+    <node pkg="gaden_player" type="gaden_player" name="gaden_player" output="screen">
+
+      <param name="/verbose" value="false" />
+	    <param name="/player_freq" value="500" />        ###(Hz) Freq for loading the simulation log_files
+	    <param name="/num_simulators" value="1" />      ### Number of simulations to load [1-inf] (useful for multiple sources and gases)
+
+      # Data from the "filament_simulator" pkg
+      # Multiple sources can be set here
+      <param name="/simulation_data_0" value="$(find orchard_demo)/demo/sim_emission_entc_0ms/sum_" />
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="mox0_broadcaster" args="3.0 2.5 0.4 0 0 0 map mox0_frame 100" />
+    <node pkg="tf" type="static_transform_publisher" name="mox1_broadcaster" args="3.0 2.5 0.4 0 0 0 map mox1_frame 100" />
+    <node pkg="tf" type="static_transform_publisher" name="mox2_broadcaster" args="3.0 2.5 0.4 0 0 0 map mox2_frame 100" />
+    <node pkg="tf" type="static_transform_publisher" name="pid_broadcaster" args="3.0 2.5 0.4 0 0 0 map pid_frame 100" />
+
+    <group ns="Mox00">
+        <node pkg="simulated_gas_sensor" type="simulated_gas_sensor" name="fake_mox" output="screen">
+          <param name="/sensor_model" value="0" />
+          <param name="/sensor_frame" value="mox0_frame" />
+          <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+    <group ns="Mox01">
+        <node pkg="simulated_gas_sensor" type="simulated_gas_sensor" name="fake_mox" output="screen">
+          <param name="/sensor_model" value="1" />
+          <param name="/sensor_frame" value="mox1_frame" />
+          <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+    <group ns="Mox02">
+        <node pkg="simulated_gas_sensor" type="simulated_gas_sensor" name="fake_mox" output="screen">
+          <param name="/sensor_model" value="2" />
+          <param name="/sensor_frame" value="mox2_frame" />
+          <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+
+    <group ns="PID">
+        <node pkg="simulated_gas_sensor" type="simulated_gas_sensor" name="fake_pid" output="screen">
+          <param name="/sensor_model" value="30" />
+          <param name="/sensor_frame" value="pid_frame" />
+          <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+
+    ### NODE Simulated Wind Sensor ###
+    #---------------------------------
+
+    <node pkg="tf" type="static_transform_publisher" name="anemometer_broadcaster" args="3.0 2.5 0.4 0 0 0 map anemometer_frame 100" />
+    <group ns="Anemometer01">
+        <node pkg="simulated_anemometer" type="simulated_anemometer" name="fake_anemometer" output="screen">
+          <param name="/sensor_frame" value="anemometer_frame" />
+          <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+
+    ### RQT PLOT Sensors ###
+    #-----------------------
+    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot1"  args="/Mox00/Sensor_reading/raw /Mox01/Sensor_reading/raw /Mox02/Sensor_reading/raw "/>
+    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot2"  args="/PID/Sensor_reading/raw "/>
+    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot3"  args="/Anemometer01/WindSensor_reading "/>
+
+
+    ### RVIZ ###
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orchard_demo)/demo/gaden_filament_simulator.rviz"/>
+</launch>

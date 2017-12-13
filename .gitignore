@@ -1,2 +1,13 @@
 *~
 gaden_environment/CADmodels
+*.DS_Store
+*.png
+*.RData
+*.csv
+*.csv_W
+*.csv_V
+*.csv_U
+sim_emission_*
+*.Rhistory
+orchard_demo/launch/gaden_simulator_demo.launch
+orchard_demo/launch/gaden_player_demo.launch

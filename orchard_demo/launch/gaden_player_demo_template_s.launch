@@ -1,0 +1,146 @@
+<!-- DEMO mission file for GADEN PLAYER in a 3D environment-->
+
+<launch>
+    <arg name="FixedFrame" default="/map" />
+
+    ### NODE environment (for RVIZ visualization) ###
+    <node pkg="gaden_environment" type="environment" name="environment" output="screen">
+
+      <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+
+      # Plot source positions (0-17)
+      <param name="/number_of_sources" value="18"/>
+
+	    <param name="/source_0_position_x" value="1"/>
+	    <param name="/source_0_position_y" value="1"/>
+	    <param name="/source_0_position_z" value="1"/>
+
+      <param name="/source_1_position_x" value="2"/>
+      <param name="/source_1_position_y" value="2"/>
+      <param name="/source_1_position_z" value="2"/>
+
+      <param name="/source_2_position_x" value="1"/>
+      <param name="/source_2_position_y" value="1"/>
+      <param name="/source_2_position_z" value="1"/>
+
+      <param name="/source_3_position_x" value="2"/>
+      <param name="/source_3_position_y" value="2"/>
+      <param name="/source_3_position_z" value="2"/>
+
+      <param name="/source_4_position_x" value="1"/>
+      <param name="/source_4_position_y" value="1"/>
+      <param name="/source_4_position_z" value="1"/>
+
+      <param name="/source_5_position_x" value="2"/>
+      <param name="/source_5_position_y" value="2"/>
+      <param name="/source_5_position_z" value="2"/>
+
+      <param name="/source_6_position_x" value="1"/>
+      <param name="/source_6_position_y" value="1"/>
+      <param name="/source_6_position_z" value="1"/>
+
+      <param name="/source_7_position_x" value="2"/>
+      <param name="/source_7_position_y" value="2"/>
+      <param name="/source_7_position_z" value="2"/>
+
+      <param name="/source_8_position_x" value="1"/>
+      <param name="/source_8_position_y" value="1"/>
+      <param name="/source_8_position_z" value="1"/>
+
+      <param name="/source_9_position_x" value="2"/>
+      <param name="/source_9_position_y" value="2"/>
+      <param name="/source_9_position_z" value="2"/>
+
+      <param name="/source_10_position_x" value="1"/>
+      <param name="/source_10_position_y" value="1"/>
+      <param name="/source_10_position_z" value="1"/>
+
+      <param name="/source_11_position_x" value="2"/>
+      <param name="/source_11_position_y" value="2"/>
+      <param name="/source_11_position_z" value="2"/>
+
+      <param name="/source_12_position_x" value="1"/>
+      <param name="/source_12_position_y" value="1"/>
+      <param name="/source_12_position_z" value="1"/>
+
+      <param name="/source_13_position_x" value="2"/>
+      <param name="/source_13_position_y" value="2"/>
+      <param name="/source_13_position_z" value="2"/>
+
+      <param name="/source_14_position_x" value="1"/>
+      <param name="/source_14_position_y" value="1"/>
+      <param name="/source_14_position_z" value="1"/>
+
+      <param name="/source_15_position_x" value="2"/>
+      <param name="/source_15_position_y" value="2"/>
+      <param name="/source_15_position_z" value="2"/>
+
+      <param name="/source_16_position_x" value="1"/>
+      <param name="/source_16_position_y" value="1"/>
+      <param name="/source_16_position_z" value="1"/>
+
+      <param name="/source_17_position_x" value="2"/>
+      <param name="/source_17_position_y" value="2"/>
+      <param name="/source_17_position_z" value="2"/>
+
+	    # Plot CAD models
+      <param name="/occupancy3D_data" value="$(find orchard_demo)/demo/OccupancyGrid3D.csv" />
+	    <param name="/number_of_CAD" value="1"/>
+      <param name="/CAD_0" value="package://orchard_demo/demo/CADmodels/orchard_s.dae"/>
+    </node>
+
+    ### NODE PLAYER ###
+    #-------------------
+    <node pkg="gaden_player" type="gaden_player" name="gaden_player" output="screen">
+
+      <param name="/verbose" value="true" />
+	    <param name="/player_freq" value="20" />        ###(Hz) Freq for loading the simulation log_files
+	    <param name="/num_simulators" value="1" />      ### Number of simulations to load [1-inf] (useful for multiple sources and gases)
+
+      # Data from the "filament_simulator" pkg
+      # Multiple sources can be set here 0-18
+      <param name="/simulation_data_0" value="$(find gaden_demo)/demo/sim_emission_prec_2msX_s/sum_" />
+
+    </node>
+
+    ### NODE Simulated Gas Sensor ###
+    #--------------------------------
+    <node pkg="tf" type="static_transform_publisher" name="mox0_broadcaster" args="10.0 8.3 1.4 0 0 0 map mox0_frame 100" />
+    <node pkg="tf" type="static_transform_publisher" name="pid_broadcaster" args="10.0 8.3 1.4 0 0 0 map pid_frame 100" />
+
+    <group ns="Mox00">
+        <node pkg="simulated_gas_sensor" type="simulated_gas_sensor" name="fake_mox" output="screen">
+	        <param name="/sensor_model" value="0" />
+	        <param name="/sensor_frame" value="mox0_frame" />
+	        <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+    <group ns="PID">
+        <node pkg="simulated_gas_sensor" type="simulated_gas_sensor" name="fake_pid" output="screen">
+	        <param name="/sensor_model" value="30" />
+	        <param name="/sensor_frame" value="pid_frame" />
+	        <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+    ### NODE Simulated Wind Sensor ###
+    #---------------------------------
+
+    <node pkg="tf" type="static_transform_publisher" name="anemometer_broadcaster" args="10.0 8.3 1.4 0 0 0 map anemometer_frame 100" />
+    <group ns="Anemometer01">
+        <node pkg="simulated_anemometer" type="simulated_anemometer" name="fake_anemometer" output="screen">
+	        <param name="/sensor_frame" value="anemometer_frame" />
+	        <param name="/fixed_frame" value="$(arg FixedFrame)"/>
+        </node>
+    </group>
+
+    ### RQT PLOT Sensors ###
+    #-----------------------
+    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot1"  args="/Mox00/Sensor_reading/raw"/>
+    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot2"  args="/PID/Sensor_reading/raw "/>
+    <node pkg="rqt_plot" type="rqt_plot" name="rqt_plot3"  args="/Anemometer01/WindSensor_reading "/>
+
+    ### RVIZ ###
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find orchard_demo)/demo/gaden_filament_simulator.rviz"/>
+</launch>
