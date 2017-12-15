@@ -17,6 +17,50 @@ inbetween_rows <- list(c((50+5):(100-5),(100+5):(150-5)),(50-4):(116+4),1:32)
 #w <- 3.7
 #h <- 3.7
 
+# Functions ----
+z.test = function(a, mu, sd){
+  zeta = (mean(a) - mu) / (sd / sqrt(length(a)))
+  return(abs(zeta))
+}
+
+z.test_s = function(a, mu, sd){
+  zeta = (mean(a,na.rm = T) - mu) / (sd / sqrt(length(a)))
+  return(zeta)
+}
+
+z.test_n = function(x,n, mu, sd){
+  zeta = (x - mu) / (sd / sqrt(length(n)))
+  return(abs(zeta))
+}
+
+my.t.test.p.value <- function(...) {
+  obj<-try(t.test(...), silent=TRUE)
+  if (is(obj, "try-error")) return(1) else return(obj$p.value)
+}
+
+ihs <- function(x) { transformed <- log(x + sqrt((x^2)+1)); return(transformed) }
+
+powerTransform <- function(y, lambda1, lambda2 = NULL, method = "boxcox") {
+  
+  boxcoxTrans <- function(x, lam1, lam2 = NULL) {
+    
+    # if we set lambda2 to zero, it becomes the one parameter transformation
+    lam2 <- ifelse(is.null(lam2), 0, lam2)
+    
+    if (lam1 == 0L) {
+      log(y + lam2)
+    } else {
+      (((y + lam2)^lam1) - 1) / lam1
+    }
+  }
+  
+  switch(method
+         , boxcox = boxcoxTrans(y, lambda1, lambda2)
+         , tukey = y^lambda1
+  )
+}
+
+# Setting up ----
 
 X <- 1:199
 Y <- 1:164
@@ -325,39 +369,9 @@ rm(z,s,i,p_ch,p_t)
 
 # Testing random sampling ----
 
-z.test = function(a, mu, sd){
-  zeta = (mean(a) - mu) / (sd / sqrt(length(a)))
-  return(abs(zeta))
-}
+number_of_samples <- c(1,16)
 
-my.t.test.p.value <- function(...) {
-  obj<-try(t.test(...), silent=TRUE)
-  if (is(obj, "try-error")) return(1) else return(obj$p.value)
-}
-
-ihs <- function(x) { transformed <- log(x + sqrt((x^2)+1)); return(transformed) }
-
-powerTransform <- function(y, lambda1, lambda2 = NULL, method = "boxcox") {
-  
-  boxcoxTrans <- function(x, lam1, lam2 = NULL) {
-    
-    # if we set lambda2 to zero, it becomes the one parameter transformation
-    lam2 <- ifelse(is.null(lam2), 0, lam2)
-    
-    if (lam1 == 0L) {
-      log(y + lam2)
-    } else {
-      (((y + lam2)^lam1) - 1) / lam1
-    }
-  }
-  
-  switch(method
-         , boxcox = boxcoxTrans(y, lambda1, lambda2)
-         , tukey = y^lambda1
-  )
-}
-
-
+for(number in number_of_samples){
 # Construct results table
 random_sampling <- array(NA,dim = c(length(sims),4*20))
 row.names(random_sampling) <- names(sims)
@@ -375,19 +389,22 @@ random_sampling_na <- as.data.frame(random_sampling_na)
 # hist(log(test_na))
 # mean(sample(test_na,4))
 
-hist(sims[[1]][,,,1])
-boxcox(sims[[15]][,,,1]~1)
-hist(log(sims[[1]][main_volume[[1]],main_volume[[2]],main_volume[[3]],1]))
-hist(log(sims[[1]][in_rows[[1]],in_rows[[2]],in_rows[[3]],1]))
-hist(log(sims[[1]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],1]))
+#hist(sims[[1]][,,,1])
+#boxcox(sims[[15]][,,,1]~1)
+#hist(log(sims[[1]][main_volume[[1]],main_volume[[2]],main_volume[[3]],1]))
+#hist(log(sims[[1]][in_rows[[1]],in_rows[[2]],in_rows[[3]],1]))
+#hist(log(sims[[1]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],1]))
 
 sim_num <- 1
-
+lambda_values <- list()
+lambda_v <- c()
 for(s in sims){
   n <- 0
   for(time in 1:dim(s)[4]){
     bc <- boxcox(s[,,,time]~1, plotit=F)
     lambda <- bc$x[which.max(bc$y)]
+    print(lambda)
+    lambda_v <- c(lambda_v, lambda) 
 
     #pop <- log(na.omit(as.vector(s[,,,time])))
     #pop_main <- log(na.omit(as.vector(s[main_volume[[1]],main_volume[[2]],main_volume[[3]],time])))
@@ -418,15 +435,15 @@ for(s in sims){
     t_in_na <- c()
     t_inbet_na <- c()
     for(i in 1:100){
-      s_all <- sample(pop,4)
-      s_main <- sample(pop_main,4)
-      s_in <- sample(pop_in,4)
-      s_inbet <- sample(pop_inbet,4)
+      s_all <- sample(pop,number)
+      s_main <- sample(pop_main,number)
+      s_in <- sample(pop_in,number)
+      s_inbet <- sample(pop_inbet,number)
       
-      s_all_na <- sample(pop_na,4)
-      s_main_na <- sample(pop_main_na,4)
-      s_in_na <- sample(pop_in_na,4)
-      s_inbet_na <- sample(pop_inbet_na,4)
+      s_all_na <- sample(pop_na,number)
+      s_main_na <- sample(pop_main_na,number)
+      s_in_na <- sample(pop_in_na,number)
+      s_inbet_na <- sample(pop_inbet_na,number)
       # To find a critical value for a two-tailed 95% confidence interval:
       #z <- c(z, z.test(s,mu=log10(sim_avg$sim_emission_c_2msX_s[1]),var=log10(sim_var$sim_emission_c_2msX_s[1])) > qnorm(1-.05/2))
       # If TRUE z.score > 1.959964 then the mean of the sample is signif. diff from the population.
@@ -475,6 +492,8 @@ for(s in sims){
   }
   
   sim_num <- sim_num + 1
+  lambda_values <- c(lambda_values,list(lambda_v))
+  lambda_v <- c()
 }
 
 rm(s,n,sim_num,t,t_main,t_in,t_inbet,s_all,s_main, s_in, s_inbet,pop,pop_main,pop_in,pop_inbet, time, t,t_in_na,t_inbet_na,t_main_na,t_na, s_all_na,s_in_na,s_inbet_na,s_main_na, pop_in_na, pop_inbet_na,pop_main_na,pop_na, lambda, bc, m_pop,sd_pop)
@@ -492,8 +511,8 @@ random_sampling_na.inbet <- random_sampling_na[,grepl( "*.inbet" , names(random_
 # Plot results of random sampling
 z <- 1
 for(s in list(random_sampling.all,random_sampling.main,random_sampling.in,random_sampling.inbet)){
-  tikz(file = paste0(path_to_sims,'RandomSampling_',zones_files[z],'.tex'))
-  plot(timesteps,s[1,], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], type = 'b', xlab = 'Time ($s$)',ylab = 'Confidence level of a 4 set random sample', main = zones[z], lwd=3)
+  tikz(file = paste0(path_to_sims,'RandomSampling_',zones_files[z],'_',number,'.tex'))
+  plot(timesteps,s[1,], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], type = 'b', xlab = 'Time ($s$)',ylab = 'Confidence level of a random sample', main = zones[z], lwd=3)
   z =z+ 1
   for(i in 2:length(s)){
     if(i %in% 2:5){
@@ -522,8 +541,8 @@ for(s in list(random_sampling.all,random_sampling.main,random_sampling.in,random
 
 z <- 1
 for(s in list(random_sampling_na.all,random_sampling_na.main,random_sampling_na.in,random_sampling_na.inbet)){
-  tikz(file = paste0(path_to_sims,'RandomSamplingNA_',zones_files[z],'.tex'))
-  plot(timesteps,s[1,], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in a 4 set random sample', main = zones[z], lwd=3)
+  tikz(file = paste0(path_to_sims,'RandomSamplingNA_',zones_files[z],'_',number,'.tex'))
+  plot(timesteps,s[1,], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in a random sample', main = zones[z], lwd=3)
   z =z+ 1
   for(i in 2:length(s)){
     if(i %in% 2:5){
@@ -552,8 +571,8 @@ for(s in list(random_sampling_na.all,random_sampling_na.main,random_sampling_na.
 
 z <- 1
 for(s in list(random_sampling_na.all*random_sampling.all*0.01,random_sampling_na.main*random_sampling.main*0.01,random_sampling_na.in*random_sampling.in*0.01,random_sampling_na.inbet*random_sampling.inbet*0.01)){
-  tikz(file = paste0(path_to_sims,'RandomSamplingComp_',zones_files[z],'.tex'))
-  plot(timesteps,s[1,], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], type = 'b', xlab = 'Time ($s$)',ylab = 'Composite confidence level of a 4 set random sample', main = zones[z], lwd=3)
+  tikz(file = paste0(path_to_sims,'RandomSamplingComp_',zones_files[z],'_',number,'.tex'))
+  plot(timesteps,s[1,], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], type = 'b', xlab = 'Time ($s$)',ylab = 'Composite confidence level of a random sample', main = zones[z], lwd=3)
   z =z+ 1
   for(i in 2:length(s)){
     if(i %in% 2:5){
@@ -601,8 +620,8 @@ random_sampling.inbet$max <- apply(random_sampling.in,1,max, na.rm=T)
 
 # Check if samples are significantly different from each other, if stage is also different
 
-sim_avg_all <- lapply(sim_avg_main,mean, na.rm=T)
-sim_std_all <- lapply(sim_std_main,mean, na.rm=T)
+#sim_avg_all <- lapply(sim_avg_main,mean, na.rm=T)
+#sim_std_all <- lapply(sim_std_main,mean, na.rm=T)
 # Take out 0 velocity since it varies stupidely over time
 
 # Construct comparison table
@@ -615,9 +634,14 @@ avg_sampling.all <- avg_sampling
 avg_sampling.main <- avg_sampling
 avg_sampling.in <- avg_sampling
 avg_sampling.inbet <- avg_sampling
+
+avg_sampling_na.all <- avg_sampling
+avg_sampling_na.main <- avg_sampling
+avg_sampling_na.in <- avg_sampling
+avg_sampling_na.inbet <- avg_sampling
 rm(avg_sampling)
 
-sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
+#sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
 
 for(master in c(1:15)){
   for(slave in c(1:15)){
@@ -626,12 +650,22 @@ for(master in c(1:15)){
     t_in <- c()
     t_inbet <- c()
     
+    t_na <- c()
+    t_main_na <- c()
+    t_in_na <- c()
+    t_inbet_na <- c()
+    
     bc <- boxcox(sims_avg[[slave]]~1, plotit=F)
     lambda <- bc$x[which.max(bc$y)]
     transformed_all <- powerTransform(na.omit(as.vector(sims_avg[[slave]])), lambda)
     transformed_main <- powerTransform(na.omit(as.vector(sims_avg[[slave]][main_volume[[1]],main_volume[[2]],main_volume[[3]]])), lambda)
     transformed_in <- powerTransform(na.omit(as.vector(sims_avg[[slave]][in_rows[[1]],in_rows[[2]],in_rows[[3]]])), lambda)
     transformed_inbet <- powerTransform(na.omit(as.vector(sims_avg[[slave]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]])), lambda)
+    
+    pop_na <- !is.na(sims_avg[[slave]])
+    pop_main_na <- !is.na(sims_avg[[slave]][main_volume[[1]],main_volume[[2]],main_volume[[3]]])
+    pop_in_na <- !is.na(sims_avg[[slave]][in_rows[[1]],in_rows[[2]],in_rows[[3]]])
+    pop_inbet_na <- !is.na(sims_avg[[slave]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]])
     
     m_master <- mean(powerTransform(sims_avg[[master]],lambda), na.rm = T)
     sd_master <- sd(powerTransform(sims_avg[[master]],lambda), na.rm = T)
@@ -641,69 +675,94 @@ for(master in c(1:15)){
       #t_all <- c(t_all,!(my.t.test.p.value(s_all,mu=log1p(sim_avg_all[[master]])) < 0.05))
       #s_all <- log(sample(sims_avg[[slave]],4))
       #t_all <- c(t_all,!(z.test(s_all,mu=log(sim_avg_all[[master]]),var=log(sim_std_all[[master]]) > qnorm(1-.05/2))))
-      s_all <- sample(transformed_all,4)
+      s_all <- sample(transformed_all,number)
       #t_all <- c(t_all,!(my.t.test.p.value(s_all,mu=powerTransform(sim_avg_all[[master]],lambda)) < 0.05))
       
-      #s_main <- log1p(sample(sims_avg[[slave]][main_volume[[1]],main_volume[[2]],main_volume[[3]]],4))
+      #s_main <- log1p(sample(sims_avg[[slave]][main_volume[[1]],main_volume[[2]],main_volume[[3]]],number))
       #t_main <- c(t_main,!(my.t.test.p.value(s_main,mu=log1p(sim_avg_all[[master]])) < 0.05))
-      #s_main <- log(sample(sims_avg[[slave]][main_volume[[1]],main_volume[[2]],main_volume[[3]]],4))
+      #s_main <- log(sample(sims_avg[[slave]][main_volume[[1]],main_volume[[2]],main_volume[[3]]],number))
       #t_main <- c(t_main,!(z.test(s_main,mu=log(sim_avg_all[[master]]),var=log(sim_std_all[[master]]) > qnorm(1-.05/2))))
-      s_main <- sample(transformed_main,4)
+      s_main <- sample(transformed_main,number)
       #t_main <- c(t_main,!(my.t.test.p.value(s_main,mu=powerTransform(sim_avg_all[[master]],lambda)) < 0.05))
       
-      #s_in <- log1p(sample(sims_avg[[slave]][in_rows[[1]],in_rows[[2]],in_rows[[3]]],4))
+      #s_in <- log1p(sample(sims_avg[[slave]][in_rows[[1]],in_rows[[2]],in_rows[[3]]],number))
       #t_in <- c(t_in,!(my.t.test.p.value(s_in,mu=log1p(sim_avg_all[[master]])) < 0.05))
-      #s_in <- log(sample(sims_avg[[slave]][in_rows[[1]],in_rows[[2]],in_rows[[3]]],4))
+      #s_in <- log(sample(sims_avg[[slave]][in_rows[[1]],in_rows[[2]],in_rows[[3]]],number))
       #t_in <- c(t_in,!(z.test(s_in,mu=log(sim_avg_all[[master]]),var=log(sim_std_all[[master]]) > qnorm(1-.05/2))))
-      s_in <- sample(transformed_in,4)
+      s_in <- sample(transformed_in,number)
       #t_in <- c(t_in,!(my.t.test.p.value(s_in,mu=powerTransform(sim_avg_all[[master]],lambda)) < 0.05))
       
-      #s_inbet <- log1p(sample(sims_avg[[slave]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]],4))
+      #s_inbet <- log1p(sample(sims_avg[[slave]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]],number))
       #t_inbet <- c(t_inbet,!(my.t.test.p.value(s_inbet,mu=log1p(sim_avg_all [[master]]))$p.value < 0.05))
-      #s_inbet <- log(sample(sims_avg[[slave]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]],4))
+      #s_inbet <- log(sample(sims_avg[[slave]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]],number))
       #t_inbet <- c(t_inbet,!(z.test(s_inbet,mu=log(sim_avg_all[[master]]),var=log(sim_std_all[[master]]) > qnorm(1-.05/2))))
-      s_inbet <- sample(transformed_inbet,4)
+      s_inbet <- sample(transformed_inbet,number)
       #t_inbet <- c(t_inbet,!(my.t.test.p.value(s_inbet,mu=powerTransform(sim_avg_all[[master]],lambda)) < 0.05))
+      
+      s_all_na <- sample(pop_na,number)
+      s_main_na <- sample(pop_main_na,number)
+      s_in_na <- sample(pop_in_na,number)
+      s_inbet_na <- sample(pop_inbet_na,number)
       
       t_all <- c(t_all,!(z.test(s_all,mu=m_master,sd=sd_master) > qnorm(1-.05/2)))
       t_main <- c(t_main,!(z.test(s_main,mu=m_master,sd=sd_master) > qnorm(1-.05/2)))
       t_in <- c(t_in,!(z.test(s_in,mu=m_master,sd=sd_master) > qnorm(1-.05/2)))
       t_inbet <- c(t_inbet,!(z.test(s_inbet,mu=m_master,sd=sd_master) > qnorm(1-.05/2)))
       
+      t_na <- c(t_na,any(s_all_na))
+      t_main_na <- c(t_main_na,any(s_main_na))
+      t_in_na <- c(t_in_na,any(s_in_na))
+      t_inbet_na <- c(t_inbet_na,any(s_inbet_na))
+      
     }
     avg_sampling.all[master,slave] <- as.numeric(sum(t_all))
     avg_sampling.main[master,slave] <- as.numeric(sum(t_main))
     avg_sampling.inbet[master,slave] <- as.numeric(sum(t_inbet))
     avg_sampling.in[master,slave] <- as.numeric(sum(t_in))
+    
+    avg_sampling_na.all[master,slave] <- as.numeric(sum(t_na))
+    avg_sampling_na.main[master,slave] <- as.numeric(sum(t_main_na))
+    avg_sampling_na.inbet[master,slave] <- as.numeric(sum(t_inbet_na))
+    avg_sampling_na.in[master,slave] <- as.numeric(sum(t_in_na))
   }
 }
-rm(master,slave,t_all,t_main,t_in,t_inbet,s_in,s_inbet,s_main,s_all, transformed, transformed_all,transformed_in, transformed_inbet, m_master, sd_master)
+rm(master,slave,t_all,t_main,t_in,t_inbet,s_in,s_inbet,s_main,s_all, transformed_all,transformed_in, transformed_inbet, m_master, sd_master)
 
-avg_sampling.all[,16]<-round(as.vector(apply(as.matrix(avg_sampling.all),1,mean,na.rm=T)))
-avg_sampling.all[16,16] <- NA
-avg_sampling.all[16,]<-round(as.vector(apply(as.matrix(avg_sampling.all),2,mean,na.rm=T)))
-avg_sampling.all[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling.all))),na.rm = T))
-avg_sampling.main[,16]<-round(as.vector(apply(as.matrix(avg_sampling.main),1,mean,na.rm=T)))
-avg_sampling.main[16,16] <- NA
-avg_sampling.main[16,]<-round(as.vector(apply(as.matrix(avg_sampling.main),2,mean,na.rm=T)))
-avg_sampling.main[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling.main))),na.rm = T))
-avg_sampling.in[,16]<-round(as.vector(apply(as.matrix(avg_sampling.in),1,mean,na.rm=T)))
-avg_sampling.in[16,16] <- NA
-avg_sampling.in[16,]<-round(as.vector(apply(as.matrix(avg_sampling.in),2,mean,na.rm=T)))
-avg_sampling.in[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling.in))),na.rm = T))
-avg_sampling.inbet[,16]<-round(as.vector(apply(as.matrix(avg_sampling.inbet),1,mean,na.rm=T)))
-avg_sampling.inbet[16,16] <- NA
-avg_sampling.inbet[16,]<-round(as.vector(apply(as.matrix(avg_sampling.inbet),2,mean,na.rm=T)))
-avg_sampling.inbet[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling.inbet))),na.rm = T))
+#random_sampling_na.all_m <- c(as.vector(apply(as.matrix(random_sampling_na.all),1, mean, na.rm=T)),0)
+#random_sampling_na.main_m <- c(as.vector(apply(as.matrix(random_sampling_na.main),1, mean, na.rm=T)),0)
+#random_sampling_na.in_m <- c(as.vector(apply(as.matrix(random_sampling_na.in),1, mean, na.rm=T)),0)
+#random_sampling_na.inbet_m <- c(as.vector(apply(as.matrix(random_sampling_na.inbet),1, mean, na.rm=T)),0)
+
+avg_sampling_comp.all <- round(avg_sampling.all*avg_sampling_na.all*0.01)
+avg_sampling_comp.main <- round(avg_sampling.main*avg_sampling_na.main*0.01)
+avg_sampling_comp.in <- round(avg_sampling.in*avg_sampling_na.in*0.01)
+avg_sampling_comp.inbet <- round(avg_sampling.inbet*avg_sampling_na.inbet*0.01)
+
+avg_sampling_comp.all[,16]<-round(as.vector(apply(as.matrix(avg_sampling_comp.all),1,mean,na.rm=T)))
+avg_sampling_comp.all[16,16] <- NA
+avg_sampling_comp.all[16,]<-round(as.vector(apply(as.matrix(avg_sampling_comp.all),2,mean,na.rm=T)))
+avg_sampling_comp.all[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling_comp.all))),na.rm = T))
+avg_sampling_comp.main[,16]<-round(as.vector(apply(as.matrix(avg_sampling_comp.main),1,mean,na.rm=T)))
+avg_sampling_comp.main[16,16] <- NA
+avg_sampling_comp.main[16,]<-round(as.vector(apply(as.matrix(avg_sampling_comp.main),2,mean,na.rm=T)))
+avg_sampling_comp.main[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling_comp.main))),na.rm = T))
+avg_sampling_comp.in[,16]<-round(as.vector(apply(as.matrix(avg_sampling_comp.in),1,mean,na.rm=T)))
+avg_sampling_comp.in[16,16] <- NA
+avg_sampling_comp.in[16,]<-round(as.vector(apply(as.matrix(avg_sampling_comp.in),2,mean,na.rm=T)))
+avg_sampling_comp.in[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling_comp.in))),na.rm = T))
+avg_sampling_comp.inbet[,16]<-round(as.vector(apply(as.matrix(avg_sampling_comp.inbet),1,mean,na.rm=T)))
+avg_sampling_comp.inbet[16,16] <- NA
+avg_sampling_comp.inbet[16,]<-round(as.vector(apply(as.matrix(avg_sampling_comp.inbet),2,mean,na.rm=T)))
+avg_sampling_comp.inbet[16,16] <- round(mean(as.vector(diag(as.matrix(avg_sampling_comp.inbet))),na.rm = T))
 
 # Plot the result
 z <- 1
-for(s in list(avg_sampling.all,avg_sampling.main,avg_sampling.in,avg_sampling.inbet)){
-tikz(file=paste0(path_to_sims,'AvgComp_',zones_files[z],'.tex'))
+for(s in list(avg_sampling_comp.all,avg_sampling_comp.main,avg_sampling_comp.in,avg_sampling_comp.inbet)){
+tikz(file=paste0(path_to_sims,'AvgComp_',zones_files[z],'_',number,'.tex'))
 image(1:16, 1:16, t(s),
-      col = brewer.pal(8,'Greens'),
+      col = brewer.pal(10,'RdYlGn'),
       main=zones[z],
-      breaks = seq(0,100,12.5),
+      breaks = seq(0,100,10),
       xaxt = 'n', 
       yaxt = 'n', 
       xlab = '', 
@@ -725,6 +784,9 @@ dev.off()
 z <- z +1
 }
 rm(centers,s,z,i)
+
+}
+
 
 avg_sampling_summary_total <- list('','','','')
 n <- 1
@@ -767,9 +829,9 @@ print(xtable(table_avg, type = "latex", caption = 'Average concentration of ethy
 
 # Make histograms
 tikz(file = paste0(path_to_sims,'hist_avg.tex'))
-hist(sims_avg[[1]]+sims_avg[[2]]+sims_avg[[3]]+sims_avg[[4]]+sims_avg[[5]], col=emission_col[3], xlab="Ethylene concentration ($ppb$)", main='')
-hist(sims_avg[[6]]+sims_avg[[7]]+sims_avg[[8]]+sims_avg[[9]]+sims_avg[[10]], col=emission_col[2], add=T)
-hist(sims_avg[[11]]+sims_avg[[12]]+sims_avg[[13]]+sims_avg[[14]]+sims_avg[[15]], col=emission_col[1], add=T)
+hist(sims_avg[[1]]+sims_avg[[2]]+sims_avg[[3]]+sims_avg[[4]]+sims_avg[[5]], col=adjustcolor(emission_col[3], alpha.f = 0.7), xlab="Ethylene concentration ($ppb$)", main='')
+hist(sims_avg[[6]]+sims_avg[[7]]+sims_avg[[8]]+sims_avg[[9]]+sims_avg[[10]], col=adjustcolor(emission_col[2], alpha.f = 0.7), add=T)
+hist(sims_avg[[11]]+sims_avg[[12]]+sims_avg[[13]]+sims_avg[[14]]+sims_avg[[15]], col=adjustcolor(emission_col[1], alpha.f = 0.7), add=T)
 legend('topright', c("Pre-climacteric", "Entering climacteric", "Climacteric"),bty = "n",fill = emission_col)
 dev.off()
 
@@ -866,24 +928,367 @@ for(i in 1:16){
 points(coords$x*10,coords$y*10,pch=16, cex=2)
 dev.off()
 
+# Get the measurement values
 measures_s_1p <- list()
 measures_s_4p <- list(list(),list(),list(),list())
 measures_s_16p <- list(list(),list(),list(),list(),list(),list(),list(),list(),list(),list(),list(),list(), list(),list(),list(),list())
 
-# Get the measurement values
 for(s in sims){
   # 1 point
-  measures_s_1p <- c(measures_s_1p,list(s[s_1p[1], s_1p[1], s_1p[3],]))
+  measures_s_1p <- c(measures_s_1p,list(s[s_1p[1], s_1p[2], s_1p[3],]))
   
   # 4 points
   for(i in 1:4){
-    measures_s_4p[[i]] <- c(measures_s_4p[[i]],list(s[s_4p[[i]][1], s_4p[[i]][1], s_4p[[i]][3],]))
+    measures_s_4p[[i]] <- c(measures_s_4p[[i]],list(s[s_4p[[i]][1], s_4p[[i]][2], s_4p[[i]][3],]))
   }
   
   # 16 points
   for(i in 1:16){
-    measures_s_16p[[i]] <- c(measures_s_16p[[i]],list(s[s_16p[[i]][1], s_16p[[i]][1], s_16p[[i]][3],]))
+    measures_s_16p[[i]] <- c(measures_s_16p[[i]],list(s[s_16p[[i]][1], s_16p[[i]][2], s_16p[[i]][3],]))
   }
 }
 
 rm(s,i)
+
+measures_s_4p_na <- measures_s_1p
+measures_s_4p_na <- rapply(measures_s_4p_na,function(x) ifelse(x!=0,0,x), how = "replace")
+measures_s_4p_na <- rapply(measures_s_4p_na,function(x) ifelse(is.na(x),0,x), how = "replace")
+
+measures_s_1p_na <- measures_s_4p_na
+
+measures_s_16p_na <- measures_s_4p_na
+
+measures_s_4p_z <- measures_s_1p
+measures_s_4p_z <- rapply(measures_s_4p_z,function(x) ifelse(x!=0,NA,x), how = "replace")
+
+measures_s_1p_z <- measures_s_4p_z
+
+measures_s_16p_z <- measures_s_4p_z
+
+# Calculate NA
+for (s in 1:15){
+  for(t in 1:length(measures_s_1p[[s]])){
+      measures_s_1p_na[[s]][[t]] <- measures_s_1p_na[[s]][[t]] + as.numeric(!is.na(measures_s_1p[[s]][[t]]))
+    }
+  }
+measures_s_1p_na <- lapply(measures_s_1p_na, function(x) (x)*100)
+
+for(p in 1:4){
+  for (s in 1:15){
+    for(t in 1:length(measures_s_1p[[s]])){
+      measures_s_4p_na[[s]][[t]] <- measures_s_4p_na[[s]][[t]] + as.numeric(!is.na(measures_s_4p[[p]][[s]][[t]]))
+    }
+  }
+}
+measures_s_4p_na <- lapply(measures_s_4p_na, function(x) (x/4)*100)
+
+for(p in 1:16){
+  for (s in 1:15){
+    for(t in 1:length(measures_s_1p[[s]])){
+      measures_s_16p_na[[s]][[t]] <- measures_s_16p_na[[s]][[t]] + as.numeric(!is.na(measures_s_16p[[p]][[s]][[t]]))
+    }
+  }
+}
+measures_s_16p_na <- lapply(measures_s_16p_na, function(x) (x/16)*100)
+
+# Calculate Z-score
+
+for (s in 1:15){
+  for(t in 1:length(measures_s_1p[[s]])){
+    measures_s_1p_z[[s]][[t]] <- z.test_s(powerTransform(measures_s_1p[[s]][[t]],lambda_values[[s]][[t]]),mu=powerTransform(sim_avg_main[[s]][[t]],lambda_values[[s]][[t]]),sd=powerTransform(sim_std_main[[s]][[t]],lambda_values[[s]][[t]]))
+  }
+}
+
+for (s in 1:15){
+  for(t in 1:length(measures_s_1p[[s]])){
+    measures_s_4p_z[[s]][[t]] <- z.test_s(powerTransform(c(measures_s_4p[[1]][[s]][[t]],measures_s_4p[[2]][[s]][[t]],measures_s_4p[[3]][[s]][[t]],measures_s_4p[[4]][[s]][[t]]),lambda_values[[s]][[t]]),mu=powerTransform(sim_avg_main[[s]][[t]],lambda_values[[s]][[t]]),sd=powerTransform(sim_std_main[[s]][[t]],lambda_values[[s]][[t]]))
+  }
+}
+
+for (s in 1:15){
+  for(t in 1:length(measures_s_1p[[s]])){
+    measures_s_16p_z[[s]][[t]] <- z.test_s(powerTransform(c(
+      measures_s_16p[[1]][[s]][[t]],measures_s_16p[[2]][[s]][[t]],measures_s_16p[[3]][[s]][[t]],measures_s_16p[[4]][[s]][[t]],
+      measures_s_16p[[5]][[s]][[t]],measures_s_16p[[6]][[s]][[t]],measures_s_16p[[7]][[s]][[t]],measures_s_16p[[8]][[s]][[t]],
+      measures_s_16p[[9]][[s]][[t]],measures_s_16p[[10]][[s]][[t]],measures_s_16p[[11]][[s]][[t]],measures_s_16p[[12]][[s]][[t]],
+      measures_s_16p[[13]][[s]][[t]],measures_s_16p[[14]][[s]][[t]],measures_s_16p[[15]][[s]][[t]],measures_s_16p[[16]][[s]][[t]]),lambda_values[[s]][[t]]),mu=powerTransform(sim_avg_main[[s]][[t]],lambda_values[[s]][[t]]),sd=powerTransform(sim_std_main[[s]][[t]],lambda_values[[s]][[t]]))
+  }
+}
+
+# NA 1 p ----
+plot(timesteps[1:14],measures_s_1p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=1$', lwd=3)
+for(i in 2:15){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 11:15){
+    p_t <- emission_col[1]
+  }
+  
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  if(i %in% c(11,6)){
+    points(timesteps[1:14],measures_s_1p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+  else{
+    points(timesteps,measures_s_1p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+}
+# NA 4 p ----
+plot(timesteps[1:14],measures_s_4p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=4$', lwd=3)
+for(i in 2:15){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 11:15){
+    p_t <- emission_col[1]
+  }
+  
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  if(i %in% c(11,6)){
+    points(timesteps[1:14],measures_s_4p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+  else{
+    points(timesteps,measures_s_4p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+}
+
+# NA 16 p ----
+plot(timesteps[1:14],measures_s_16p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=16$', lwd=3)
+for(i in 2:15){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 11:15){
+    p_t <- emission_col[1]
+  }
+  
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  if(i %in% c(11,6)){
+    points(timesteps[1:14],measures_s_16p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+  else{
+    points(timesteps,measures_s_16p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+}
+
+
+
+# Z 1 p ----
+tikz(file=paste0(path_to_sims,'RegularGrid1p_Z.tex'))
+plot(timesteps[1:14],measures_s_1p_z[[1]], ylim = range(measures_s_1p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=1$', lwd=3)
+for(i in 2:15){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 11:15){
+    p_t <- emission_col[1]
+  }
+  
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  if(i %in% c(11,6)){
+    points(timesteps[1:14],measures_s_1p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+  else{
+    points(timesteps,measures_s_1p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+}
+abline(h=1.96,lty=3)
+abline(h=-1.96, lty=3)
+dev.off()
+
+# Z 4 p ----
+tikz(file=paste0(path_to_sims,'RegularGrid4p_Z.tex'))
+plot(timesteps[1:14],measures_s_4p_z[[1]], ylim = range(measures_s_4p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=4$', lwd=3)
+for(i in 2:15){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 11:15){
+    p_t <- emission_col[1]
+  }
+  
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  if(i %in% c(11,6)){
+    points(timesteps[1:14],measures_s_4p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+  else{
+    points(timesteps,measures_s_4p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+}
+abline(h=1.96,lty=3)
+abline(h=-1.96, lty=3)
+dev.off()
+
+# Z 16 p ----
+tikz(file=paste0(path_to_sims,'RegularGrid16p_Z.tex'))
+plot(timesteps[1:14],measures_s_16p_z[[1]], ylim = range(measures_s_16p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=16$', lwd=3)
+for(i in 2:15){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 11:15){
+    p_t <- emission_col[1]
+  }
+  
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  if(i %in% c(11,6)){
+    points(timesteps[1:14],measures_s_16p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+  else{
+    points(timesteps,measures_s_16p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+  }
+}
+abline(h=1.96,lty=3)
+abline(h=-1.96, lty=3)
+dev.off()
+
+
+# Comparision between samples in different sims ----
+reg_sampling <- array(NA,dim = c(16,16))
+row.names(reg_sampling) <- c(1:15,'Mean')
+colnames(reg_sampling) <- c(1:15,'Mean')
+reg_sampling <- as.data.frame(reg_sampling)
+
+reg_sampling.1 <- reg_sampling
+reg_sampling.4 <- reg_sampling
+reg_sampling.16 <- reg_sampling
+rm(reg_sampling)
+
+measures_s_1p.mean <- lapply(measures_s_1p, mean,na.rm=T)
+
+measures_s_4p.mean <- lapply(measures_s_4p, function(x) unlist(lapply(x,mean,na.rm=T)))
+measures_s_4p.mean <- apply(as.data.frame(measures_s_4p.mean),1, mean,na.rm=T)
+
+measures_s_16p.mean <- lapply(measures_s_16p, function(x) unlist(lapply(x,mean,na.rm=T)))
+measures_s_16p.mean <- apply(as.data.frame(measures_s_16p.mean),1, mean,na.rm=T)
+
+lambda_values.mean <- lapply(lambda_values, mean,na.rm=T)
+
+for(master in c(1:15)){
+  for(slave in c(1:15)){
+    mu_t <- powerTransform(sim_avg_all[[master]], lambda_values.mean[[slave]])
+    sd_t <- powerTransform(sim_std_all[[master]], lambda_values.mean[[slave]])
+    
+    #reg_sampling.1[master,slave] <- as.numeric(z.test_n(powerTransform(measures_s_1p.mean[[slave]],lambda_values.mean[[slave]]) ,1,mu_t,sd_t) <= 1.96)
+    #reg_sampling.4[master,slave] <- as.numeric(z.test_n(powerTransform(measures_s_4p.mean[[slave]],lambda_values.mean[[slave]]),4,mu_t,sd_t) <= 1.96)
+    #reg_sampling.16[master,slave] <- as.numeric(z.test_n(powerTransform(measures_s_16p.mean[[slave]],lambda_values.mean[[slave]]),16,mu_t,sd_t) <= 1.96)
+    
+    reg_sampling.1[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_1p.mean[[slave]],lambda_values.mean[[slave]]) ,1,mu_t,sd_t) > qnorm(1-.05/2)))
+    reg_sampling.4[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_4p.mean[[slave]],lambda_values.mean[[slave]]) ,1,mu_t,sd_t) > qnorm(1-.05/2)))
+    reg_sampling.16[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_16p.mean[[slave]],lambda_values.mean[[slave]]) ,1,mu_t,sd_t) > qnorm(1-.05/2)))
+  }
+}
+
+# Plotting
+
+reg_sampling.1[,16]<-as.vector(apply(as.matrix(reg_sampling.1),1,mean,na.rm=T))
+reg_sampling.1[16,16] <- NA
+reg_sampling.1[16,]<-as.vector(apply(as.matrix(reg_sampling.1),2,mean,na.rm=T))
+reg_sampling.1[16,16] <-mean(as.vector(diag(as.matrix(reg_sampling.1))),na.rm = T)
+
+reg_sampling.4[,16]<-as.vector(apply(as.matrix(reg_sampling.4),1,mean,na.rm=T))
+reg_sampling.4[16,16] <- NA
+reg_sampling.4[16,]<- as.vector(apply(as.matrix(reg_sampling.4),2,mean,na.rm=T))
+reg_sampling.4[16,16] <- mean(as.vector(diag(as.matrix(reg_sampling.4))),na.rm = T)
+
+reg_sampling.16[,16]<-as.vector(apply(as.matrix(reg_sampling.16),1,mean,na.rm=T))
+reg_sampling.16[16,16] <- NA
+reg_sampling.16[16,]<-as.vector(apply(as.matrix(reg_sampling.16),2,mean,na.rm=T))
+reg_sampling.16[16,16] <- mean(as.vector(diag(as.matrix(reg_sampling.16))),na.rm = T)
+
+# Plot the result
+number_samples <- c('1','4','16')
+z <- 1
+for(s in list(round(reg_sampling.1,1),round(reg_sampling.4,1),round(reg_sampling.16,1))){
+  tikz(file=paste0(path_to_sims,'RegularGridComp',number_samples[z],'p.tex'))
+  image(1:16, 1:16, t(s),
+        col = brewer.pal(10,'RdYlGn'),
+        main=paste0('$n=',number_samples[z],'$'),
+        breaks = seq(0,1,0.1),
+        xaxt = 'n', 
+        yaxt = 'n', 
+        xlab = '', 
+        ylab = 'Simulation Number',
+        ylim = c(16 + 0.5, 1 - 0.5)
+  )
+  centers <- expand.grid(1:16,1:16)
+  text(centers[,2], centers[,1], c(as.matrix(s)), col= "black")
+  for(i in 1:16){text(i, i, s[i,i], col= 'black',font=2)}
+  
+  mtext(names(avg_sampling.all), at=1:ncol(s), padj = -0.2)
+  mtext(names(avg_sampling.all), at=1:nrow(s), side = 2, las = 1, adj = 1.2)
+  #add black lines
+  abline(h=1:15 + 0.5)
+  abline(v=1:15 + 0.5)
+  abline(h=c(5,10,15)+0.5,lwd=6)
+  abline(v=c(5,10,15)+0.5,lwd=6)
+  dev.off()
+  z <- z +1
+}
+rm(centers,s,z,i)
