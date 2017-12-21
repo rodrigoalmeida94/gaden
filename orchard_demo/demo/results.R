@@ -369,7 +369,7 @@ rm(z,s,i,p_ch,p_t)
 
 # Testing random sampling ----
 
-number_of_samples <- c(1,16)
+number_of_samples <- c(1,4,16)
 
 for(number in number_of_samples){
 # Construct results table
@@ -620,8 +620,8 @@ random_sampling.inbet$max <- apply(random_sampling.in,1,max, na.rm=T)
 
 # Check if samples are significantly different from each other, if stage is also different
 
-#sim_avg_all <- lapply(sim_avg_main,mean, na.rm=T)
-#sim_std_all <- lapply(sim_std_main,mean, na.rm=T)
+sim_avg_all <- lapply(sim_avg_main,mean, na.rm=T)
+sim_std_all <- lapply(sim_std_main,mean, na.rm=T)
 # Take out 0 velocity since it varies stupidely over time
 
 # Construct comparison table
@@ -822,10 +822,38 @@ rm(s,n,avg_sampling_summary_total,avg_sampling_summary)
 # }
 
 # Make average table ----
-table_avg <- data.frame(as.array(lapply(sim_avg,mean)),as.array(sim_avg_all), as.array(lapply(sim_avg_in,mean)), as.array(lapply(sim_avg_inbet,mean)), row.names = 1:15)
-colnames(table_avg) <- zones
+table_avg <- data.frame(as.array(lapply(sim_avg,mean)),as.array(lapply(sim_std,mean)), c(1:15),as.array(sim_avg_all),as.array(sim_std_all), c(1:15), as.array(lapply(sim_avg_in,mean)), as.array(lapply(sim_std_in,mean)), c(1:15),as.array(lapply(sim_avg_inbet,mean)), as.array(lapply(sim_std_inbet,mean)),c(1:15), row.names = 1:15)
+table_avg[1,3] <- mean(unlist(table_avg[1:5,1]))
+table_avg[2,3] <- mean(unlist(table_avg[1:5,2]))^2
+table_avg[6,3] <- mean(unlist(table_avg[6:10,1]))
+table_avg[7,3] <- mean(unlist(table_avg[6:10,2]))^2
+table_avg[11,3] <- mean(unlist(table_avg[11:15,1]))
+table_avg[12,3] <- mean(unlist(table_avg[11:15,2]))^2
 
-print(xtable(table_avg, type = "latex", caption = 'Average concentration of ethylene ($ppb$) in the different simulations and zones.', digits = 3, label='tbl:avg_concentration'), file = paste0(path_to_sims,"MeanConcentration.tex"))
+table_avg[1,6] <- mean(unlist(table_avg[1:5,1+3]))
+table_avg[2,6] <- mean(unlist(table_avg[1:5,2+3]))^2
+table_avg[6,6] <- mean(unlist(table_avg[6:10,1+3]))
+table_avg[7,6] <- mean(unlist(table_avg[6:10,2+3]))^2
+table_avg[11,6] <- mean(unlist(table_avg[11:15,1+3]))
+table_avg[12,6] <- mean(unlist(table_avg[11:15,2+3]))^2
+
+table_avg[1,9] <- mean(unlist(table_avg[1:5,1+6]))
+table_avg[2,9] <- mean(unlist(table_avg[1:5,2+6]))^2
+table_avg[6,9] <- mean(unlist(table_avg[6:10,1+6]))
+table_avg[7,9] <- mean(unlist(table_avg[6:10,2+6]))^2
+table_avg[11,9] <- mean(unlist(table_avg[11:15,1+6]))
+table_avg[12,9] <- mean(unlist(table_avg[11:15,2+6]))^2
+
+table_avg[1,12] <- mean(unlist(table_avg[1:5,1+9]))
+table_avg[2,12] <- mean(unlist(table_avg[1:5,2+9]))^2
+table_avg[6,12] <- mean(unlist(table_avg[6:10,1+9]))
+table_avg[7,12] <- mean(unlist(table_avg[6:10,2+9]))^2
+table_avg[11,12] <- mean(unlist(table_avg[11:15,1+9]))
+table_avg[12,12] <- mean(unlist(table_avg[11:15,2+9]))^2
+
+colnames(table_avg) <- c(zones[1],'','',zones[2],'','',zones[3],'','',zones[4],'','')
+
+print(xtable(table_avg, type = "latex", caption = 'Average concentration of ethylene ($ppb$) in the different simulations and zones.', digits = 2, label='tbl:avg_concentration'), file = paste0(path_to_sims,"MeanConcentration.tex"))
 
 # Make histograms
 tikz(file = paste0(path_to_sims,'hist_avg.tex'))
