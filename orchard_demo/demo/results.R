@@ -11,9 +11,9 @@ path_to_sims <- '/Users/rodrigoalmeida/Dropbox/Rodrigo/Thesis/Simulations/figure
 # Making zones
 main_volume <- list(25:174,25:130,1:32)
 # trees + 2.5 m buffer around it
-in_rows <- list(c((50-4):(50+4),(100-4):(100+4),(150-4):(150+4)),(50-4):(116+4),1:32)
+in_rows <- list(c((50-4):(50+4),(100-4):(100+4),(150-4):(150+4)),(50-4):(105+4),1:32)
 # trees + 0.4 cm on each side (0.8 m per row)
-inbetween_rows <- list(c((50+5):(100-5),(100+5):(150-5)),(50-4):(116+4),1:32)
+inbetween_rows <- list(c((50+5):(100-5),(100+5):(150-5)),(50-4):(105+4),1:32)
 #w <- 3.7
 #h <- 3.7
 
@@ -108,7 +108,7 @@ for(i in 1:length(sims)){
 rm(i)
 
 for(sim in sims){
-  #is.na(sim) <- !sim
+  is.na(sim) <- !sim
   
   sim_avg <- c(sim_avg,list(apply(sim,4,mean, na.rm=T)))
   sim_avg_main <- c(sim_avg_main,list(apply(sim[main_volume[[1]],main_volume[[2]],main_volume[[3]],],4,mean, na.rm=T)))
@@ -170,51 +170,51 @@ zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
 # Plotting
 # Average Concentration XY maps ----
-#breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
+# #breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
+# 
+# for(n in 1:15){
+#   xy_plane <- apply(sims[[n]],c(1,2),max)
+#   print(paste('range XY',range(xy_plane)[1], '-', range(xy_plane)[2]))
+#   if(n %in% 1:5){
+#     stage <- 3
+#   }
+#   if(n %in% 6:10){
+#     stage <- 2
+#   }
+#   if(n %in% 11:15){
+#     stage <- 1
+#   }
+#   
+#   pdf.options(family='Helvetica-Narrow')
+#   pdf(paste0(path_to_sims,names(sims)[[n]],'_XY.pdf'))
+#   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
+#   image.plot(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE, legend.lab = 'Ethylene concentration ($ppb$)')
+#   image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
+#   points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white", "red"))(4)[ii[[stage]]])
+#   dev.off()
+# }
+# rm(s)
+# #breaks = breaks_stages[[stage]]
+# 
+# tikz(file = paste0(path_to_sims,'legend_c_XY.tex'), height = 0.7)
+# par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+# plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+# legend('top',levels(ii_c), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_3$ ($Ls^{-1}$)'  )
+# dev.off()
+# 
+# tikz(file = paste0(path_to_sims,'legend_prec_XY.tex'), height = 0.7)
+# par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+# plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+# legend('top',levels(ii_prec), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_1$ ($Ls^{-1}$)'  )
+# dev.off()
+# 
+# tikz(file = paste0(path_to_sims,'legend_entc_XY.tex'), height = 0.7)
+# par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+# plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+# legend('top',levels(ii_entc), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_2$ ($Ls^{-1}$)'  )
+# dev.off()
 
-for(n in 1:15){
-  xy_plane <- apply(sims[[n]],c(1,2),max)
-  print(paste('range XY',range(xy_plane)[1], '-', range(xy_plane)[2]))
-  if(n %in% 1:5){
-    stage <- 3
-  }
-  if(n %in% 6:10){
-    stage <- 2
-  }
-  if(n %in% 11:15){
-    stage <- 1
-  }
-  
-  pdf.options(family='Helvetica-Narrow')
-  pdf(paste0(path_to_sims,names(sims)[[n]],'_XY.pdf'))
-  #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
-  image.plot(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE, legend.lab = 'Ethylene concentration ($ppb$)')
-  image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-  points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white", "red"))(4)[ii[[stage]]])
-  dev.off()
-}
-rm(s)
-#breaks = breaks_stages[[stage]]
-
-tikz(file = paste0(path_to_sims,'legend_c_XY.tex'), height = 0.7)
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend('top',levels(ii_c), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_3$ ($Ls^{-1}$)'  )
-dev.off()
-
-tikz(file = paste0(path_to_sims,'legend_prec_XY.tex'), height = 0.7)
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend('top',levels(ii_prec), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_1$ ($Ls^{-1}$)'  )
-dev.off()
-
-tikz(file = paste0(path_to_sims,'legend_entc_XY.tex'), height = 0.7)
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend('top',levels(ii_entc), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_2$ ($Ls^{-1}$)'  )
-dev.off()
-
-# Average Concentration ----
+# Average Ethylene Concentration ----
 z <- 1
 for(s in list(sim_avg,sim_avg_main,sim_avg_in,sim_avg_inbet)){
   tikz(file = paste0(path_to_sims,'Avg_',zones_files[z],'.tex'))
@@ -954,6 +954,16 @@ for(i in 1:16){
   points(s_16p[[i]][1],s_16p[[i]][2],pch=4)
 }
 points(coords$x*10,coords$y*10,pch=16, cex=2)
+# Main volume
+polygon(c(25,174,174,25),c(130,130,25,25), border = NA, col = rgb(0, 18, 242, 55, maxColorValue = 255))
+# In-rows
+polygon(c((50-4),(50+4),(50+4),(50-4)),c((50-4),(50-4),(105+4),(105+4)), border = NA, col = rgb(0, 231, 100, 65, maxColorValue = 255))
+polygon(c((100-4),(100+4),(100+4),(100-4)),c((50-4),(50-4),(105+4),(105+4)), border = NA, col = rgb(0, 231, 100, 65, maxColorValue = 255))
+polygon(c((150-4),(150+4),(150+4),(150-4)),c((50-4),(50-4),(105+4),(105+4)), border = NA, col = rgb(0, 231, 100, 65, maxColorValue = 255))
+
+# In between rows
+polygon(c((50+5),(100-5),(100-5),(50+5)),c((50-4),(50-4),(105+4),(105+4)), border = NA, col = rgb(255, 255, 0, 65, maxColorValue = 255))
+polygon(c((100+5),(150-5),(150-5),(100+5)),c((50-4),(50-4),(105+4),(105+4)), border = NA, col = rgb(255, 255, 0, 65, maxColorValue = 255))
 dev.off()
 
 # Get the measurement values
@@ -1268,14 +1278,14 @@ for(master in c(1:15)){
     #reg_sampling.16[master,slave] <- as.numeric(z.test_n(powerTransform(measures_s_16p.mean[[slave]],lambda_values.mean[[slave]]),16,mu_t,sd_t) <= 1.96)
     
     reg_sampling.1[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_1p.mean[[slave]],lambda_values.mean[[slave]]) ,1,mu_t,sd_t) > qnorm(1-.05/2)))
-    reg_sampling.4[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_4p.mean[[slave]],lambda_values.mean[[slave]]) ,1,mu_t,sd_t) > qnorm(1-.05/2)))
-    reg_sampling.16[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_16p.mean[[slave]],lambda_values.mean[[slave]]) ,1,mu_t,sd_t) > qnorm(1-.05/2)))
+    reg_sampling.4[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_4p.mean[[slave]],lambda_values.mean[[slave]]) ,4,mu_t,sd_t) > qnorm(1-.05/2)))
+    reg_sampling.16[master,slave] <- as.integer(!(z.test_n(powerTransform(measures_s_16p.mean[[slave]],lambda_values.mean[[slave]]) ,16,mu_t,sd_t) > qnorm(1-.05/2)))
   }
 }
 
 # Plotting
 
-reg_sampling.1[,16]<-as.vector(apply(as.matrix(reg_sampling.1),1,mean,na.rm=T))
+reg_sampling.1[,16] <- as.vector(apply(as.matrix(reg_sampling.1),1,mean,na.rm=T))
 reg_sampling.1[16,16] <- NA
 reg_sampling.1[16,]<-as.vector(apply(as.matrix(reg_sampling.1),2,mean,na.rm=T))
 reg_sampling.1[16,16] <-mean(as.vector(diag(as.matrix(reg_sampling.1))),na.rm = T)
@@ -1320,3 +1330,4 @@ for(s in list(round(reg_sampling.1,1),round(reg_sampling.4,1),round(reg_sampling
   z <- z +1
 }
 rm(centers,s,z,i)
+
