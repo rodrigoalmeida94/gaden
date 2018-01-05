@@ -16,6 +16,7 @@ in_rows <- list(c((50-4):(50+4),(100-4):(100+4),(150-4):(150+4)),(50-4):(105+4),
 inbetween_rows <- list(c((50+5):(100-5),(100+5):(150-5)),(50-4):(105+4),1:32)
 #w <- 3.7
 #h <- 3.7
+zones_col <- c(rgb(0, 18, 242, 55, maxColorValue = 255),rgb(0, 231, 100, 65, maxColorValue = 255),rgb(255, 255, 0, 65, maxColorValue = 255))
 
 # Functions ----
 z.test = function(a, mu, sd){
@@ -101,7 +102,7 @@ sim_var_inbet <- list()
 sim_max_inbet <- list()
 sim_n_inbet <- list()
 
- Makes 0 <- NA
+# Makes 0 <- NA
 for(i in 1:length(sims)){
   is.na(sims[[i]]) <- !sims[[i]]
 }
@@ -848,9 +849,25 @@ table_avg[12,12] <- mean(unlist(table_avg[11:15,2+9]))^2
 
 colnames(table_avg) <- c(zones[1],'','',zones[2],'','',zones[3],'','',zones[4],'','')
 
+table_avg[c(3:5,8:10,13:15),c(3,6,9,12)] <- ''
+
 print(xtable(table_avg, type = "latex", caption = 'Average concentration of ethylene ($ppb$) in the different simulations and zones.', digits = 2, label='tbl:avg_concentration'), file = paste0(path_to_sims,"MeanConcentration.tex"))
 
-# Make histograms
+# Make average plot ----
+
+plot(c(1,2,3),table_avg[c(11,6,1),3],xlab='$E_i$',ylab = 'Ethylene concentration ($ppb$)', ylim=c(0,10), type = 'b', pch=1)
+
+polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),3])-sqrt(as.numeric(table_avg[c(12,7,2),3])), rev(as.numeric(table_avg[c(11,6,1),3])+sqrt(as.numeric(table_avg[c(12,7,2),3])))))
+polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),6])-sqrt(as.numeric(table_avg[c(12,7,2),6])), rev(as.numeric(table_avg[c(11,6,1),6])+sqrt(as.numeric(table_avg[c(12,7,2),6])))), col=zones_col[1], border = NA)
+polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),9])-sqrt(as.numeric(table_avg[c(12,7,2),9])), rev(as.numeric(table_avg[c(11,6,1),9])+sqrt(as.numeric(table_avg[c(12,7,2),9])))), col=zones_col[2], border = NA)
+polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),12])-sqrt(as.numeric(table_avg[c(12,7,2),12])), rev(as.numeric(table_avg[c(11,6,1),12])+sqrt(as.numeric(table_avg[c(12,7,2),12])))), col=zones_col[3], border = NA)
+
+points(c(1,2,3),table_avg[c(11,6,1),6], type='b',pch=2, col = zones_col[1])
+points(c(1,2,3),table_avg[c(11,6,1),9], type='b',pch=3, col = zones_col[2])
+points(c(1,2,3),table_avg[c(11,6,1),12], type='b', pch=4, col = zones_col[3])
+
+
+# Make histograms ----
 tikz(file = paste0(path_to_sims,'hist_avg.tex'))
 hist(sims_avg[[1]]+sims_avg[[2]]+sims_avg[[3]]+sims_avg[[4]]+sims_avg[[5]], col=adjustcolor(emission_col[3], alpha.f = 0.7), xlab="Ethylene concentration ($ppb$)", main='')
 hist(sims_avg[[6]]+sims_avg[[7]]+sims_avg[[8]]+sims_avg[[9]]+sims_avg[[10]], col=adjustcolor(emission_col[2], alpha.f = 0.7), add=T)
@@ -1025,7 +1042,7 @@ for(p in 1:16){
 }
 measures_s_16p_na <- lapply(measures_s_16p_na, function(x) (x/16)*100)
 
-# Calculate Z-score
+# Calculate Z-score 
 
 for (s in 1:15){
   for(t in 1:length(measures_s_1p[[s]])){
