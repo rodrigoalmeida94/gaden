@@ -101,7 +101,7 @@ sim_var_inbet <- list()
 sim_max_inbet <- list()
 sim_n_inbet <- list()
 
-# Makes 0 <- NA
+ Makes 0 <- NA
 for(i in 1:length(sims)){
   is.na(sims[[i]]) <- !sims[[i]]
 }
@@ -170,49 +170,44 @@ zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
 # Plotting
 # Average Concentration XY maps ----
-# #breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
-# 
-# for(n in 1:15){
-#   xy_plane <- apply(sims[[n]],c(1,2),max)
-#   print(paste('range XY',range(xy_plane)[1], '-', range(xy_plane)[2]))
-#   if(n %in% 1:5){
-#     stage <- 3
-#   }
-#   if(n %in% 6:10){
-#     stage <- 2
-#   }
-#   if(n %in% 11:15){
-#     stage <- 1
-#   }
-#   
-#   pdf.options(family='Helvetica-Narrow')
-#   pdf(paste0(path_to_sims,names(sims)[[n]],'_XY.pdf'))
-#   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
-#   image.plot(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE, legend.lab = 'Ethylene concentration ($ppb$)')
-#   image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-#   points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white", "red"))(4)[ii[[stage]]])
-#   dev.off()
-# }
-# rm(s)
-# #breaks = breaks_stages[[stage]]
-# 
-# tikz(file = paste0(path_to_sims,'legend_c_XY.tex'), height = 0.7)
-# par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
-# plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-# legend('top',levels(ii_c), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_3$ ($Ls^{-1}$)'  )
-# dev.off()
-# 
-# tikz(file = paste0(path_to_sims,'legend_prec_XY.tex'), height = 0.7)
-# par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
-# plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-# legend('top',levels(ii_prec), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_1$ ($Ls^{-1}$)'  )
-# dev.off()
-# 
-# tikz(file = paste0(path_to_sims,'legend_entc_XY.tex'), height = 0.7)
-# par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
-# plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-# legend('top',levels(ii_entc), pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz = TRUE, bty = "n", title = '$E_2$ ($Ls^{-1}$)'  )
-# dev.off()
+#breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
+
+for(n in 1:15){ 
+xy_plane <- apply(sims[[n]],c(1,2),max) 
+print(paste('range XY',range(xy_plane)[1], '-', range(xy_plane)[2])) 
+if(n %in% 1:5){ stage <- 3 }
+if(n %in% 6:10){ stage <- 2 }
+if(n %in% 11:15){ stage <- 1 }
+
+pdf.options(family='Helvetica-Narrow')
+pdf(paste0(path_to_sims,names(sims)[[n]],'_XY.pdf'))
+#plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
+image.plot(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE, legend.lab = 'Ethylene concentration ($ppb$)')
+image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
+points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+"red"))(4)[ii[[stage]]])
+dev.off() 
+} 
+
+rm(s,n) #breaks = breaks_stages[[stage]]
+
+tikz(file = paste0(path_to_sims,'legend_c_XY.tex'), height = 0.7) par(fig =
+c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) plot(0, 0, type =
+"n", bty = "n", xaxt = "n", yaxt = "n") legend('top',levels(ii_c),
+pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz =
+TRUE, bty = "n", title = '$E_3$ ($Ls^{-1}$)'  ) dev.off()
+
+tikz(file = paste0(path_to_sims,'legend_prec_XY.tex'), height = 0.7) par(fig =
+c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) plot(0, 0, type =
+"n", bty = "n", xaxt = "n", yaxt = "n") legend('top',levels(ii_prec),
+pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz =
+TRUE, bty = "n", title = '$E_1$ ($Ls^{-1}$)'  ) dev.off()
+
+tikz(file = paste0(path_to_sims,'legend_entc_XY.tex'), height = 0.7) par(fig =
+c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) plot(0, 0, type =
+"n", bty = "n", xaxt = "n", yaxt = "n") legend('top',levels(ii_entc),
+pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz =
+TRUE, bty = "n", title = '$E_2$ ($Ls^{-1}$)'  ) dev.off()
 
 # Average Ethylene Concentration ----
 z <- 1
@@ -641,7 +636,7 @@ avg_sampling_na.in <- avg_sampling
 avg_sampling_na.inbet <- avg_sampling
 rm(avg_sampling)
 
-#sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
+sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
 
 for(master in c(1:15)){
   for(slave in c(1:15)){
@@ -944,7 +939,7 @@ s_16p <- lapply(s_16p, round)
 
 # plot the points in the orchard
 tikz(file = paste0(path_to_sims,'points_to_sample.tex'))
-plot(s_1p[1],s_1p[2], xlim= range(main_volume[[1]]),ylim=range(main_volume[[2]]),pch=1,xlab = '',ylab = '')
+plot(s_1p[1],s_1p[2], xlim= range(main_volume[[1]]),ylim=range(main_volume[[2]]),pch=1,xlab = '$x$ ($cm$)',ylab = '$y$ ($cm$)')
 points(s_4p[[1]][1],s_4p[[1]][2],pch=2)
 points(s_4p[[2]][1],s_4p[[2]][2],pch=2)
 points(s_4p[[3]][1],s_4p[[3]][2],pch=2)
@@ -964,6 +959,7 @@ polygon(c((150-4),(150+4),(150+4),(150-4)),c((50-4),(50-4),(105+4),(105+4)), bor
 # In between rows
 polygon(c((50+5),(100-5),(100-5),(50+5)),c((50-4),(50-4),(105+4),(105+4)), border = NA, col = rgb(255, 255, 0, 65, maxColorValue = 255))
 polygon(c((100+5),(150-5),(150-5),(100+5)),c((50-4),(50-4),(105+4),(105+4)), border = NA, col = rgb(255, 255, 0, 65, maxColorValue = 255))
+legend('topleft',zones[2:4],fill=c(rgb(0, 18, 242, 55, maxColorValue = 255),rgb(0, 231, 100, 65, maxColorValue = 255),rgb(255, 255, 0, 65, maxColorValue = 255)),horiz = T)
 dev.off()
 
 # Get the measurement values
