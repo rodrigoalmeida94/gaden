@@ -164,9 +164,9 @@ emission_col <- brewer.pal(3,'Reds')
 zones <- c('Environment','Main volume','In rows','In-between rows')
 zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
-# Plotting
+# Plotting 
 # Average Concentration XY maps ----
-breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
+#breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
 # 
 for(n in 1:15){
 xy_plane <- apply(sims[[n]],c(1,2),max)
@@ -205,6 +205,7 @@ dev.off()
 
 rm(s,n) 
 
+# Legend Maximum maps ----
 breaks = breaks_stages[[stage]]
 
 tikz(file = paste0(path_to_sims, 'legend_c_XY.tex'),height = 0.7) 
@@ -214,7 +215,8 @@ legend('top',levels(ii_c),pch = 23,pt.bg = colorRampPalette(c("white", "red"))(4
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'legend_prec_XY.tex'),
-     height = 0.7) par(
+     height = 0.7) 
+par(
        fig =
          c(0, 1, 0, 1),
        oma = c(0, 0, 0, 0),
@@ -243,7 +245,8 @@ legend(
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'legend_entc_XY.tex'),
-     height = 0.7) par(
+     height = 0.7) 
+par(
        fig =
          c(0, 1, 0, 1),
        oma = c(0, 0, 0, 0),
@@ -272,7 +275,7 @@ legend(
 dev.off()
 
 
-# Makes 0 <- NA
+# Makes 0 <- NA ----
 for(i in 1:length(sims)){
   is.na(sims[[i]]) <- !sims[[i]]
 }

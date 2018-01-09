@@ -10,7 +10,7 @@ setwd("~/catkin_ws/src/gaden/orchard_demo/demo")
 load("~/catkin_ws/src/gaden/orchard_demo/demo/parameters.RData")
 
 # tikz('e_boxplot.tex')
-#boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($Ls^{-1}kg^{-1}$)')
+#boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Ls^{-1}kg^{-1}$)')
 # dev.off()
 # 
 # tikz('l_boxplot.tex')
@@ -18,7 +18,7 @@ load("~/catkin_ws/src/gaden/orchard_demo/demo/parameters.RData")
 # dev.off()
 # 
 # tikz('ee_boxplot.tex')
-# boxplot(emission_prec,emission_entc,emission_c, names = c('$E_1$','$E_2$','$E_3$'), ylab = 'Emission per tree ($Ls^{-1}\ per\ tree$)')
+# boxplot(emission_prec,emission_entc,emission_c, names = c('$E_1$','$E_2$','$E_3$'), ylab = 'Emission per tree ($\\mu Ls^{-1}\ per\ tree$)')
 # dev.off()
 # 
 # tikz('h_boxplot.tex')
@@ -145,6 +145,7 @@ if(save_files){system(paste0('source gif_maker.sh ',sim_name))}
 graphics.off() 
 }
 
-rm(list=setdiff(ls(), c('sim_emission_c_0_ms_s','sim_emission_prec_0_ms_s', 'sim_emission_entc_0_ms_s','sim_emission_c_01_ms_s','sim_emission_prec_01_ms_s', 'sim_emission_entc_01_ms_s', simulation_runs$name,'coords','emission_data','timesteps','steps','simulation_runs', 'trees_xy', 'trees_xz', 'trees_yz', 'emission_c', 'emission_entc', 'emission_prec')))
+rm(list=setdiff(ls(), c('sim_emission_c_0ms_s','sim_emission_prec_0ms_s', 'sim_emission_entc_0ms_s','sim_emission_c_01ms_s','sim_emission_prec_01ms_s', 'sim_emission_entc_01ms_s', 'sim_emission_c_2msX_drone','sim_emission_prec_2ms_drone', 'sim_emission_entc_2msX_drone', simulation_runs$name,'coords','emission_data','timesteps','steps','simulation_runs', 'trees_xy', 'trees_xz', 'trees_yz', 'emission_c', 'emission_entc', 'emission_prec')))
 
-save.image(file='sim_results_01.RData')
+#save.image(file='sim_results_01.RData')
+save.image(file='sim_results_02.RData')
