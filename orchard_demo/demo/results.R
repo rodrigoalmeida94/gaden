@@ -166,7 +166,7 @@ zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
 # Plotting
 # Average Concentration XY maps ----
-#breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
+breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
 # 
 for(n in 1:15){
 xy_plane <- apply(sims[[n]],c(1,2),max)
@@ -203,25 +203,73 @@ points(coords$e_y*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c(
 dev.off()
 }
 
-rm(s,n) #breaks = breaks_stages[[stage]]
-# 
-# tikz(file = paste0(path_to_sims,'legend_c_XY.tex'), height = 0.7) par(fig =
-# c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) plot(0, 0, type =
-# "n", bty = "n", xaxt = "n", yaxt = "n") legend('top',levels(ii_c),
-# pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz =
-# TRUE, bty = "n", title = '$E_3$ ($Ls^{-1}$)'  ) dev.off()
-# 
-# tikz(file = paste0(path_to_sims,'legend_prec_XY.tex'), height = 0.7) par(fig =
-# c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) plot(0, 0, type =
-# "n", bty = "n", xaxt = "n", yaxt = "n") legend('top',levels(ii_prec),
-# pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz =
-# TRUE, bty = "n", title = '$E_1$ ($Ls^{-1}$)'  ) dev.off()
-# 
-# tikz(file = paste0(path_to_sims,'legend_entc_XY.tex'), height = 0.7) par(fig =
-# c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) plot(0, 0, type =
-# "n", bty = "n", xaxt = "n", yaxt = "n") legend('top',levels(ii_entc),
-# pch=23,pt.bg = colorRampPalette(c("white", "red"))(4), xpd = TRUE, horiz =
-# TRUE, bty = "n", title = '$E_2$ ($Ls^{-1}$)'  ) dev.off()
+rm(s,n) 
+
+breaks = breaks_stages[[stage]]
+
+tikz(file = paste0(path_to_sims, 'legend_c_XY.tex'),height = 0.7) 
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
+plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
+legend('top',levels(ii_c),pch = 23,pt.bg = colorRampPalette(c("white", "red"))(4),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_3$ ($\\mu Ls^{-1}$)') 
+dev.off()
+
+tikz(file = paste0(path_to_sims, 'legend_prec_XY.tex'),
+     height = 0.7) par(
+       fig =
+         c(0, 1, 0, 1),
+       oma = c(0, 0, 0, 0),
+       mar = c(0, 0, 0, 0)
+     ) 
+plot(
+       0,
+       0,
+       type =
+         "n",
+       bty = "n",
+       xaxt = "n",
+       yaxt = "n"
+     ) 
+legend(
+       'top',
+       levels(ii_prec),
+       pch = 23,
+       pt.bg = colorRampPalette(c("white", "red"))(4),
+       xpd = TRUE,
+       horiz =
+         TRUE,
+       bty = "n",
+       title = '$E_1$ ($\\mu Ls^{-1}$)'
+     )
+dev.off()
+
+tikz(file = paste0(path_to_sims, 'legend_entc_XY.tex'),
+     height = 0.7) par(
+       fig =
+         c(0, 1, 0, 1),
+       oma = c(0, 0, 0, 0),
+       mar = c(0, 0, 0, 0)
+     ) 
+plot(
+       0,
+       0,
+       type =
+         "n",
+       bty = "n",
+       xaxt = "n",
+       yaxt = "n"
+     ) 
+legend(
+       'top',
+       levels(ii_entc),
+       pch = 23,
+       pt.bg = colorRampPalette(c("white", "red"))(4),
+       xpd = TRUE,
+       horiz =
+         TRUE,
+       bty = "n",
+       title = '$E_2$ ($\\mu Ls^{-1}$)'
+     ) 
+dev.off()
 
 
 # Makes 0 <- NA
@@ -1363,4 +1411,34 @@ for(s in list(round(reg_sampling.1,1),round(reg_sampling.4,1),round(reg_sampling
   z <- z +1
 }
 rm(centers,s,z,i)
+
+
+# Scatter plot of average emission/average concentration ----
+tikz(file=paste0(path_to_sims,'Model',zones_files[1],'.tex'))
+plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)), pch=rep(c(1,2,2,3,3),3),table_avg$Environment,col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[1])
+abline(fit <- lm(unlist(table_avg$Environment)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
+#exp_model <- lm(log(unlist(table_avg$Environment))~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)))
+#pred_exp <- exp(predict(exp_model,list(x=10:140)))
+
+legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+dev.off()
+
+tikz(file=paste0(path_to_sims,'Model',zones_files[2],'.tex'))
+plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)),table_avg$`Main volume`, pch=rep(c(1,2,2,3,3),3),col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[2])
+abline(fit <- lm(unlist(table_avg$`Main volume`)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
+legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+dev.off()
+
+tikz(file=paste0(path_to_sims,'Model',zones_files[3],'.tex'))
+plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)),table_avg$`In rows`, pch=rep(c(1,2,2,3,3),3),col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[3])
+abline(fit <- lm(unlist(table_avg$`In rows`)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
+legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+dev.off()
+
+tikz(file=paste0(path_to_sims,'Model',zones_files[4],'.tex'))
+plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)), table_avg$`In-between rows`, pch=rep(c(1,2,2,3,3),3),col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[4])
+abline(fit <- lm(unlist(table_avg$`In-between rows`)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
+legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+dev.off()
+
 
