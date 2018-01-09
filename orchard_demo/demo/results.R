@@ -1418,30 +1418,64 @@ rm(centers,s,z,i)
 
 # Scatter plot of average emission/average concentration ----
 tikz(file=paste0(path_to_sims,'Model',zones_files[1],'.tex'), height = 3.5)
-plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)), pch=rep(c(1,2,2,3,3),3),table_avg$Environment,col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[1])
-abline(fit <- lm(unlist(table_avg$Environment)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
-#exp_model <- lm(log(unlist(table_avg$Environment))~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)))
-#pred_exp <- exp(predict(exp_model,list(x=10:140)))
 
-legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+y <- unlist(table_avg$Environment)
+x <- c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))
+exp_model <- lm(log(y)~x)
+pred_exp <- exp(predict(exp_model,list(x=10:140)))
+lin_model <- lm(y~x)
+
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[1])
+abline(lin_model, lty=2)
+lines(10:140, pred_exp, lty=3)
+legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
 dev.off()
 
 tikz(file=paste0(path_to_sims,'Model',zones_files[2],'.tex'), height = 3.5)
-plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)),table_avg$`Main volume`, pch=rep(c(1,2,2,3,3),3),col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[2])
-abline(fit <- lm(unlist(table_avg$`Main volume`)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
-legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+
+y <- unlist(table_avg$`Main volume`)
+x <- c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))
+exp_model <- lm(log(y)~x)
+pred_exp <- exp(predict(exp_model,list(x=10:140)))
+lin_model <- lm(y~x)
+
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[2])
+abline(lin_model, lty=2)
+lines(10:140, pred_exp, lty=3)
+legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
 dev.off()
 
 tikz(file=paste0(path_to_sims,'Model',zones_files[3],'.tex'), height = 3.5)
-plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)),table_avg$`In rows`, pch=rep(c(1,2,2,3,3),3),col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[3])
-abline(fit <- lm(unlist(table_avg$`In rows`)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
-legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+
+y <- unlist(table_avg$`In rows`)
+x <- c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))
+exp_model <- lm(log(y)~x)
+pred_exp <- exp(predict(exp_model,list(x=10:140)))
+lin_model <- lm(y~x)
+
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[3])
+abline(lin_model, lty=2)
+lines(10:140, pred_exp, lty=3)
+legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
 dev.off()
 
 tikz(file=paste0(path_to_sims,'Model',zones_files[4],'.tex'), height = 3.5)
-plot(c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5)), table_avg$`In-between rows`, pch=rep(c(1,2,2,3,3),3),col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[4])
-abline(fit <- lm(unlist(table_avg$`In-between rows`)~c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))), lty=2)
-legend("topleft", bty="n", lty = c(2,NA), legend=c('Linear model',paste("$R^2=$", format(summary(fit)$adj.r.squared, digits=4))))
+
+y <- unlist(table_avg$`In-between rows`)
+x <- c(rep(mean(emission_c*1000),5),rep(mean(emission_entc*1000),5),rep(mean(emission_prec*1000),5))
+exp_model <- lm(log(y)~x)
+pred_exp <- exp(predict(exp_model,list(x=10:140)))
+lin_model <- lm(y~x)
+
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[4])
+abline(lin_model, lty=2)
+lines(10:140, pred_exp, lty=3)
+legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
 dev.off()
+
+rm(x,y,exp_model,pred_exp,lin_model)
+
+
+
 
 
