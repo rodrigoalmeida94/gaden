@@ -140,7 +140,7 @@ coords$e_y[coords$side == 5]  <- coords$e_y[coords$side == 5] - 0.3
 coords$e_x[coords$side == 6]  <- coords$e_x[coords$side == 6] + 0.3
 coords$e_y[coords$side == 6]  <- coords$e_y[coords$side == 6] + 0.3
 
-wind_data <- c('$(find orchard_demo)/demo/wind_at_cell_center_points_01ms',"$(find orchard_demo)/demo/wind_at_cell_center_points_2msX","$(find orchard_demo)/demo/wind_at_cell_center_points_2msY","$(find orchard_demo)/demo/wind_at_cell_center_points_5msX","$(find orchard_demo)/demo/wind_at_cell_center_points_5msY")
+wind_data <- c('$(find orchard_demo)/demo/wind_at_cell_center_points_0ms',"$(find orchard_demo)/demo/wind_at_cell_center_points_2msX","$(find orchard_demo)/demo/wind_at_cell_center_points_2msY","$(find orchard_demo)/demo/wind_at_cell_center_points_5msX","$(find orchard_demo)/demo/wind_at_cell_center_points_5msY","$(find orchard_demo)/demo/wind_at_cell_center_points_2msX_drone")
 emission_data <- c('emission_c','emission_entc','emission_prec')
 
 simulation_runs <- expand.grid(wind_data,emission_data, stringsAsFactors = FALSE)
