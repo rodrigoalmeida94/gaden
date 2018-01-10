@@ -147,7 +147,7 @@ simulation_runs <- expand.grid(wind_data,emission_data, stringsAsFactors = FALSE
 simulation_runs$wind_speed <- sapply(strsplit(simulation_runs$Var1,'_'),tail,1)
 simulation_runs$name <- paste0('sim_',simulation_runs$Var2,'_',simulation_runs$wind_speed,'_s')
 
-simulation_runs$time_step <- rep(c('0.001', '0.05', '0.05', '0.02','0.02'),3)
+#simulation_runs$time_step <- rep(c('0.001', '0.05', '0.05', '0.02','0.02'),3)
 
 save.image(file='parameters.RData')
 
@@ -263,7 +263,7 @@ for(i in 0:(n-1)){
 }
 
   
-for(s in 1:15){
+for(s in 1:18){
   simulation_launch <- template
   player_launch <- player
   wind <- simulation_runs$Var1[s]

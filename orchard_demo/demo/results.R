@@ -1475,7 +1475,21 @@ dev.off()
 
 rm(x,y,exp_model,pred_exp,lin_model)
 
+# Plot evolution of emission across stages ----
 
+emission_all <- data.frame(emission_prec,emission_entc,emission_c)*1000
+tikz(file=paste0(path_to_sims,'EmissionEvolution.tex'), height = 4)
+plot(c(1,2,3),emission_all[1,], xlab='$E_i$', ylab = 'Emission rate ($\\mu Ls^{-1}$)', xaxt="n",ylim = range(emission_all), type='b', pch=3, lty=2)
+axis(1, at = c(1,2,3))
+for(i in 2:18){points(c(1,2,3),emission_all[i,],type = 'b', pch=3, lty=2)}
 
+x <- c(rep(1,18),rep(2,18),rep(3,18))
+y <- log(c(emission_prec,emission_entc,emission_c)*1000)
+exp_model <- lm(y~x)
+pred_exp <- exp(predict(exp_model,list(x=seq(0,4,0.1))))
+lines(seq(0,4,0.1), pred_exp, col='orange',lwd=3)
+legend("topleft", bty="n", lty = c(1,NA), legend='Exponential trend line',col='orange',lwd=3)
+dev.off()
+rm(x,y,exp_model,pred_exp)
 
 

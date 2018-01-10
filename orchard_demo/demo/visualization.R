@@ -59,14 +59,14 @@ ii <- list(ii_prec,ii_entc,ii_c)
 
 timesteps <- seq(15,300,15)
 #timesteps <- seq(15,300,15)
-steps <- 0:14
+steps <- 0:19
 #steps <- 0:19
 #steps <- 0:8
 # Remove zero sims if needed
 #simulation_runs <- simulation_runs[-c(1,6,11),]
-save_files <- F
+save_files <- T
 
-for(index in c(1)){
+for(index in c(6)){
 sim_name <- simulation_runs$name[index]
 print(sim_name)
 if(simulation_runs$Var2[index] == 'emission_prec'){

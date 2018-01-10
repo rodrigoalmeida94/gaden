@@ -67,7 +67,7 @@ num_cells_z = ceil(environment_dimensions(3)/cell_resolution);
 % the cell centers, and then export the data to a CSV file (input for this script)
 % FORMAT: "U [m/s]:0","U [m/s]:1","U [m/s]:2","Points:0","Points:1","Points:2"
 % FORMAT: U, V, W, x, y, z
-filename = strcat(folder_path,'wind_at_cell_center_points_2msX_drone.csv');
+filename = strcat(folder_path,'wind_at_cell_center_points_2msX_drone0.csv');
 CSV = dlmread(filename,',',1,0);
 
 % Plot original data in 3D - scatter3(x,y,z,size,[color])
