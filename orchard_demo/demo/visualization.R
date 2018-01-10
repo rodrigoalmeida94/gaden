@@ -66,7 +66,7 @@ steps <- 0:19
 #simulation_runs <- simulation_runs[-c(1,6,11),]
 save_files <- T
 
-for(index in c(6)){
+for(index in c(12,18)){
 sim_name <- simulation_runs$name[index]
 print(sim_name)
 if(simulation_runs$Var2[index] == 'emission_prec'){
@@ -148,4 +148,4 @@ graphics.off()
 rm(list=setdiff(ls(), c('sim_emission_c_0ms_s','sim_emission_prec_0ms_s', 'sim_emission_entc_0ms_s','sim_emission_c_01ms_s','sim_emission_prec_01ms_s', 'sim_emission_entc_01ms_s', 'sim_emission_c_2msX_drone','sim_emission_prec_2ms_drone', 'sim_emission_entc_2msX_drone', simulation_runs$name,'coords','emission_data','timesteps','steps','simulation_runs', 'trees_xy', 'trees_xz', 'trees_yz', 'emission_c', 'emission_entc', 'emission_prec')))
 
 #save.image(file='sim_results_01.RData')
-save.image(file='sim_results_02.RData')
+save.image(file='sim_results_drone.RData')
