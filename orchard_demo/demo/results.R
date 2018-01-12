@@ -2,6 +2,7 @@ setwd("~/catkin_ws/src/gaden/orchard_demo/demo")
 set.seed(12345678)
 load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results.RData")
 load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results_01.RData")
+load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results_drone.RData")
 library(RColorBrewer)
 require(tikzDevice)
 library(fields)
@@ -74,6 +75,9 @@ ii <- list(ii_prec,ii_entc,ii_c)
 sims <- list(sim_emission_c_0ms_s, sim_emission_c_2msX_s,sim_emission_c_2msY_s,sim_emission_c_5msX_s,sim_emission_c_5msY_s,sim_emission_entc_0ms_s,sim_emission_entc_2msX_s,sim_emission_entc_2msY_s,sim_emission_entc_5msX_s,sim_emission_entc_5msY_s,sim_emission_prec_0ms_s,sim_emission_prec_2msX_s,sim_emission_prec_2msY_s,sim_emission_prec_5msX_s,sim_emission_prec_5msY_s)
 
 names(sims) <- c('sim_emission_c_0ms_s',"sim_emission_c_2msX_s","sim_emission_c_2msY_s","sim_emission_c_5msX_s","sim_emission_c_5msY_s",'sim_emission_entc_0ms_s',"sim_emission_entc_2msX_s","sim_emission_entc_2msY_s","sim_emission_entc_5msX_s","sim_emission_entc_5msY_s",'sim_emission_prec_0ms_s',"sim_emission_prec_2msX_s","sim_emission_prec_2msY_s","sim_emission_prec_5msX_s","sim_emission_prec_5msY_s")
+
+sims_drone <- list(sim_emission_c_drone1_s,sim_emission_entc_drone1_s,sim_emission_prec_drone1_s,sim_emission_c_drone2_s,sim_emission_entc_drone2_s,sim_emission_prec_drone2_s)
+names(sims_drone) <- c('sim_emission_c_drone1_s','sim_emission_entc_drone1_s','sim_emission_prec_drone1_s','sim_emission_c_drone2_s','sim_emission_entc_drone2_s','sim_emission_prec_drone2_s')
 
 #sims <- list(sim_emission_c_01ms_s, sim_emission_c_2msX_s,sim_emission_c_2msY_s,sim_emission_c_5msX_s,sim_emission_c_5msY_s,sim_emission_entc_0ms_s,sim_emission_entc_2msX_s,sim_emission_entc_2msY_s,sim_emission_entc_5msX_s,sim_emission_entc_5msY_s,sim_emission_prec_0ms_s,sim_emission_prec_2msX_s,sim_emission_prec_2msY_s,sim_emission_prec_5msX_s,sim_emission_prec_5msY_s)
 
@@ -180,7 +184,7 @@ if(n %in% 11:15){ stage <- 1 }
 
 pdf(paste0(path_to_sims,names(sims)[[n]],'_XY.pdf'))
 #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
-image.plot(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE)
+image(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE)
 image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
 points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
 "red"))(4)[ii[[stage]]])
@@ -188,7 +192,7 @@ dev.off()
 
 pdf(paste0(path_to_sims,names(sims)[[n]],'_XZ.pdf'))
 #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
-image.plot(X,Z,xz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(1,60), ann=FALSE)
+image(X,Z,xz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(1,60), ann=FALSE)
 image(X,Z,trees_xz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
 points(coords$e_x*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                   "red"))(4)[ii[[stage]]])
@@ -1491,5 +1495,68 @@ lines(seq(0,4,0.1), pred_exp, col='orange',lwd=3)
 legend("topleft", bty="n", lty = c(1,NA), legend='Exponential trend line',col='orange',lwd=3)
 dev.off()
 rm(x,y,exp_model,pred_exp)
+
+# Plot drone sims maps ----
+
+for(n in 1:6){
+  xy_plane <- apply(sims_drone[[n]],c(1,2),max)
+  xz_plane <- apply(sims_drone[[n]],c(1,3),max)
+  yz_plane <- apply(sims_drone[[n]],c(2,3),max)
+  
+  print(paste('range XY',range(xy_plane)[1], '-', range(xy_plane)[2]))
+  if(n %in% c(1,4)){ stage <- 3 }
+  if(n %in% c(2,5)){ stage <- 2 }
+  if(n %in% c(3,6)){ stage <- 1 }
+  
+  if(n %in% c(1:3)){point <- s_1p[1:2]}
+  if(n %in% c(1:3)){point <- c(125,s_1p[2])}
+  
+  pdf(paste0(path_to_sims,names(sims_drone)[[n]],'_XY.pdf'))
+  #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
+  image(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE)
+  image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
+  points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+                                                                                    "red"))(4)[ii[[stage]]])
+  points(point[1],point[2], pch=17, col='magenta',cex=2)
+  dev.off()
+  
+  pdf(paste0(path_to_sims,names(sims_drone)[[n]],'_XZ.pdf'))
+  #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
+  image(X,Z,xz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(1,60), ann=FALSE)
+  image(X,Z,trees_xz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
+  points(coords$e_x*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+                                                                                  "red"))(4)[ii[[stage]]])
+  points(point[1],40, pch=17, col='magenta',cex=2)
+  dev.off()
+  
+  pdf(paste0(path_to_sims,names(sims_drone)[[n]],'_YZ.pdf'))
+  #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
+  image.plot(Y,Z,yz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,141),ylim=c(1,60), ann=FALSE, legend.lab = 'Ethylene concentration (ppb)', legend.line = 2.5)
+  image(Y,Z,trees_yz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
+  points(coords$e_y*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+                                                                                  "red"))(4)[ii[[stage]]])
+  points(point[2],40, pch=17, col='magenta',cex=2)
+  dev.off()
+}
+
+rm(s,n, point) 
+
+tikz(file = paste0(path_to_sims, 'legend_drone_c_XY.tex'),height = 0.7) 
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
+plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
+legend('top',c(levels(ii_c), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_3$ ($\\mu Ls^{-1}$)', col=c(rep('black',4),'magenta'))
+dev.off()
+
+tikz(file = paste0(path_to_sims, 'legend_drone_entc_XY.tex'),height = 0.7) 
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
+plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
+legend('top',c(levels(ii_entc), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_2$ ($\\mu Ls^{-1}$)', col=c(rep('black',4),'magenta'))
+dev.off()
+
+tikz(file = paste0(path_to_sims, 'legend_drone_prec_XY.tex'),height = 0.7) 
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
+plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
+legend('top',c(levels(ii_prec), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_1$ ($\\mu Ls^{-1}$)', col=c(rep('black',4),'magenta'))
+dev.off()
 
 
