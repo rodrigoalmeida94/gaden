@@ -65,8 +65,8 @@ steps <- 0:19
 # Remove zero sims if needed
 #simulation_runs <- simulation_runs[-c(1,6,11),]
 save_files <- T
-
-for(index in c(6,7,13,14,20,21)){
+#c(6,7,13,14,20,21)
+for(index in c(7,14,21)){
 sim_name <- simulation_runs$name[index]
 print(sim_name)
 if(simulation_runs$Var2[index] == 'emission_prec'){

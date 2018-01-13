@@ -1508,8 +1508,8 @@ for(n in 1:6){
   if(n %in% c(2,5)){ stage <- 2 }
   if(n %in% c(3,6)){ stage <- 1 }
   
-  if(n %in% c(1:3)){point <- s_1p[1:2]}
-  if(n %in% c(1:3)){point <- c(125,s_1p[2])}
+  if(n %in% c(1:3)){point <- c(s_1p[1:2],40)}
+  if(n %in% c(4:6)){point <- c(125,s_1p[2],20)}
   
   pdf(paste0(path_to_sims,names(sims_drone)[[n]],'_XY.pdf'))
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
@@ -1526,7 +1526,7 @@ for(n in 1:6){
   image(X,Z,trees_xz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
   points(coords$e_x*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                   "red"))(4)[ii[[stage]]])
-  points(point[1],40, pch=17, col='magenta',cex=2)
+  points(point[1],point[3], pch=17, col='magenta',cex=2)
   dev.off()
   
   pdf(paste0(path_to_sims,names(sims_drone)[[n]],'_YZ.pdf'))
@@ -1535,7 +1535,7 @@ for(n in 1:6){
   image(Y,Z,trees_yz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
   points(coords$e_y*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                   "red"))(4)[ii[[stage]]])
-  points(point[2],40, pch=17, col='magenta',cex=2)
+  points(point[2],point[3], pch=17, col='magenta',cex=2)
   dev.off()
 }
 
