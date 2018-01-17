@@ -1563,6 +1563,6 @@ dev.off()
 
 
 # Adaptive sampling ----
-test <- sim_avg$sim_emission_c_0ms_s
-diff_test <- diff(test)
-which(diff(sign(diff(test)))==-2)+1
+test <- sims_avg$sim_emission_c_0ms_s
+diff_test <- which(diff(sign(diff(test)))==-2)+1
+
