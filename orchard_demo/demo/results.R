@@ -19,6 +19,8 @@ inbetween_rows <- list(c((50+5):(100-5),(100+5):(150-5)),(50-4):(105+4),1:32)
 #h <- 3.7
 zones_col <- c(rgb(0, 18, 242, 55, maxColorValue = 255),rgb(0, 231, 100, 65, maxColorValue = 255),rgb(255, 255, 0, 65, maxColorValue = 255))
 
+# FIX LEGENDS MicroLs to PPB s or nL s
+
 # Functions ----
 z.test = function(a, mu, sd){
   zeta = (mean(a) - mu) / (sd / sqrt(length(a)))
@@ -170,7 +172,7 @@ zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
 # Plotting 
 # Average Concentration XY maps ----
-#breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
+breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
 # 
 for(n in 1:15){
 xy_plane <- apply(sims[[n]],c(1,2),max)
@@ -215,7 +217,7 @@ breaks = breaks_stages[[stage]]
 tikz(file = paste0(path_to_sims, 'legend_c_XY.tex'),height = 0.7) 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
 plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
-legend('top',levels(ii_c),pch = 23,pt.bg = colorRampPalette(c("white", "red"))(4),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_3$ ($\\mu Ls^{-1}$)') 
+legend('top',levels(ii_c),pch = 23,pt.bg = colorRampPalette(c("white", "red"))(4),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_3$ ($nLs^{-1}$)') 
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'legend_prec_XY.tex'),
@@ -244,7 +246,7 @@ legend(
        horiz =
          TRUE,
        bty = "n",
-       title = '$E_1$ ($\\mu Ls^{-1}$)'
+       title = '$E_1$ ($nLs^{-1}$)'
      )
 dev.off()
 
@@ -274,7 +276,7 @@ legend(
        horiz =
          TRUE,
        bty = "n",
-       title = '$E_2$ ($\\mu Ls^{-1}$)'
+       title = '$E_2$ ($nLs^{-1}$)'
      ) 
 dev.off()
 
@@ -441,7 +443,9 @@ rm(z,s,i,p_ch,p_t)
 # Testing random sampling ----
 
 number_of_samples <- c(1,4,16)
-
+sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
+sim_avg_all <- lapply(sim_avg_main,mean, na.rm=T)
+sim_std_all <- lapply(sim_std_main,mean, na.rm=T)
 for(number in number_of_samples){
 # Construct results table
 random_sampling <- array(NA,dim = c(length(sims),4*20))
@@ -691,8 +695,6 @@ random_sampling.inbet$max <- apply(random_sampling.in,1,max, na.rm=T)
 
 # Check if samples are significantly different from each other, if stage is also different
 
-sim_avg_all <- lapply(sim_avg_main,mean, na.rm=T)
-sim_std_all <- lapply(sim_std_main,mean, na.rm=T)
 # Take out 0 velocity since it varies stupidely over time
 
 # Construct comparison table
@@ -711,8 +713,6 @@ avg_sampling_na.main <- avg_sampling
 avg_sampling_na.in <- avg_sampling
 avg_sampling_na.inbet <- avg_sampling
 rm(avg_sampling)
-
-sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
 
 for(master in c(1:15)){
   for(slave in c(1:15)){
@@ -1429,7 +1429,7 @@ exp_model <- lm(log(y)~x)
 pred_exp <- exp(predict(exp_model,list(x=10:140)))
 lin_model <- lm(y~x)
 
-plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[1])
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($nLs^{-1}$)', main = zones[1])
 abline(lin_model, lty=2)
 lines(10:140, pred_exp, lty=3)
 legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
@@ -1443,7 +1443,7 @@ exp_model <- lm(log(y)~x)
 pred_exp <- exp(predict(exp_model,list(x=10:140)))
 lin_model <- lm(y~x)
 
-plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[2])
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($nLs^{-1}$)', main = zones[2])
 abline(lin_model, lty=2)
 lines(10:140, pred_exp, lty=3)
 legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
@@ -1457,7 +1457,7 @@ exp_model <- lm(log(y)~x)
 pred_exp <- exp(predict(exp_model,list(x=10:140)))
 lin_model <- lm(y~x)
 
-plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[3])
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($nLs^{-1}$)', main = zones[3])
 abline(lin_model, lty=2)
 lines(10:140, pred_exp, lty=3)
 legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
@@ -1471,7 +1471,7 @@ exp_model <- lm(log(y)~x)
 pred_exp <- exp(predict(exp_model,list(x=10:140)))
 lin_model <- lm(y~x)
 
-plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($\\mu Ls^{-1}$)', main = zones[4])
+plot(x,y, pch=rep(c(1,2,2,3,3),3), col=c(rep(emission_col[3],5),rep(emission_col[2],5),rep(emission_col[1],5)), ylab = 'Average ethylene concentration ($ppb$)', xlab= 'Average emission rate ($nLs^{-1}$)', main = zones[4])
 abline(lin_model, lty=2)
 lines(10:140, pred_exp, lty=3)
 legend("topleft", bty="n", lty = c(2,NA,3,NA), legend=c('Linear model',paste("$R^2=$", format(summary(lin_model)$adj.r.squared, digits=4)), 'Exponential model', paste("$R^2=$", format(summary(exp_model)$adj.r.squared, digits=4))))
@@ -1483,7 +1483,7 @@ rm(x,y,exp_model,pred_exp,lin_model)
 
 emission_all <- data.frame(emission_prec,emission_entc,emission_c)*1000
 tikz(file=paste0(path_to_sims,'EmissionEvolution.tex'), height = 4)
-plot(c(1,2,3),emission_all[1,], xlab='$E_i$', ylab = 'Emission rate ($\\mu Ls^{-1}$)', xaxt="n",ylim = range(emission_all), type='b', pch=3, lty=2)
+plot(c(1,2,3),emission_all[1,], xlab='$E_i$', ylab = 'Emission rate ($nLs^{-1}$)', xaxt="n",ylim = range(emission_all), type='b', pch=3, lty=2)
 axis(1, at = c(1,2,3))
 for(i in 2:18){points(c(1,2,3),emission_all[i,],type = 'b', pch=3, lty=2)}
 
@@ -1544,20 +1544,25 @@ rm(s,n, point)
 tikz(file = paste0(path_to_sims, 'legend_drone_c_XY.tex'),height = 0.7) 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
 plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
-legend('top',c(levels(ii_c), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_3$ ($\\mu Ls^{-1}$)', col=c(rep('black',4),'magenta'))
+legend('top',c(levels(ii_c), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_3$ ($nLs^{-1}$)', col=c(rep('black',4),'magenta'))
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'legend_drone_entc_XY.tex'),height = 0.7) 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
 plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
-legend('top',c(levels(ii_entc), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_2$ ($\\mu Ls^{-1}$)', col=c(rep('black',4),'magenta'))
+legend('top',c(levels(ii_entc), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_2$ ($nLs^{-1}$)', col=c(rep('black',4),'magenta'))
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'legend_drone_prec_XY.tex'),height = 0.7) 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0)) 
 plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n") 
-legend('top',c(levels(ii_prec), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_1$ ($\\mu Ls^{-1}$)', col=c(rep('black',4),'magenta'))
+legend('top',c(levels(ii_prec), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_1$ ($nLs^{-1}$)', col=c(rep('black',4),'magenta'))
 dev.off()
 
 # Plot basic stats drone ----
 
+
+# Adaptive sampling ----
+test <- sim_avg$sim_emission_c_0ms_s
+diff_test <- diff(test)
+which(diff(sign(diff(test)))==-2)+1
