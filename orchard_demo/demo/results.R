@@ -1559,4 +1559,5 @@ plot(0,0,type = "n", bty = "n", xaxt = "n", yaxt = "n")
 legend('top',c(levels(ii_prec), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRampPalette(c("white", "red"))(4),'magenta'),xpd = TRUE,horiz =TRUE,bty = "n",title = '$E_1$ ($\\mu Ls^{-1}$)', col=c(rep('black',4),'magenta'))
 dev.off()
 
+# Plot basic stats drone ----
 

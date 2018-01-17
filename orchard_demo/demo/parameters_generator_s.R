@@ -11,9 +11,13 @@ n <- 18
 
 # Yield in ton in a 2000 tree per ha field, over several years
 yield <- c(5,16,29,42,53,63,65)
+# yield per tree
 yield <- (yield*1000)/(10000/5.5)
 mean_yield <- mean(yield)
 sd_yield <- sd(yield)
+# Yield from the field experiments
+# mean_yield <- 16.5
+# sd_yield <- 5.1
 
 lower <- 0
 upper <- max(yield)
@@ -53,6 +57,8 @@ e_entc <- qnorm(runif(n, pnorm(lower, mean=mean_e_entc, sd=sd_e_entc), pnorm(upp
 # Climacteric
 mean_e_c <- 20
 sd_e_c <- 15
+# Change SD CLIMACTERIC
+# sd_e_c <- 10
 
 e_c <- qnorm(runif(n, pnorm(lower, mean=mean_e_c, sd=sd_e_c), pnorm(upper, mean=mean_e_c, sd=sd_e_c)), mean=mean_e_c, sd=sd_e_c)
 
@@ -106,6 +112,8 @@ emission_prec*180
 # if(figs){boxplot(result_all, result_emission,result_load)
 # }
 
+# 
+
 # Make coordinates for trees
 
 x_coord <- seq(5,15,5)
@@ -139,6 +147,36 @@ coords$e_y[coords$side == 5]  <- coords$e_y[coords$side == 5] - 0.3
 # For position 6 
 coords$e_x[coords$side == 6]  <- coords$e_x[coords$side == 6] + 0.3
 coords$e_y[coords$side == 6]  <- coords$e_y[coords$side == 6] + 0.3
+
+# # Considering a circle around the point with r = 0.3 and equal sections
+# sections <- 2*pi/6
+# #For position 1
+# coords$e_x[coords$side == 1] <- coords$e_x[coords$side == 1] + 0.3*cospi(1*sections)
+# coords$e_y[coords$side == 1]  <- coords$e_y[coords$side == 1] + 0.3*sinpi(1*sections)
+# 
+# #For position 2 
+# coords$e_x[coords$side == 2] <- coords$e_x[coords$side == 2] + 0.3*cospi(2*sections)
+# coords$e_y[coords$side == 2]  <- coords$e_y[coords$side == 2] + 0.3*sinpi(2*sections)
+# 
+# # For position 3 
+# coords$e_x[coords$side == 3] <- coords$e_x[coords$side == 3] + 0.3*cospi(3*sections)
+# coords$e_y[coords$side == 3]  <- coords$e_y[coords$side == 3] + 0.3*sinpi(3*sections)
+#
+# # For position 4 
+# coords$e_x[coords$side == 4] <- coords$e_x[coords$side == 4] + 0.3*cospi(4*sections)
+# coords$e_y[coords$side == 4]  <- coords$e_y[coords$side == 4] + 0.3*sinpi(4*sections)
+#
+# # For position 5 
+# coords$e_x[coords$side == 5] <- coords$e_x[coords$side == 5] + 0.3*cospi(5*sections)
+# coords$e_y[coords$side == 5]  <- coords$e_y[coords$side == 5] + 0.3*sinpi(5*sections)
+#
+# # For position 6 
+# coords$e_x[coords$side == 6] <- coords$e_x[coords$side == 6] + 0.3*cospi(6*sections)
+# coords$e_y[coords$side == 6]  <- coords$e_y[coords$side == 6] + 0.3*sinpi(6*sections)
+
+# # Rounding to decimals
+# coords$e_x <- round(coords$e_x,1)
+# coords$e_y <- round(coords$e_y,1)
 
 wind_data <- c('$(find orchard_demo)/demo/wind_at_cell_center_points_0ms',"$(find orchard_demo)/demo/wind_at_cell_center_points_2msX","$(find orchard_demo)/demo/wind_at_cell_center_points_2msY","$(find orchard_demo)/demo/wind_at_cell_center_points_5msX","$(find orchard_demo)/demo/wind_at_cell_center_points_5msY","$(find orchard_demo)/demo/wind_at_cell_center_points_2msX_drone1","$(find orchard_demo)/demo/wind_at_cell_center_points_2msX_drone2")
 emission_data <- c('emission_c','emission_entc','emission_prec')

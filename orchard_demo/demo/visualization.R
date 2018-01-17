@@ -10,7 +10,7 @@ setwd("~/catkin_ws/src/gaden/orchard_demo/demo")
 load("~/catkin_ws/src/gaden/orchard_demo/demo/parameters.RData")
 
 # tikz('e_boxplot.tex')
-#boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Ls^{-1}kg^{-1}$)')
+#boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Lh^{-1}kg^{-1}$)')
 # dev.off()
 # 
 # tikz('l_boxplot.tex')
