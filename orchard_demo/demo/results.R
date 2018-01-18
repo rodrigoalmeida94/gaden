@@ -1580,7 +1580,7 @@ sims_drone_avg_pos2 <- lapply(sims_drone[4:6], function(x) apply(x[point2_zone[[
 
 z <- 1
 for(s in list(sims_drone_avg_pos1,sims_drone_avg_pos2)){
-  tikz(file = paste0(path_to_sims,'DroneAvg_Pos',z,'.tex'))
+  tikz(file = paste0(path_to_sims,'DroneAvg_Pos',z,'.tex'),height = 3.5)
   plot(timesteps[1:length(s[[1]])],s[[1]], ylim = range(s,na.rm=T), xlim=range(timesteps), col=emission_col[3], type = 'b',pch=2, xlab = 'Time ($s$)',ylab = 'Average ethylene concentration ($ppb$)', main = paste('Position',z), lwd=3)
   z =z+ 1
   for(i in 2:length(s)){
@@ -1600,7 +1600,7 @@ for(s in list(sims_drone_avg_pos1,sims_drone_avg_pos2)){
 rm(z)
 
 # Adaptive sampling ----
-test <- sims_avg$sim_emission_c_5msX_s
+test <- sims_avg$sim_emission_c_5msY_s
 
 id <- array(1:length(test),dim = dim(test))
 test_bin <- diff(sign(diff(test)))==-2
