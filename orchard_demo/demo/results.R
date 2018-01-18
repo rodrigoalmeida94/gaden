@@ -170,6 +170,11 @@ emission_col <- brewer.pal(3,'Reds')
 zones <- c('Environment','Main volume','In rows','In-between rows')
 zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
+number_of_samples <- c(1,4,16)
+sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
+sim_avg_all <- lapply(sim_avg,mean, na.rm=T)
+sim_std_all <- lapply(sim_std,mean, na.rm=T)
+
 # Plotting 
 # Average Concentration XY maps ----
 breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
@@ -441,11 +446,6 @@ for(s in list(sim_std,sim_std_main,sim_std_in,sim_std_inbet)){
 rm(z,s,i,p_ch,p_t)
 
 # Testing random sampling ----
-
-number_of_samples <- c(1,4,16)
-sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
-sim_avg_all <- lapply(sim_avg,mean, na.rm=T)
-sim_std_all <- lapply(sim_std,mean, na.rm=T)
 for(number in number_of_samples){
 # Construct results table
 random_sampling <- array(NA,dim = c(length(sims),4*20))
@@ -1600,7 +1600,10 @@ for(s in list(sims_drone_avg_pos1,sims_drone_avg_pos2)){
 rm(z)
 
 # Adaptive sampling ----
-test <- sims_avg$sim_emission_c_5msY_s
+translation_all <- list()
+point_all <- list()
+for(i in 1:15){
+test <- sims_avg[[i]]
 
 id <- array(1:length(test),dim = dim(test))
 test_bin <- diff(sign(diff(test)))==-2
@@ -1614,12 +1617,83 @@ test_coords <- as.data.frame(t(sapply(diff_test_inbetween_rows, function(x) whic
 names(test_coords) <- c('x','y','z')
 
 trans_init <- array(NA,dim=c(1000,3))
-for(i in 1:1000){
+point_init<- array(NA,dim=c(1000,3))
+for(z in 1:1000){
 init <- which(id==sample(inbetween_rows_id,1), arr.ind = T)
 test_coords$dist_init <- ((test_coords$x-init[1])^2)+((test_coords$y-init[2])^2)+((test_coords$z-init[3])^2)
 translation <- test_coords[which(test_coords$dist==min(test_coords$dist)),1:3] - init
-trans_init[i,1] <- translation[1,]$x
-trans_init[i,2] <- translation[1,]$y
-trans_init[i,3] <- translation[1,]$z
+trans_init[z,1] <- translation[1,]$x
+trans_init[z,2] <- translation[1,]$y
+trans_init[z,3] <- translation[1,]$z
+point_init[z,1] <- init[1]
+point_init[z,2] <- init[2]
+point_init[z,3] <- init[3]
 }
+translation_all[[i]] <- trans_init
+point_all[[i]] <- point_init
+}
+rm(i,z)
+
+plot(density(translation_all[[1]][,1]), main = 'X', ylim=c(0,0.3), col=emission_col[3], lwd=2, lty=1)
+lines(density(translation_all[[2]][,1]), col=emission_col[3], lwd=2, lty=2)
+lines(density(translation_all[[3]][,1]), col=emission_col[3], lwd=2, lty=3)
+lines(density(translation_all[[4]][,1]), col=emission_col[3], lwd=2, lty=2)
+lines(density(translation_all[[5]][,1]), col=emission_col[3],lwd=2, lty=3)
+
+lines(density(translation_all[[6]][,1]), col=emission_col[2], lwd=2, lty=1)
+lines(density(translation_all[[7]][,1]), col=emission_col[2], lwd=2, lty=2)
+lines(density(translation_all[[8]][,1]), col=emission_col[2], lwd=2, lty=3)
+lines(density(translation_all[[9]][,1]), col=emission_col[2],lwd=2, lty=2)
+lines(density(translation_all[[10]][,1]), col=emission_col[2],lwd=2, lty=3)
+
+lines(density(translation_all[[11]][,1]), col=emission_col[1], lwd=2, lty=1)
+lines(density(translation_all[[12]][,1]), col=emission_col[1], lwd=2, lty=2)
+lines(density(translation_all[[13]][,1]), col=emission_col[1], lwd=2, lty=3)
+lines(density(translation_all[[14]][,1]), col=emission_col[1],lwd=2, lty=2)
+lines(density(translation_all[[15]][,1]), col=emission_col[1],lwd=2, lty=3)
+abline(v=mean(sapply(translation_all[c(1,6,11)], function(x) mean(x[,1]))), lty=1)
+abline(v=mean(sapply(translation_all[c(2,7,12,4,9,14)], function(x) mean(x[,1]))), lty=2)
+abline(v=mean(sapply(translation_all[c(3,8,13,5,10,15)], function(x) mean(x[,1]))), lty=3)
+
+plot(density(translation_all[[1]][,2]), main = 'Y', ylim=c(0,0.6), col=emission_col[3], lwd=2, lty=1)
+lines(density(translation_all[[2]][,2]), col=emission_col[3], lwd=2, lty=2)
+lines(density(translation_all[[3]][,2]), col=emission_col[3], lwd=2, lty=3)
+lines(density(translation_all[[4]][,2]), col=emission_col[3], lwd=2, lty=2)
+lines(density(translation_all[[5]][,2]), col=emission_col[3],lwd=2, lty=3)
+
+lines(density(translation_all[[6]][,2]), col=emission_col[2], lwd=2, lty=1)
+lines(density(translation_all[[7]][,2]), col=emission_col[2], lwd=2, lty=2)
+lines(density(translation_all[[8]][,2]), col=emission_col[2], lwd=2, lty=3)
+lines(density(translation_all[[9]][,2]), col=emission_col[2],lwd=2, lty=2)
+lines(density(translation_all[[10]][,2]), col=emission_col[2],lwd=2, lty=3)
+
+lines(density(translation_all[[11]][,2]), col=emission_col[1], lwd=2, lty=1)
+lines(density(translation_all[[12]][,2]), col=emission_col[1], lwd=2, lty=2)
+lines(density(translation_all[[13]][,2]), col=emission_col[1], lwd=2, lty=3)
+lines(density(translation_all[[14]][,2]), col=emission_col[1],lwd=2, lty=2)
+lines(density(translation_all[[15]][,2]), col=emission_col[1],lwd=2, lty=3)
+abline(v=mean(sapply(translation_all[c(1,6,11)], function(x) mean(x[,2]))), lty=1)
+abline(v=mean(sapply(translation_all[c(2,7,12,4,9,14)], function(x) mean(x[,2]))), lty=2)
+abline(v=mean(sapply(translation_all[c(3,8,13,5,10,15)], function(x) mean(x[,2]))), lty=3)
+
+plot(density(translation_all[[1]][,3]), main = 'Z', ylim=c(0,0.7), col=emission_col[3], lwd=2, lty=1)
+lines(density(translation_all[[2]][,3]), col=emission_col[3], lwd=2, lty=2)
+lines(density(translation_all[[3]][,3]), col=emission_col[3], lwd=2, lty=3)
+lines(density(translation_all[[4]][,3]), col=emission_col[3], lwd=2, lty=2)
+lines(density(translation_all[[5]][,3]), col=emission_col[3],lwd=2, lty=3)
+
+lines(density(translation_all[[6]][,3]), col=emission_col[2], lwd=2, lty=1)
+lines(density(translation_all[[7]][,3]), col=emission_col[2], lwd=2, lty=2)
+lines(density(translation_all[[8]][,3]), col=emission_col[2], lwd=2, lty=3)
+lines(density(translation_all[[9]][,3]), col=emission_col[2],lwd=2, lty=2)
+lines(density(translation_all[[10]][,3]), col=emission_col[2],lwd=2, lty=3)
+
+lines(density(translation_all[[11]][,3]), col=emission_col[1], lwd=2, lty=1)
+lines(density(translation_all[[12]][,3]), col=emission_col[1], lwd=2, lty=2)
+lines(density(translation_all[[13]][,3]), col=emission_col[1], lwd=2, lty=3)
+lines(density(translation_all[[14]][,3]), col=emission_col[1],lwd=2, lty=2)
+lines(density(translation_all[[15]][,3]), col=emission_col[1],lwd=2, lty=3)
+abline(v=mean(sapply(translation_all[c(1,6,11)], function(x) mean(x[,3]))), lty=1)
+abline(v=mean(sapply(translation_all[c(2,7,12,4,9,14)], function(x) mean(x[,3]))), lty=2)
+abline(v=mean(sapply(translation_all[c(3,8,13,5,10,15)], function(x) mean(x[,3]))), lty=3)
 
