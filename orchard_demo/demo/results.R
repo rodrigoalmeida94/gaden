@@ -444,8 +444,8 @@ rm(z,s,i,p_ch,p_t)
 
 number_of_samples <- c(1,4,16)
 sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
-sim_avg_all <- lapply(sim_avg_main,mean, na.rm=T)
-sim_std_all <- lapply(sim_std_main,mean, na.rm=T)
+sim_avg_all <- lapply(sim_avg,mean, na.rm=T)
+sim_std_all <- lapply(sim_std,mean, na.rm=T)
 for(number in number_of_samples){
 # Construct results table
 random_sampling <- array(NA,dim = c(length(sims),4*20))
@@ -488,8 +488,10 @@ for(s in sims){
     
     pop <- powerTransform(na.omit(as.vector(s[,,,time])), lambda)
     pop_main <- powerTransform(na.omit(as.vector(s[main_volume[[1]],main_volume[[2]],main_volume[[3]],time])), lambda)
-    m_pop <- mean(pop_main)
-    sd_pop <- sd(pop_main)
+    #m_pop <- mean(pop_main)
+    #sd_pop <- sd(pop_main)
+    m_pop <- mean(pop)
+    sd_pop <- sd(pop)
     pop_in <- powerTransform(na.omit(as.vector(s[in_rows[[1]],in_rows[[2]],in_rows[[3]],time])),lambda)
     pop_inbet <- powerTransform(na.omit(as.vector(s[inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],time])), lambda)
     
@@ -1560,9 +1562,64 @@ legend('top',c(levels(ii_prec), 'Drone'),pch = c(rep(23,4),17),pt.bg = c(colorRa
 dev.off()
 
 # Plot basic stats drone ----
+# For position around the drone, average concentration
 
+for(i in 1:length(sims_drone)){
+  is.na(sims_drone[[i]]) <- !sims_drone[[i]]
+}
+rm(i)
+
+point1 <- c(s_1p[1:2],40)
+point1_zone <- list(((point1[1]-5):(point1[1]+5)),((point1[2]-5):(point1[2]+5)),((point1[3]-5):(point1[3]+5)))
+point2 <- c(125,s_1p[2],20)
+point2_zone <- list(((point2[1]-5):(point2[1]+5)),((point2[2]-5):(point2[2]+5)),((point2[3]-5):(point2[3]+5)))
+
+sims_drone_avg_pos1 <- lapply(sims_drone[1:3], function(x) apply(x[point1_zone[[1]],point1_zone[[2]],point1_zone[[3]],], MARGIN = c(4),mean, na.rm=T))
+
+sims_drone_avg_pos2 <- lapply(sims_drone[4:6], function(x) apply(x[point2_zone[[1]],point2_zone[[2]],point2_zone[[3]],], MARGIN = c(4),mean, na.rm=T))
+
+z <- 1
+for(s in list(sims_drone_avg_pos1,sims_drone_avg_pos2)){
+  tikz(file = paste0(path_to_sims,'DroneAvg_Pos',z,'.tex'))
+  plot(timesteps[1:length(s[[1]])],s[[1]], ylim = range(s,na.rm=T), xlim=range(timesteps), col=emission_col[3], type = 'b',pch=2, xlab = 'Time ($s$)',ylab = 'Average ethylene concentration ($ppb$)', main = paste('Position',z), lwd=3)
+  z =z+ 1
+  for(i in 2:length(s)){
+    if(i %in% 1){
+      p_t <- emission_col[3]
+    }
+    if(i %in% 2){
+      p_t <- emission_col[2]
+    }
+    if(i %in% 3){
+      p_t <- emission_col[1]
+    }
+    points(timesteps[1:length(s[[i]])],s[[i]], col=p_t,pch=2, type = 'b',lwd=3)
+  }
+  dev.off()
+}
+rm(z)
 
 # Adaptive sampling ----
-test <- sims_avg$sim_emission_c_0ms_s
-diff_test <- which(diff(sign(diff(test)))==-2)+1
+test <- sims_avg$sim_emission_c_5msX_s
+
+id <- array(1:length(test),dim = dim(test))
+test_bin <- diff(sign(diff(test)))==-2
+diff_test <- which(diff(sign(diff(test)))==-2)
+
+inbetween_rows_id <- id[inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]]
+
+diff_test_inbetween_rows<- diff_test[diff_test %in% inbetween_rows_id]
+
+test_coords <- as.data.frame(t(sapply(diff_test_inbetween_rows, function(x) which(id==x,arr.ind = T))))
+names(test_coords) <- c('x','y','z')
+
+trans_init <- array(NA,dim=c(1000,3))
+for(i in 1:1000){
+init <- which(id==sample(inbetween_rows_id,1), arr.ind = T)
+test_coords$dist_init <- ((test_coords$x-init[1])^2)+((test_coords$y-init[2])^2)+((test_coords$z-init[3])^2)
+translation <- test_coords[which(test_coords$dist==min(test_coords$dist)),1:3] - init
+trans_init[i,1] <- translation[1,]$x
+trans_init[i,2] <- translation[1,]$y
+trans_init[i,3] <- translation[1,]$z
+}
 
