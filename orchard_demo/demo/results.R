@@ -8,6 +8,8 @@ require(tikzDevice)
 library(fields)
 library(MASS)
 library(xtable)
+library(randomForest)
+
 path_to_sims <- '/Users/rodrigoalmeida/Dropbox/Rodrigo/Thesis/Simulations/figures/'
 # Making zones
 main_volume <- list(25:174,25:130,1:32)
@@ -171,9 +173,6 @@ zones <- c('Environment','Main volume','In rows','In-between rows')
 zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
 number_of_samples <- c(1,4,16)
-sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
-sim_avg_all <- lapply(sim_avg,mean, na.rm=T)
-sim_std_all <- lapply(sim_std,mean, na.rm=T)
 
 # Plotting 
 # Average Concentration XY maps ----
@@ -291,6 +290,9 @@ for(i in 1:length(sims)){
   is.na(sims[[i]]) <- !sims[[i]]
 }
 rm(i)
+sims_avg <- lapply(sims,function(x) apply(x,c(1,2,3),mean, na.rm=T ))
+sim_avg_all <- lapply(sim_avg,mean, na.rm=T)
+sim_std_all <- lapply(sim_std,mean, na.rm=T)
 
 # Average Ethylene Concentration ----
 z <- 1
@@ -1640,7 +1642,7 @@ test_coords_y$combine <- as.character(interaction(test_coords_y$x,test_coords_y$
 
 test_coords_match <- test_coords[complete.cases(match(test_coords$combine, test_coords_z$combine)),] 
 
-test_coords_match <- test_coords_match[complete.cases(match(test_coords_match$combine, test_coords_y$combine)),] 
+#test_coords_match <- test_coords_match[complete.cases(match(test_coords_match$combine, test_coords_y$combine)),] 
 
 test_coords <- test_coords_match
 
@@ -1727,28 +1729,77 @@ abline(v=mean(sapply(translation_all[c(3,8,13,5,10,15)], function(x) mean(x[,3])
 
 # x,y,z,trans_x,trans_y,trans_z,dir,vel,stage
 wind0ms <- cbind(rbind(point_all[[1]],point_all[[6]],point_all[[11]]),rbind(translation_all[[1]],translation_all[[6]],translation_all[[11]]))
-wind0ms <- cbind(wind0ms,rep(0,length(wind0ms)),rep(0,length(wind0ms)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+wind0ms <- cbind(wind0ms,rep(360,300),rep(0,300), c(rep(1,100),rep(2,100),rep(3,100)))
 
 wind2msX <- cbind(rbind(point_all[[2]],point_all[[7]],point_all[[12]]),rbind(translation_all[[2]],translation_all[[7]],translation_all[[12]]))
-wind2msX <- cbind(wind2msX,rep(0,length(wind2msX)),rep(2,length(wind2msX)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+wind2msX <- cbind(wind2msX,rep(0,300),rep(2,300), c(rep(1,100),rep(2,100),rep(3,100)))
 
 wind2msY <- cbind(rbind(point_all[[3]],point_all[[8]],point_all[[13]]),rbind(translation_all[[3]],translation_all[[8]],translation_all[[13]]))
-wind2msY <- cbind(wind2msY,rep(90,length(wind2msY)),rep(2,length(wind2msY)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+wind2msY <- cbind(wind2msY,rep(90,300),rep(2,300), c(rep(1,100),rep(2,100),rep(3,100)))
 
 wind5msX <- cbind(rbind(point_all[[4]],point_all[[9]],point_all[[14]]),rbind(translation_all[[4]],translation_all[[9]],translation_all[[14]]))
-wind5msX <- cbind(wind5msX,rep(0,length(wind5msX)),rep(5,length(wind5msX)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+wind5msX <- cbind(wind5msX,rep(0,300),rep(5,300), c(rep(1,100),rep(2,100),rep(3,100)))
 
 wind5msY <- cbind(rbind(point_all[[5]],point_all[[10]],point_all[[15]]),rbind(translation_all[[5]],translation_all[[10]],translation_all[[15]]))
-wind5msY <- cbind(wind5msY,rep(90,length(wind5msY)),rep(5,length(wind5msY)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+wind5msY <- cbind(wind5msY,rep(90,300),rep(5,300), c(rep(1,100),rep(2,100),rep(3,100)))
 
 wind_all <- rbind(wind0ms,wind2msX,wind2msY,wind5msX,wind5msY)
+wind_all <- cbind(wind_all,rep(1:15,1,each=100))
 wind_all <- as.data.frame(wind_all)
-names(wind_all) <- c('x','y','z','trans_x','trans_y','trans_z','dir','vel', 'stage')
+names(wind_all) <- c('x','y','z','trans_x','trans_y','trans_z','dir','vel', 'stage','sim_num')
+wind_all$e <- apply(wind_all, 1, function(x) sims_avg[[x[10]]][x[1],x[2],x[3]])
+wind_all$e[is.nan(wind_all$e)] <- 0
 
-library(randomForest)
+model_x <- randomForest(trans_x~x+y+z+dir+vel+e, data = wind_all, importance=T)
+model_y <- randomForest(trans_y~x+y+z+dir+vel+e+trans_x+trans_z, data = wind_all,importance=T)
+model_z <- randomForest(trans_z~x+y+z+dir+vel+e+trans_x, data = wind_all, importance=T)
 
-model_x <- randomForest(trans_x~x+y+z+dir+vel+stage, data = wind_all, importance=T)
-model_y <- randomForest(trans_y~., data = wind_all,importance=T)
-model_z <- randomForest(trans_z~., data = wind_all, importance=T)
+# Testing adaptive sampling
+sim_sample_of_4 <- list()
+for(f in 1:15){
+one_sim <- sims_avg[[f]]
+sample_of_4 <- list()
+if(f %in% c(1,6,11)){dir<-360}
+if(f %in% c(2,4,7,9,12,14)){dir<-0}
+if(f %in% c(3,5,8,10,13,15)){dir<-90}
 
-wind_all$pred_x <- model_x$predicted
+if(f %in% c(1,6,11)){vel<-0}
+if(f %in% c(2,3,7,8,12,13)){dir<-0}
+if(f %in% c(4,5,9,10,14,15)){dir<-90}
+
+for(n in 1:100){
+# first get X, then Z, then Y
+x <- sample(inbetween_rows[[1]],1)
+y <- sample(inbetween_rows[[2]],1)
+z <- sample(inbetween_rows[[3]],1)
+e <- one_sim[x,y,z]
+
+if(is.nan(e)){e<-0}
+
+sample_adp <- c(e)
+
+for(i in 2:4){
+# Get X
+input <- as.data.frame(t(c(x,y,z,dir,vel,e)))
+names(input) <- c('x','y','z','dir','vel','e')
+test_trans_x <- round(predict(model_x,input))
+
+# Get Z
+input <- as.data.frame(t(c(x,y,z,dir,vel,e,test_trans_x)))
+names(input) <- c('x','y','z','dir','vel','e','trans_x')
+test_trans_z <- round(predict(model_z,input))
+
+# Get Y
+input <- as.data.frame(t(c(x,y,z,dir,vel,e,test_trans_x, test_trans_z)))
+names(input) <- c('x','y','z','dir','vel','e','trans_x','trans_z')
+test_trans_y <- round(predict(model_y,input))
+
+x <- x+test_trans_x
+y <- y+test_trans_y
+z <- z+test_trans_z
+sample_adp <- c(sample_adp,e)
+}
+sample_of_4[[n]] <- sample_adp
+}
+sim_sample_of_4[[f]] <- sample_of_4
+}
