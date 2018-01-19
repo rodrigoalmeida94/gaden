@@ -1570,9 +1570,9 @@ for(i in 1:length(sims_drone)){
 rm(i)
 
 point1 <- c(s_1p[1:2],40)
-point1_zone <- list(((point1[1]-5):(point1[1]+5)),((point1[2]-5):(point1[2]+5)),((point1[3]-5):(point1[3]+5)))
+point1_zone <- list(((point1[1]-2):(point1[1]+2)),((point1[2]-2):(point1[2]+2)),((point1[3]-2):(point1[3]+2)))
 point2 <- c(125,s_1p[2],20)
-point2_zone <- list(((point2[1]-5):(point2[1]+5)),((point2[2]-5):(point2[2]+5)),((point2[3]-5):(point2[3]+5)))
+point2_zone <- list(((point2[1]-2):(point2[1]+2)),((point2[2]-2):(point2[2]+2)),((point2[3]-2):(point2[3]+2)))
 
 sims_drone_avg_pos1 <- lapply(sims_drone[1:3], function(x) apply(x[point1_zone[[1]],point1_zone[[2]],point1_zone[[3]],], MARGIN = c(4),mean, na.rm=T))
 
@@ -1605,20 +1605,48 @@ point_all <- list()
 for(i in 1:15){
 test <- sims_avg[[i]]
 
+test_z <- aperm(test)
+test_y <- aperm(test, perm=c(2,1,3))
+
 id <- array(1:length(test),dim = dim(test))
-test_bin <- diff(sign(diff(test)))==-2
+id_z <- aperm(id)
+id_y <- aperm(id, perm=c(2,1,3))
+
+#test_bin <- diff(sign(diff(test)))==-2
+#test_z_bin <- diff(sign(diff(test_z)))==-2
+#test_y_bin <- diff(sign(diff(test_y)))==-2
+
 diff_test <- which(diff(sign(diff(test)))==-2)
+diff_test_z <- which(diff(sign(diff(test_z)))==-2)
+diff_test_y <- which(diff(sign(diff(test_y)))==-2)
 
 inbetween_rows_id <- id[inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]]]
+inbetween_rows_id_z <- id_z[inbetween_rows[[3]],inbetween_rows[[2]],inbetween_rows[[1]]]
+inbetween_rows_id_y <- id_y[inbetween_rows[[2]],inbetween_rows[[1]],inbetween_rows[[3]]]
 
 diff_test_inbetween_rows<- diff_test[diff_test %in% inbetween_rows_id]
+diff_test_z_inbetween_rows<- diff_test_z[diff_test_z %in% inbetween_rows_id_z]
+diff_test_y_inbetween_rows<- diff_test_y[diff_test_y %in% inbetween_rows_id_y]
 
 test_coords <- as.data.frame(t(sapply(diff_test_inbetween_rows, function(x) which(id==x,arr.ind = T))))
 names(test_coords) <- c('x','y','z')
+test_coords$combine <- as.character(interaction(test_coords$x,test_coords$y,test_coords$z))
+test_coords_z <- as.data.frame(t(sapply(diff_test_z_inbetween_rows, function(x) which(id_z==x,arr.ind = T))))
+names(test_coords_z) <- c('z','y','x')
+test_coords_z$combine <- as.character(interaction(test_coords_z$x,test_coords_z$y,test_coords_z$z))
+test_coords_y <- as.data.frame(t(sapply(diff_test_y_inbetween_rows, function(x) which(id_y==x,arr.ind = T))))
+names(test_coords_y) <- c('y','x','z')
+test_coords_y$combine <- as.character(interaction(test_coords_y$x,test_coords_y$y,test_coords_y$z))
 
-trans_init <- array(NA,dim=c(1000,3))
-point_init<- array(NA,dim=c(1000,3))
-for(z in 1:1000){
+test_coords_match <- test_coords[complete.cases(match(test_coords$combine, test_coords_z$combine)),] 
+
+test_coords_match <- test_coords_match[complete.cases(match(test_coords_match$combine, test_coords_y$combine)),] 
+
+test_coords <- test_coords_match
+
+trans_init <- array(NA,dim=c(100,3))
+point_init<- array(NA,dim=c(100,3))
+for(z in 1:100){
 init <- which(id==sample(inbetween_rows_id,1), arr.ind = T)
 test_coords$dist_init <- ((test_coords$x-init[1])^2)+((test_coords$y-init[2])^2)+((test_coords$z-init[3])^2)
 translation <- test_coords[which(test_coords$dist==min(test_coords$dist)),1:3] - init
@@ -1697,3 +1725,30 @@ abline(v=mean(sapply(translation_all[c(1,6,11)], function(x) mean(x[,3]))), lty=
 abline(v=mean(sapply(translation_all[c(2,7,12,4,9,14)], function(x) mean(x[,3]))), lty=2)
 abline(v=mean(sapply(translation_all[c(3,8,13,5,10,15)], function(x) mean(x[,3]))), lty=3)
 
+# x,y,z,trans_x,trans_y,trans_z,dir,vel,stage
+wind0ms <- cbind(rbind(point_all[[1]],point_all[[6]],point_all[[11]]),rbind(translation_all[[1]],translation_all[[6]],translation_all[[11]]))
+wind0ms <- cbind(wind0ms,rep(0,length(wind0ms)),rep(0,length(wind0ms)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+
+wind2msX <- cbind(rbind(point_all[[2]],point_all[[7]],point_all[[12]]),rbind(translation_all[[2]],translation_all[[7]],translation_all[[12]]))
+wind2msX <- cbind(wind2msX,rep(0,length(wind2msX)),rep(2,length(wind2msX)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+
+wind2msY <- cbind(rbind(point_all[[3]],point_all[[8]],point_all[[13]]),rbind(translation_all[[3]],translation_all[[8]],translation_all[[13]]))
+wind2msY <- cbind(wind2msY,rep(90,length(wind2msY)),rep(2,length(wind2msY)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+
+wind5msX <- cbind(rbind(point_all[[4]],point_all[[9]],point_all[[14]]),rbind(translation_all[[4]],translation_all[[9]],translation_all[[14]]))
+wind5msX <- cbind(wind5msX,rep(0,length(wind5msX)),rep(5,length(wind5msX)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+
+wind5msY <- cbind(rbind(point_all[[5]],point_all[[10]],point_all[[15]]),rbind(translation_all[[5]],translation_all[[10]],translation_all[[15]]))
+wind5msY <- cbind(wind5msY,rep(90,length(wind5msY)),rep(5,length(wind5msY)), c(rep(1,1000),rep(2,1000),rep(3,1000)))
+
+wind_all <- rbind(wind0ms,wind2msX,wind2msY,wind5msX,wind5msY)
+wind_all <- as.data.frame(wind_all)
+names(wind_all) <- c('x','y','z','trans_x','trans_y','trans_z','dir','vel', 'stage')
+
+library(randomForest)
+
+model_x <- randomForest(trans_x~x+y+z+dir+vel+stage, data = wind_all, importance=T)
+model_y <- randomForest(trans_y~., data = wind_all,importance=T)
+model_z <- randomForest(trans_z~., data = wind_all, importance=T)
+
+wind_all$pred_x <- model_x$predicted
