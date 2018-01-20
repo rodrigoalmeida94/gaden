@@ -301,7 +301,7 @@ for(i in 0:(n-1)){
 }
 
   
-for(s in 1:21){
+for(s in 1:nrow(simulation_runs)){
   simulation_launch <- template
   player_launch <- player
   wind <- simulation_runs$Var1[s]

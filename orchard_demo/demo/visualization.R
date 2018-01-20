@@ -58,15 +58,15 @@ ii_c <- cut(emission_c*1000, breaks = seq(min(emission_c*1000), max(emission_c*1
 ii <- list(ii_prec,ii_entc,ii_c)
 
 timesteps <- seq(15,300,15)
-#timesteps <- seq(15,300,15)
-steps <- 0:19
+#timesteps <- seq(15,300,15)x
+#steps <- 0:19
 #steps <- 0:19
 #steps <- 0:8
 # Remove zero sims if needed
 #simulation_runs <- simulation_runs[-c(1,6,11),]
-save_files <- T
+save_files <- F
 #c(6,7,13,14,20,21)
-for(index in c(7,14,21)){
+for(index in 1:nrow(simulation_runs)){
 sim_name <- simulation_runs$name[index]
 print(sim_name)
 if(simulation_runs$Var2[index] == 'emission_prec'){
@@ -77,7 +77,8 @@ if(simulation_runs$Var2[index] == 'emission_prec'){
   stage <- 3
 }
 print(paste('ethylene emission',stage))
-
+steps <- 0:length(list.files(path=simulation_runs$name[index],pattern = 'sum_[0-9]{1,2}$'))
+print(paste('max timesteps',max(steps)))
 for(e in steps){
   # Read result file
   print(paste('timestep',e))
@@ -148,4 +149,7 @@ graphics.off()
 rm(list=setdiff(ls(), c('sim_emission_c_0ms_s','sim_emission_prec_0ms_s', 'sim_emission_entc_0ms_s','sim_emission_c_01ms_s','sim_emission_prec_01ms_s', 'sim_emission_entc_01ms_s', 'sim_emission_c_2msX_drone','sim_emission_prec_2ms_drone', 'sim_emission_entc_2msX_drone', simulation_runs$name,'coords','emission_data','timesteps','steps','simulation_runs', 'trees_xy', 'trees_xz', 'trees_yz', 'emission_c', 'emission_entc', 'emission_prec')))
 
 #save.image(file='sim_results_01.RData')
-save.image(file='sim_results_drone.RData')
+#save.image(file='sim_results_drone.RData')
+save.image(file='sim_results_all_201.RData')
+
+
