@@ -77,7 +77,7 @@ if(simulation_runs$Var2[index] == 'emission_prec'){
   stage <- 3
 }
 print(paste('ethylene emission',stage))
-steps <- 0:length(list.files(path=simulation_runs$name[index],pattern = 'sum_[0-9]{1,2}$'))
+steps <- 0:(length(list.files(path=simulation_runs$name[index],pattern = 'sum_[0-9]{1,2}$'))-1)
 print(paste('max timesteps',max(steps)))
 for(e in steps){
   # Read result file
