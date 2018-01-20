@@ -9,21 +9,24 @@ library(RColorBrewer)
 setwd("~/catkin_ws/src/gaden/orchard_demo/demo")
 load("~/catkin_ws/src/gaden/orchard_demo/demo/parameters.RData")
 
-# tikz('e_boxplot.tex')
-# boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Lh^{-1}kg^{-1}$)')
-# dev.off()
-# 
-# tikz('l_boxplot.tex')
-# boxplot(fruit_load, names= '$l$', ylab= "Fruit load (kg per tree)")
-# dev.off()
-# 
-# tikz('ee_boxplot.tex')
-# boxplot(emission_prec,emission_entc,emission_c, names = c('$E_1$','$E_2$','$E_3$'), ylab = 'Emission per tree ($\\mu Ls^{-1}\ per\ tree$)')
-# dev.off()
-# 
-# tikz('h_boxplot.tex')
-#boxplot(fruit_position, names = '$h$', ylab='Height ($m$)')
-# dev.off()
+plots <- F
+if(plots){
+tikz('e_boxplot.tex')
+boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Lh^{-1}kg^{-1}$)')
+dev.off()
+
+tikz('l_boxplot.tex')
+boxplot(fruit_load, names= '$l$', ylab= "Fruit load (kg per tree)")
+dev.off()
+
+tikz('ee_boxplot.tex')
+boxplot(emission_prec,emission_entc,emission_c, names = c('$E_1$','$E_2$','$E_3$'), ylab = 'Emission per tree ($\\mu Ls^{-1}\ per\ tree$)')
+dev.off()
+
+tikz('h_boxplot.tex')
+boxplot(fruit_position, names = '$h$', ylab='Height ($m$)')
+dev.off()
+}
 
 X <- 1:199
 Y <- 1:164
@@ -150,6 +153,6 @@ rm(list=setdiff(ls(), c('sim_emission_c_0ms_s','sim_emission_prec_0ms_s', 'sim_e
 
 #save.image(file='sim_results_01.RData')
 #save.image(file='sim_results_drone.RData')
-save.image(file='sim_results_all_201.RData')
-
+#save.image(file='sim_results_all_201.RData')
+save.image(file='sim_results_new.RData')
 
