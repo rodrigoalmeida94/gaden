@@ -175,7 +175,7 @@ zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 number_of_samples <- c(1,4,16)
 
 # Plotting 
-# Average Concentration XY maps ----
+# Maximum Concentration XY maps ----
 breaks_stages <- list(seq(0,12,1.2),seq(0,35,3.5),seq(0,50,5))
 # 
 for(n in 1:15){
@@ -192,7 +192,7 @@ pdf(paste0(path_to_sims,names(sims)[[n]],'_XY.pdf'))
 #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
 image(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE)
 image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+points(coords$e_x*10,coords$e_y*10,cex=2,pch=23,col='black',bg=colorRampPalette(c("white",
 "red"))(4)[ii[[stage]]])
 dev.off()
 
@@ -200,7 +200,7 @@ pdf(paste0(path_to_sims,names(sims)[[n]],'_XZ.pdf'))
 #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
 image(X,Z,xz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(1,60), ann=FALSE)
 image(X,Z,trees_xz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-points(coords$e_x*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+points(coords$e_x*10,coords$z*10,cex=2,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                   "red"))(4)[ii[[stage]]])
 dev.off()
 
@@ -208,7 +208,7 @@ pdf(paste0(path_to_sims,names(sims)[[n]],'_YZ.pdf'))
 #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
 image.plot(Y,Z,yz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,141),ylim=c(1,60), ann=FALSE, legend.lab = 'Ethylene concentration (ppb)', legend.line = 2.5)
 image(Y,Z,trees_yz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-points(coords$e_y*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+points(coords$e_y*10,coords$z*10,cex=2,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                   "red"))(4)[ii[[stage]]])
 dev.off()
 }
@@ -1519,7 +1519,7 @@ for(n in 1:6){
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image(X,Y,xy_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image(X,Y,trees_xy, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-  points(coords$e_x*10,coords$e_y*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+  points(coords$e_x*10,coords$e_y*10,cex=2,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                     "red"))(4)[ii[[stage]]])
   points(point[1],point[2], pch=17, col='magenta',cex=2)
   dev.off()
@@ -1528,7 +1528,7 @@ for(n in 1:6){
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image(X,Z,xz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,174),ylim=c(1,60), ann=FALSE)
   image(X,Z,trees_xz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-  points(coords$e_x*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+  points(coords$e_x*10,coords$z*10,cex=2,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                   "red"))(4)[ii[[stage]]])
   points(point[1],point[3], pch=17, col='magenta',cex=2)
   dev.off()
@@ -1537,7 +1537,7 @@ for(n in 1:6){
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image.plot(Y,Z,yz_plane, col = brewer.pal(10,'BrBG'), xlim=c(25,141),ylim=c(1,60), ann=FALSE, legend.lab = 'Ethylene concentration (ppb)', legend.line = 2.5)
   image(Y,Z,trees_yz, col=c(adjustcolor( "white", alpha.f = 0),adjustcolor( "black", alpha.f = 0.7)), add = T)
-  points(coords$e_y*10,coords$z*10,cex=1,pch=23,col='black',bg=colorRampPalette(c("white",
+  points(coords$e_y*10,coords$z*10,cex=2,pch=23,col='black',bg=colorRampPalette(c("white",
                                                                                   "red"))(4)[ii[[stage]]])
   points(point[2],point[3], pch=17, col='magenta',cex=2)
   dev.off()
