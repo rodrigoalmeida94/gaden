@@ -1650,8 +1650,8 @@ trans_init <- array(NA,dim=c(100,3))
 point_init<- array(NA,dim=c(100,3))
 for(z in 1:100){
 init <- which(id==sample(inbetween_rows_id,1), arr.ind = T)
-test_coords$dist_init <- ((test_coords$x-init[1])^2)+((test_coords$y-init[2])^2)+((test_coords$z-init[3])^2)
-translation <- test_coords[which(test_coords$dist==min(test_coords$dist)),1:3] - init
+test_coords$dist_init <- sqrt(((test_coords$x-init[1])^2)+((test_coords$y-init[2])^2)+((test_coords$z-init[3])^2))
+translation <- test_coords[which(test_coords$dist_init==min(test_coords$dist_init[test_coords$dist_init>20])),1:3] - init
 trans_init[z,1] <- translation[1,]$x
 trans_init[z,2] <- translation[1,]$y
 trans_init[z,3] <- translation[1,]$z
@@ -1828,3 +1828,52 @@ names(z_test_sum_sim_sample_of_4) <- 1:15
 names(z_test_na_sim_sample_of_4) <- 1:15
 
 z_test_comp_sim_sample_of_4 <- unlist(z_test_sum_sim_sample_of_4)*0.1*unlist(z_test_na_sim_sample_of_4)/10
+
+# Plot example of adaptive sampling scheme
+for(f in 3){
+  one_sim <- sims_avg[[f]]
+  sample_of_4 <- list()
+  if(f %in% c(1,6,11)){dir<-360}
+  if(f %in% c(2,4,7,9,12,14)){dir<-0}
+  if(f %in% c(3,5,8,10,13,15)){dir<-90}
+  
+  if(f %in% c(1,6,11)){vel<-0}
+  if(f %in% c(2,3,7,8,12,13)){vel<-2}
+  if(f %in% c(4,5,9,10,14,15)){vel<-5}
+  
+  for(repetition in 1){
+    x <- sample(inbetween_rows[[1]],1)
+    y <- sample(inbetween_rows[[2]],1)
+    z <- sample(inbetween_rows[[3]],1)
+    e <- one_sim[x,y,z]
+    
+    image(X,Y, trees_xy)
+    points(x,y)
+    
+    if(length(e)==0){e <- 0}
+    if(is.na(e)){e <- 0}
+    
+    sample_4 <- e
+    for(sample_number in 1:3){
+      input <- as.data.frame(t(c(x,y,z,dir,vel,e)))
+      names(input) <- c('x','y','z','dir','vel','e')
+      
+      trans_x <- round(predict(model_x, input))
+      input$trans_x <- trans_x
+      trans_z <- round(predict(model_z, input))
+      input$trans_z <- trans_z
+      trans_y <- round(predict(model_y, input))
+      
+      x <- x + trans_x[[1]]
+      if(x<=0){x<-1}
+      y <- y + trans_y[[1]]
+      if(y<=0){y<-1}
+      z <- z + trans_z[[1]]
+      if(z<=0){z<-1}
+      e <- one_sim[x,y,z]
+      points(x,y)
+      if(length(e)==0){e <- 0}
+      if(is.na(e)){e <- 0}
+    }
+  }
+}
