@@ -1646,12 +1646,12 @@ test_coords_match <- test_coords[complete.cases(match(test_coords$combine, test_
 
 test_coords <- test_coords_match
 
-trans_init <- array(NA,dim=c(100,3))
-point_init<- array(NA,dim=c(100,3))
-for(z in 1:100){
+trans_init <- array(NA,dim=c(1000,3))
+point_init<- array(NA,dim=c(1000,3))
+for(z in 1:1000){
 init <- which(id==sample(inbetween_rows_id,1), arr.ind = T)
 test_coords$dist_init <- sqrt(((test_coords$x-init[1])^2)+((test_coords$y-init[2])^2)+((test_coords$z-init[3])^2))
-translation <- test_coords[which(test_coords$dist_init==min(test_coords$dist_init[test_coords$dist_init>20])),1:3] - init
+translation <- test_coords[which(test_coords$dist_init==min(test_coords$dist_init[test_coords$dist_init>30])),1:3] - init
 trans_init[z,1] <- translation[1,]$x
 trans_init[z,2] <- translation[1,]$y
 trans_init[z,3] <- translation[1,]$z
@@ -1729,22 +1729,22 @@ abline(v=mean(sapply(translation_all[c(3,8,13,5,10,15)], function(x) mean(x[,3])
 
 # x,y,z,trans_x,trans_y,trans_z,dir,vel,stage
 wind0ms <- cbind(rbind(point_all[[1]],point_all[[6]],point_all[[11]]),rbind(translation_all[[1]],translation_all[[6]],translation_all[[11]]))
-wind0ms <- cbind(wind0ms,rep(360,300),rep(0,300), c(rep(1,100),rep(2,100),rep(3,100)))
+wind0ms <- cbind(wind0ms,rep(-1,3000),rep(0,3000), c(rep(1,1000),rep(2,1000),rep(3,1000)))
 
 wind2msX <- cbind(rbind(point_all[[2]],point_all[[7]],point_all[[12]]),rbind(translation_all[[2]],translation_all[[7]],translation_all[[12]]))
-wind2msX <- cbind(wind2msX,rep(0,300),rep(2,300), c(rep(1,100),rep(2,100),rep(3,100)))
+wind2msX <- cbind(wind2msX,rep(0,3000),rep(2,3000), c(rep(1,1000),rep(2,1000),rep(3,1000)))
 
 wind2msY <- cbind(rbind(point_all[[3]],point_all[[8]],point_all[[13]]),rbind(translation_all[[3]],translation_all[[8]],translation_all[[13]]))
-wind2msY <- cbind(wind2msY,rep(90,300),rep(2,300), c(rep(1,100),rep(2,100),rep(3,100)))
+wind2msY <- cbind(wind2msY,rep(90,3000),rep(2,3000), c(rep(1,1000),rep(2,1000),rep(3,1000)))
 
 wind5msX <- cbind(rbind(point_all[[4]],point_all[[9]],point_all[[14]]),rbind(translation_all[[4]],translation_all[[9]],translation_all[[14]]))
-wind5msX <- cbind(wind5msX,rep(0,300),rep(5,300), c(rep(1,100),rep(2,100),rep(3,100)))
+wind5msX <- cbind(wind5msX,rep(0,3000),rep(5,3000), c(rep(1,1000),rep(2,1000),rep(3,1000)))
 
 wind5msY <- cbind(rbind(point_all[[5]],point_all[[10]],point_all[[15]]),rbind(translation_all[[5]],translation_all[[10]],translation_all[[15]]))
-wind5msY <- cbind(wind5msY,rep(90,300),rep(5,300), c(rep(1,100),rep(2,100),rep(3,100)))
+wind5msY <- cbind(wind5msY,rep(90,3000),rep(5,3000), c(rep(1,1000),rep(2,1000),rep(3,1000)))
 
 wind_all <- rbind(wind0ms,wind2msX,wind2msY,wind5msX,wind5msY)
-wind_all <- cbind(wind_all,rep(1:15,1,each=100))
+wind_all <- cbind(wind_all,rep(1:15,1,each=1000))
 wind_all <- as.data.frame(wind_all)
 names(wind_all) <- c('x','y','z','trans_x','trans_y','trans_z','dir','vel', 'stage','sim_num')
 wind_all$e <- apply(wind_all, 1, function(x) sims_avg[[x[10]]][x[1],x[2],x[3]])
@@ -1759,7 +1759,7 @@ sim_sample_of_4 <- list()
 for(f in 1:15){
 one_sim <- sims_avg[[f]]
 sample_of_4 <- list()
-if(f %in% c(1,6,11)){dir<-360}
+if(f %in% c(1,6,11)){dir<--1}
 if(f %in% c(2,4,7,9,12,14)){dir<-0}
 if(f %in% c(3,5,8,10,13,15)){dir<-90}
 
