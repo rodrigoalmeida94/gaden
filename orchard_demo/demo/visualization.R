@@ -9,7 +9,7 @@ library(RColorBrewer)
 setwd("~/catkin_ws/src/gaden/orchard_demo/demo")
 load("~/catkin_ws/src/gaden/orchard_demo/demo/parameters.RData")
 
-plots <- F
+plots <- T
 if(plots){
 tikz('e_boxplot.tex')
 boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Lh^{-1}kg^{-1}$)')
@@ -67,7 +67,7 @@ timesteps <- seq(15,300,15)
 #steps <- 0:8
 # Remove zero sims if needed
 #simulation_runs <- simulation_runs[-c(1,6,11),]
-save_files <- F
+save_files <- T
 #c(6,7,13,14,20,21)
 for(index in 1:nrow(simulation_runs)){
 sim_name <- simulation_runs$name[index]

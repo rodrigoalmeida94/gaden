@@ -1,8 +1,9 @@
 setwd("~/catkin_ws/src/gaden/orchard_demo/demo")
 set.seed(12345678)
-load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results.RData")
-load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results_01.RData")
-load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results_drone.RData")
+#load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results.RData")
+#load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results_01.RData")
+#load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results_drone.RData")
+load("~/catkin_ws/src/gaden/orchard_demo/demo/sim_results_new.RData")
 library(RColorBrewer)
 require(tikzDevice)
 library(fields)
@@ -448,6 +449,7 @@ for(s in list(sim_std,sim_std_main,sim_std_in,sim_std_inbet)){
 rm(z,s,i,p_ch,p_t)
 
 # Testing random sampling ----
+avg_sampling_summary_n <- list()
 for(number in number_of_samples){
 # Construct results table
 random_sampling <- array(NA,dim = c(length(sims),4*20))
@@ -880,10 +882,13 @@ for(s in list(avg_sampling.all,avg_sampling.main,avg_sampling.in,avg_sampling.in
   n <- n+1
 }
 
-avg_sampling_summary.all <- avg_sampling_summary_total[[1]]
-avg_sampling_summary.main <- avg_sampling_summary_total[[2]]
-avg_sampling_summary.in <- avg_sampling_summary_total[[3]]
-avg_sampling_summary.inbet <- avg_sampling_summary_total[[4]]
+number <- 1
+avg_sampling_summary_n[[number]] <- avg_sampling_summary_total
+number <- number +1
+#avg_sampling_summary.all <- avg_sampling_summary_total[[1]]
+#avg_sampling_summary.main <- avg_sampling_summary_total[[2]]
+#avg_sampling_summary.in <- avg_sampling_summary_total[[3]]
+#avg_sampling_summary.inbet <- avg_sampling_summary_total[[4]]
 rm(s,n,avg_sampling_summary_total,avg_sampling_summary)
 
 # n <- 1
@@ -1754,7 +1759,7 @@ model_x <- randomForest(trans_x~x+y+z+dir+vel+e, data = wind_all, importance=T)
 model_y <- randomForest(trans_y~x+y+z+dir+vel+e+trans_x+trans_z, data = wind_all,importance=T)
 model_z <- randomForest(trans_z~x+y+z+dir+vel+e+trans_x, data = wind_all, importance=T)
 
-# Testing adaptive sampling
+# Testing adaptive sampling ----
 sim_sample_of_4 <- list()
 for(f in 1:15){
 one_sim <- sims_avg[[f]]
