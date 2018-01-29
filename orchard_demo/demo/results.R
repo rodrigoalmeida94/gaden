@@ -450,6 +450,7 @@ rm(z,s,i,p_ch,p_t)
 
 # Testing random sampling ----
 avg_sampling_summary_n <- list()
+numbering <- 1
 for(number in number_of_samples){
 # Construct results table
 random_sampling <- array(NA,dim = c(length(sims),4*20))
@@ -862,8 +863,6 @@ z <- z +1
 }
 rm(centers,s,z,i)
 
-}
-
 
 avg_sampling_summary_total <- list('','','','')
 n <- 1
@@ -881,15 +880,16 @@ for(s in list(avg_sampling.all,avg_sampling.main,avg_sampling.in,avg_sampling.in
   avg_sampling_summary_total[[n]] <- avg_sampling_summary
   n <- n+1
 }
+avg_sampling_summary_n[[numbering]] <- avg_sampling_summary_total
+numbering <- numbering +1
+}
 
-number <- 1
-avg_sampling_summary_n[[number]] <- avg_sampling_summary_total
-number <- number +1
+
 #avg_sampling_summary.all <- avg_sampling_summary_total[[1]]
 #avg_sampling_summary.main <- avg_sampling_summary_total[[2]]
 #avg_sampling_summary.in <- avg_sampling_summary_total[[3]]
 #avg_sampling_summary.inbet <- avg_sampling_summary_total[[4]]
-rm(s,n,avg_sampling_summary_total,avg_sampling_summary)
+rm(s,n,avg_sampling_summary_total,avg_sampling_summary, number)
 
 # n <- 1
 # for(avg_s in list(avg_sampling_summary.all, avg_sampling_summary.main, avg_sampling_summary.in, avg_sampling_summary.inbet)){
@@ -1151,7 +1151,7 @@ for (s in 1:15){
 }
 
 # NA 1 p ----
-plot(timesteps[1:14],measures_s_1p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=1$', lwd=3)
+plot(timesteps[1:15],measures_s_1p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=1$', lwd=3)
 for(i in 2:15){
   if(i %in% 2:5){
     p_t <- emission_col[3]
@@ -1173,14 +1173,14 @@ for(i in 2:15){
     p_ch <- wind_pch[3]
   }
   if(i %in% c(11,6)){
-    points(timesteps[1:14],measures_s_1p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+    points(timesteps[1:15],measures_s_1p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
   }
   else{
     points(timesteps,measures_s_1p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
   }
 }
 # NA 4 p ----
-plot(timesteps[1:14],measures_s_4p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=4$', lwd=3)
+plot(timesteps[1:15],measures_s_4p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=4$', lwd=3)
 for(i in 2:15){
   if(i %in% 2:5){
     p_t <- emission_col[3]
@@ -1202,7 +1202,7 @@ for(i in 2:15){
     p_ch <- wind_pch[3]
   }
   if(i %in% c(11,6)){
-    points(timesteps[1:14],measures_s_4p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+    points(timesteps[1:15],measures_s_4p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
   }
   else{
     points(timesteps,measures_s_4p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
@@ -1210,7 +1210,7 @@ for(i in 2:15){
 }
 
 # NA 16 p ----
-plot(timesteps[1:14],measures_s_16p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=16$', lwd=3)
+plot(timesteps[1:15],measures_s_16p_na[[1]], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = 'Probability of ethylene existing in the sample', main = '$n=16$', lwd=3)
 for(i in 2:15){
   if(i %in% 2:5){
     p_t <- emission_col[3]
@@ -1232,7 +1232,7 @@ for(i in 2:15){
     p_ch <- wind_pch[3]
   }
   if(i %in% c(11,6)){
-    points(timesteps[1:14],measures_s_16p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+    points(timesteps[1:15],measures_s_16p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
   }
   else{
     points(timesteps,measures_s_16p_na[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
@@ -1243,7 +1243,7 @@ for(i in 2:15){
 
 # Z 1 p ----
 tikz(file=paste0(path_to_sims,'RegularGrid1p_Z.tex'))
-plot(timesteps[1:14],measures_s_1p_z[[1]], ylim = range(measures_s_1p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=1$', lwd=3)
+plot(timesteps[1:15],measures_s_1p_z[[1]], ylim = range(measures_s_1p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=1$', lwd=3)
 for(i in 2:15){
   if(i %in% 2:5){
     p_t <- emission_col[3]
@@ -1265,7 +1265,7 @@ for(i in 2:15){
     p_ch <- wind_pch[3]
   }
   if(i %in% c(11,6)){
-    points(timesteps[1:14],measures_s_1p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+    points(timesteps[1:15],measures_s_1p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
   }
   else{
     points(timesteps,measures_s_1p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
@@ -1277,7 +1277,7 @@ dev.off()
 
 # Z 4 p ----
 tikz(file=paste0(path_to_sims,'RegularGrid4p_Z.tex'))
-plot(timesteps[1:14],measures_s_4p_z[[1]], ylim = range(measures_s_4p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=4$', lwd=3)
+plot(timesteps[1:15],measures_s_4p_z[[1]], ylim = range(measures_s_4p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=4$', lwd=3)
 for(i in 2:15){
   if(i %in% 2:5){
     p_t <- emission_col[3]
@@ -1299,7 +1299,7 @@ for(i in 2:15){
     p_ch <- wind_pch[3]
   }
   if(i %in% c(11,6)){
-    points(timesteps[1:14],measures_s_4p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+    points(timesteps[1:15],measures_s_4p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
   }
   else{
     points(timesteps,measures_s_4p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
@@ -1311,7 +1311,7 @@ dev.off()
 
 # Z 16 p ----
 tikz(file=paste0(path_to_sims,'RegularGrid16p_Z.tex'))
-plot(timesteps[1:14],measures_s_16p_z[[1]], ylim = range(measures_s_16p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=16$', lwd=3)
+plot(timesteps[1:15],measures_s_16p_z[[1]], ylim = range(measures_s_16p_z,na.rm = T), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], lty=3, type = 'b', xlab = 'Time ($s$)',ylab = '$z$-score', main = '$n=16$', lwd=3)
 for(i in 2:15){
   if(i %in% 2:5){
     p_t <- emission_col[3]
@@ -1333,7 +1333,7 @@ for(i in 2:15){
     p_ch <- wind_pch[3]
   }
   if(i %in% c(11,6)){
-    points(timesteps[1:14],measures_s_16p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
+    points(timesteps[1:15],measures_s_16p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
   }
   else{
     points(timesteps,measures_s_16p_z[[i]], col=p_t,pch=p_ch, type = 'b', lwd=3)
@@ -1882,3 +1882,7 @@ for(f in 3){
     }
   }
 }
+
+# Make table summary confidence levels ----
+
+
