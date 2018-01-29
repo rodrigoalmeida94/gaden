@@ -902,7 +902,7 @@ rm(s,n,avg_sampling_summary_total,avg_sampling_summary, number)
 # }
 
 # Make average table ----
-table_avg <- data.frame(as.array(lapply(sim_avg,mean)),as.array(lapply(sim_std,mean)), c(1:15),as.array(sim_avg_all),as.array(sim_std_all), c(1:15), as.array(lapply(sim_avg_in,mean)), as.array(lapply(sim_std_in,mean)), c(1:15),as.array(lapply(sim_avg_inbet,mean)), as.array(lapply(sim_std_inbet,mean)),c(1:15), row.names = 1:15)
+table_avg <- data.frame(as.array(lapply(sim_avg,mean)),as.array(lapply(sim_std,mean)), c(1:15),as.array(sim_avg_main),as.array(sim_std_main), c(1:15), as.array(lapply(sim_avg_in,mean)), as.array(lapply(sim_std_in,mean)), c(1:15),as.array(lapply(sim_avg_inbet,mean)), as.array(lapply(sim_std_inbet,mean)),c(1:15), row.names = 1:15)
 table_avg[1,3] <- mean(unlist(table_avg[1:5,1]))
 table_avg[2,3] <- mean(unlist(table_avg[1:5,2]))^2
 table_avg[6,3] <- mean(unlist(table_avg[6:10,1]))
@@ -1760,6 +1760,7 @@ model_y <- randomForest(trans_y~x+y+z+dir+vel+e+trans_x+trans_z, data = wind_all
 model_z <- randomForest(trans_z~x+y+z+dir+vel+e+trans_x, data = wind_all, importance=T)
 
 # Testing adaptive sampling ----
+# 4 samples
 sim_sample_of_4 <- list()
 for(f in 1:15){
 one_sim <- sims_avg[[f]]
@@ -1834,6 +1835,82 @@ names(z_test_na_sim_sample_of_4) <- 1:15
 
 z_test_comp_sim_sample_of_4 <- unlist(z_test_sum_sim_sample_of_4)*0.1*unlist(z_test_na_sim_sample_of_4)/10
 
+# 16 samples
+sim_sample_of_16 <- list()
+for(f in 1:15){
+  one_sim <- sims_avg[[f]]
+  sample_of_16 <- list()
+  if(f %in% c(1,6,11)){dir<--1}
+  if(f %in% c(2,4,7,9,12,14)){dir<-0}
+  if(f %in% c(3,5,8,10,13,15)){dir<-90}
+  
+  if(f %in% c(1,6,11)){vel<-0}
+  if(f %in% c(2,3,7,8,12,13)){vel<-2}
+  if(f %in% c(4,5,9,10,14,15)){vel<-5}
+  
+  for(repetition in 1:100){
+    x <- sample(inbetween_rows[[1]],1)
+    y <- sample(inbetween_rows[[2]],1)
+    z <- sample(inbetween_rows[[3]],1)
+    e <- one_sim[x,y,z]
+    
+    if(length(e)==0){e <- 0}
+    if(is.na(e)){e <- 0}
+    
+    sample_16 <- e
+    for(sample_number in 1:15){
+      input <- as.data.frame(t(c(x,y,z,dir,vel,e)))
+      names(input) <- c('x','y','z','dir','vel','e')
+      
+      trans_x <- round(predict(model_x, input))
+      input$trans_x <- trans_x
+      trans_z <- round(predict(model_z, input))
+      input$trans_z <- trans_z
+      trans_y <- round(predict(model_y, input))
+      
+      x <- x + trans_x[[1]]
+      if(x<=0){x<-1}
+      y <- y + trans_y[[1]]
+      if(y<=0){y<-1}
+      z <- z + trans_z[[1]]
+      if(z<=0){z<-1}
+      e <- one_sim[x,y,z]
+      
+      if(length(e)==0){e <- 0}
+      if(is.na(e)){e <- 0}
+      sample_16 <- c(sample_16,e)
+    }
+    sample_of_16[[repetition]] <- sample_16
+  }
+  sim_sample_of_16[[f]] <- sample_of_16
+}
+rm(sample_16,sample_of_16,x,y,z,e,trans_x,trans_y,trans_z,input,sample_number,repetition,dir,vel,f,one_sim)
+
+mean_sim_sample_of_16 <- lapply(sim_sample_of_16,function(x) lapply(x,mean))
+for(i in 1:15){
+  for(z in 1:100){
+    if(mean_sim_sample_of_16[[i]][[z]] ==0){
+      mean_sim_sample_of_16[[i]][[z]]<- NA
+    } 
+  }
+}
+rm(i,z)
+#Log transform
+mean_sim_sample_of_16 <- lapply(mean_sim_sample_of_16,function(x) lapply(x,log))
+
+z_test_mean_sim_sample_of_16 <- list()
+for(i in 1:15){
+  z_test_mean_sim_sample_of_16[[i]] <- lapply(mean_sim_sample_of_16[[i]],function(x) z.test_n(x,16,log(sim_avg_all[[i]]),log(sim_std_all[[i]])))
+}
+
+z_test_sum_sim_sample_of_16 <- lapply(z_test_mean_sim_sample_of_16, function(x) sum(unlist(x)<1.96,na.rm=T))
+z_test_na_sim_sample_of_16 <- lapply(z_test_mean_sim_sample_of_16, function(x) sum(!is.na(unlist(x))))
+names(z_test_sum_sim_sample_of_16) <- 1:15
+names(z_test_na_sim_sample_of_16) <- 1:15
+
+z_test_comp_sim_sample_of_16 <- unlist(z_test_sum_sim_sample_of_16)*0.1*unlist(z_test_na_sim_sample_of_16)/10
+
+
 # Plot example of adaptive sampling scheme
 for(f in 3){
   one_sim <- sims_avg[[f]]
@@ -1884,5 +1961,25 @@ for(f in 3){
 }
 
 # Make table summary confidence levels ----
+confidence_table <- data.frame(rep('',8))
+confidence_table$`Sampling strategy` <- c('Random sampling','','','Regular grid','','', 'Adaptive sampling','')
+confidence_table$`$n$` <- c(1,4,16,1,4,16,4,16)
+confidence_table$`$S=S$` <- c(20,51,83,30,60,40,mean(z_test_comp_sim_sample_of_4),mean(z_test_comp_sim_sample_of_16))
+confidence_table$`$E_3=E_3$` <- c(avg_sampling_summary_n[[1]][[1]][1,1],avg_sampling_summary_n[[2]][[1]][1,1], avg_sampling_summary_n[[3]][[1]][1,1], (sum(reg_sampling.1[1:5,1:5])/25)*100, (sum(reg_sampling.4[1:5,1:5])/25)*100, (sum(reg_sampling.16[1:5,1:5])/25)*100,0,0)
+confidence_table$`$E_2=E_2$` <- c(avg_sampling_summary_n[[1]][[1]][2,2],avg_sampling_summary_n[[2]][[1]][2,2], avg_sampling_summary_n[[3]][[1]][2,2], (sum(reg_sampling.1[6:10,6:10])/25)*100, (sum(reg_sampling.4[6:10,6:10])/25)*100, (sum(reg_sampling.16[6:10,6:10])/25)*100,0,0)
+confidence_table$`$E_1=E_1$` <- c(avg_sampling_summary_n[[1]][[1]][3,3],avg_sampling_summary_n[[2]][[1]][3,3], avg_sampling_summary_n[[3]][[1]][3,3], (sum(reg_sampling.1[11:15,11:15])/25)*100, (sum(reg_sampling.4[11:15,11:15])/25)*100, (sum(reg_sampling.16[11:15,11:15])/25)*100,0,0)
+confidence_table$`$Error 1$` <- c(
+  (avg_sampling_summary_n[[1]][[1]][1,2]+avg_sampling_summary_n[[1]][[1]][2,1]+avg_sampling_summary_n[[1]][[1]][2,3]+avg_sampling_summary_n[[1]][[1]][3,2])/4,
+  (avg_sampling_summary_n[[2]][[1]][1,2]+avg_sampling_summary_n[[2]][[1]][2,1]+avg_sampling_summary_n[[2]][[1]][2,3]+avg_sampling_summary_n[[2]][[1]][3,2])/4, 
+  (avg_sampling_summary_n[[3]][[1]][1,2]+avg_sampling_summary_n[[3]][[1]][2,1]+avg_sampling_summary_n[[3]][[1]][2,3]+avg_sampling_summary_n[[3]][[1]][3,2])/4,
+  sum(reg_sampling.1[c(6:10,11:15),c(6:10,11:15)],na.rm = T), sum(reg_sampling.4[c(6:10,11:15),c(6:10,11:15)], na.rm = T), sum(reg_sampling.16[c(6:10,11:15),c(6:10,11:15)], na.rm=T),0,0)
+confidence_table$`$Error 2$` <- c(
+  (avg_sampling_summary_n[[1]][[1]][1,3]+avg_sampling_summary_n[[1]][[1]][3,1])/2,
+  (avg_sampling_summary_n[[2]][[1]][1,3]+avg_sampling_summary_n[[2]][[1]][3,1])/2, 
+  (avg_sampling_summary_n[[3]][[1]][1,3]+avg_sampling_summary_n[[3]][[1]][3,1])/2,
+  ((sum(reg_sampling.1[1:5,11:15],na.rm = T)+sum(reg_sampling.1[11:15,1:5],na.rm = T))/50)*100, 
+  ((sum(reg_sampling.4[1:5,11:15],na.rm = T)+sum(reg_sampling.4[11:15,1:5],na.rm = T))/50)*100, 
+  ((sum(reg_sampling.16[1:5,11:15],na.rm = T)+sum(reg_sampling.16[11:15,1:5],na.rm = T))/50)*100,0,0)
 
 
+print(xtable(confidence_table, type = "latex", caption = 'Confidence level of different sampling strategies and sample numbers.', digits = 0, label='tbl:confidence_sampling'), file = paste0(path_to_sims,"ConfidenceSampling.tex"))
