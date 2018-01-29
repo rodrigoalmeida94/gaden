@@ -10,7 +10,6 @@ library(fields)
 library(MASS)
 library(xtable)
 library(randomForest)
-library(plyr)
 
 path_to_sims <- '/Users/rodrigoalmeida/Dropbox/Rodrigo/Thesis/Simulations/figures/'
 # Making zones
@@ -329,15 +328,57 @@ dev.off()
 
 all_c <- rbind(apply(sims[[2]], MARGIN = 4,FUN = c),apply(sims[[3]], MARGIN = 4,FUN = c), apply(sims[[4]], MARGIN = 4,FUN = c),apply(sims[[5]], MARGIN = 4,FUN = c),cbind(apply(sims[[1]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
 
+all_c_main <- rbind(apply(sims[[2]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[3]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), apply(sims[[4]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[5]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[1]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_c_inbet <- rbind(apply(sims[[2]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[3]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), apply(sims[[4]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[5]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[1]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_c_inrow <- rbind(apply(sims[[2]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[3]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c), apply(sims[[4]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[5]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[1]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+
 all_entc <- rbind(apply(sims[[7]], MARGIN = 4,FUN = c),apply(sims[[8]], MARGIN = 4,FUN = c), apply(sims[[9]], MARGIN = 4,FUN = c),apply(sims[[10]], MARGIN = 4,FUN = c),cbind(apply(sims[[6]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_entc_main <- rbind(apply(sims[[7]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[8]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), apply(sims[[9]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[10]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[6]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_entc_inrow <- rbind(apply(sims[[7]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[8]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c), apply(sims[[9]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[10]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[6]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_entc_inbet <- rbind(apply(sims[[7]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[8]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), apply(sims[[9]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[10]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[6]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
 
 all_prec <- rbind(apply(sims[[12]], MARGIN = 4,FUN = c),apply(sims[[13]], MARGIN = 4,FUN = c), apply(sims[[14]], MARGIN = 4,FUN = c),apply(sims[[15]], MARGIN = 4,FUN = c),cbind(apply(sims[[11]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
 
-boxplot(all_c,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[1])
-boxplot(all_c, log='y', range=0, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3])
-boxplot(all_entc, log='y', range=0, boxwex=0.25, at = 1:20, add=T,col=emission_col[2])
-boxplot(all_prec, log='y', range=0, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1])
+all_prec_main <- rbind(apply(sims[[12]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[13]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), apply(sims[[14]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[15]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[11]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
 
+all_prec_inrow <- rbind(apply(sims[[12]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[13]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c), apply(sims[[14]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[15]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[11]][in_rows[[1]],in_rows[[2]],in_rows[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_prec_inbet <- rbind(apply(sims[[12]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[13]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), apply(sims[[14]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[15]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[11]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[1],'.tex'))
+boxplot(all_c,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[1], range=1)
+boxplot(all_c, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
+boxplot(all_entc, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
+boxplot(all_prec, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+dev.off()
+
+tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[2],'.tex'))
+boxplot(all_c_main,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[2], range=1)
+boxplot(all_c_main, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
+boxplot(all_entc_main, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
+boxplot(all_prec_main, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+dev.off()
+
+tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[3],'.tex'))
+boxplot(all_c_inrow,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[3], range=1)
+boxplot(all_c_inrow, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
+boxplot(all_entc_inrow, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
+boxplot(all_prec_inrow, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+dev.off()
+
+tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[4],'.tex'))
+boxplot(all_c_inbet,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[4], range=1)
+boxplot(all_c_inbet, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
+boxplot(all_entc_inbet, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
+boxplot(all_prec_inbet, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+dev.off()
 
 # Variance ----
 z <- 1
