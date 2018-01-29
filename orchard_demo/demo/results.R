@@ -10,6 +10,7 @@ library(fields)
 library(MASS)
 library(xtable)
 library(randomForest)
+library(plyr)
 
 path_to_sims <- '/Users/rodrigoalmeida/Dropbox/Rodrigo/Thesis/Simulations/figures/'
 # Making zones
@@ -325,6 +326,18 @@ for(i in 2:length(sims)){
 }
 dev.off()
 }
+
+all_c <- rbind(apply(sims[[2]], MARGIN = 4,FUN = c),apply(sims[[3]], MARGIN = 4,FUN = c), apply(sims[[4]], MARGIN = 4,FUN = c),apply(sims[[5]], MARGIN = 4,FUN = c),cbind(apply(sims[[1]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_entc <- rbind(apply(sims[[7]], MARGIN = 4,FUN = c),apply(sims[[8]], MARGIN = 4,FUN = c), apply(sims[[9]], MARGIN = 4,FUN = c),apply(sims[[10]], MARGIN = 4,FUN = c),cbind(apply(sims[[6]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_prec <- rbind(apply(sims[[12]], MARGIN = 4,FUN = c),apply(sims[[13]], MARGIN = 4,FUN = c), apply(sims[[14]], MARGIN = 4,FUN = c),apply(sims[[15]], MARGIN = 4,FUN = c),cbind(apply(sims[[11]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+boxplot(all_c,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[1])
+boxplot(all_c, log='y', range=0, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3])
+boxplot(all_entc, log='y', range=0, boxwex=0.25, at = 1:20, add=T,col=emission_col[2])
+boxplot(all_prec, log='y', range=0, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1])
+
 
 # Variance ----
 z <- 1
@@ -902,7 +915,7 @@ rm(s,n,avg_sampling_summary_total,avg_sampling_summary, number)
 # }
 
 # Make average table ----
-table_avg <- data.frame(as.array(lapply(sim_avg,mean)),as.array(lapply(sim_std,mean)), c(1:15),as.array(sim_avg_main),as.array(sim_std_main), c(1:15), as.array(lapply(sim_avg_in,mean)), as.array(lapply(sim_std_in,mean)), c(1:15),as.array(lapply(sim_avg_inbet,mean)), as.array(lapply(sim_std_inbet,mean)),c(1:15), row.names = 1:15)
+table_avg <- data.frame(as.array(lapply(sim_avg,mean)),as.array(lapply(sim_std,mean)), c(1:15),as.array(lapply(sim_avg_main,mean)),as.array(lapply(sim_std_main,mean)), c(1:15), as.array(lapply(sim_avg_in,mean)), as.array(lapply(sim_std_in,mean)), c(1:15),as.array(lapply(sim_avg_inbet,mean)), as.array(lapply(sim_std_inbet,mean)),c(1:15), row.names = 1:15)
 table_avg[1,3] <- mean(unlist(table_avg[1:5,1]))
 table_avg[2,3] <- mean(unlist(table_avg[1:5,2]))^2
 table_avg[6,3] <- mean(unlist(table_avg[6:10,1]))
@@ -939,16 +952,16 @@ print(xtable(table_avg, type = "latex", caption = 'Average concentration of ethy
 
 # Make average plot ----
 
-plot(c(1,2,3),table_avg[c(11,6,1),3],xlab='$E_i$',ylab = 'Ethylene concentration ($ppb$)', ylim=c(0,10), type = 'b', pch=1)
-
-polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),3])-sqrt(as.numeric(table_avg[c(12,7,2),3])), rev(as.numeric(table_avg[c(11,6,1),3])+sqrt(as.numeric(table_avg[c(12,7,2),3])))))
-polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),6])-sqrt(as.numeric(table_avg[c(12,7,2),6])), rev(as.numeric(table_avg[c(11,6,1),6])+sqrt(as.numeric(table_avg[c(12,7,2),6])))), col=zones_col[1], border = NA)
-polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),9])-sqrt(as.numeric(table_avg[c(12,7,2),9])), rev(as.numeric(table_avg[c(11,6,1),9])+sqrt(as.numeric(table_avg[c(12,7,2),9])))), col=zones_col[2], border = NA)
-polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),12])-sqrt(as.numeric(table_avg[c(12,7,2),12])), rev(as.numeric(table_avg[c(11,6,1),12])+sqrt(as.numeric(table_avg[c(12,7,2),12])))), col=zones_col[3], border = NA)
-
-points(c(1,2,3),table_avg[c(11,6,1),6], type='b',pch=2, col = zones_col[1])
-points(c(1,2,3),table_avg[c(11,6,1),9], type='b',pch=3, col = zones_col[2])
-points(c(1,2,3),table_avg[c(11,6,1),12], type='b', pch=4, col = zones_col[3])
+# plot(c(1,2,3),table_avg[c(11,6,1),3],xlab='$E_i$',ylab = 'Ethylene concentration ($ppb$)', ylim=c(0,10), type = 'b', pch=1)
+# 
+# polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),3])-sqrt(as.numeric(table_avg[c(12,7,2),3])), rev(as.numeric(table_avg[c(11,6,1),3])+sqrt(as.numeric(table_avg[c(12,7,2),3])))))
+# polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),6])-sqrt(as.numeric(table_avg[c(12,7,2),6])), rev(as.numeric(table_avg[c(11,6,1),6])+sqrt(as.numeric(table_avg[c(12,7,2),6])))), col=zones_col[1], border = NA)
+# polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),9])-sqrt(as.numeric(table_avg[c(12,7,2),9])), rev(as.numeric(table_avg[c(11,6,1),9])+sqrt(as.numeric(table_avg[c(12,7,2),9])))), col=zones_col[2], border = NA)
+# polygon(c(1:3,rev(1:3)),c(as.numeric(table_avg[c(11,6,1),12])-sqrt(as.numeric(table_avg[c(12,7,2),12])), rev(as.numeric(table_avg[c(11,6,1),12])+sqrt(as.numeric(table_avg[c(12,7,2),12])))), col=zones_col[3], border = NA)
+# 
+# points(c(1,2,3),table_avg[c(11,6,1),6], type='b',pch=2, col = zones_col[1])
+# points(c(1,2,3),table_avg[c(11,6,1),9], type='b',pch=3, col = zones_col[2])
+# points(c(1,2,3),table_avg[c(11,6,1),12], type='b', pch=4, col = zones_col[3])
 
 
 # Make histograms ----
@@ -1966,14 +1979,14 @@ confidence_table$`Sampling strategy` <- c('Random sampling','','','Regular grid'
 confidence_table$`$n$` <- c(1,4,16,1,4,16,4,16)
 confidence_table$`$S=S$` <- c(20,51,83,30,60,40,mean(z_test_comp_sim_sample_of_4),mean(z_test_comp_sim_sample_of_16))
 confidence_table$`$E_3=E_3$` <- c(avg_sampling_summary_n[[1]][[1]][1,1],avg_sampling_summary_n[[2]][[1]][1,1], avg_sampling_summary_n[[3]][[1]][1,1], (sum(reg_sampling.1[1:5,1:5])/25)*100, (sum(reg_sampling.4[1:5,1:5])/25)*100, (sum(reg_sampling.16[1:5,1:5])/25)*100,0,0)
-confidence_table$`$E_2=E_2$` <- c(avg_sampling_summary_n[[1]][[1]][2,2],avg_sampling_summary_n[[2]][[1]][2,2], avg_sampling_summary_n[[3]][[1]][2,2], (sum(reg_sampling.1[6:10,6:10])/25)*100, (sum(reg_sampling.4[6:10,6:10])/25)*100, (sum(reg_sampling.16[6:10,6:10])/25)*100,0,0)
+confidence_table$`$E_2=E_2$` <- c(avg_sampling_summary_n[[1]][[1]][2,2],avg_sampling_summary_n[[2]][[1]][2,2], avg_sampling_summary_n[[3]][[1]][2,2], (sum(reg_sampling.1[6:10,6:10])/25)*100, (sum(reg_sampling.4[6:10,6:10],na.rm = T)/25)*100, (sum(reg_sampling.16[6:10,6:10])/25)*100,0,0)
 confidence_table$`$E_1=E_1$` <- c(avg_sampling_summary_n[[1]][[1]][3,3],avg_sampling_summary_n[[2]][[1]][3,3], avg_sampling_summary_n[[3]][[1]][3,3], (sum(reg_sampling.1[11:15,11:15])/25)*100, (sum(reg_sampling.4[11:15,11:15])/25)*100, (sum(reg_sampling.16[11:15,11:15])/25)*100,0,0)
-confidence_table$`$Error 1$` <- c(
+confidence_table$`Error 1` <- c(
   (avg_sampling_summary_n[[1]][[1]][1,2]+avg_sampling_summary_n[[1]][[1]][2,1]+avg_sampling_summary_n[[1]][[1]][2,3]+avg_sampling_summary_n[[1]][[1]][3,2])/4,
   (avg_sampling_summary_n[[2]][[1]][1,2]+avg_sampling_summary_n[[2]][[1]][2,1]+avg_sampling_summary_n[[2]][[1]][2,3]+avg_sampling_summary_n[[2]][[1]][3,2])/4, 
   (avg_sampling_summary_n[[3]][[1]][1,2]+avg_sampling_summary_n[[3]][[1]][2,1]+avg_sampling_summary_n[[3]][[1]][2,3]+avg_sampling_summary_n[[3]][[1]][3,2])/4,
   sum(reg_sampling.1[c(6:10,11:15),c(6:10,11:15)],na.rm = T), sum(reg_sampling.4[c(6:10,11:15),c(6:10,11:15)], na.rm = T), sum(reg_sampling.16[c(6:10,11:15),c(6:10,11:15)], na.rm=T),0,0)
-confidence_table$`$Error 2$` <- c(
+confidence_table$`Error 2` <- c(
   (avg_sampling_summary_n[[1]][[1]][1,3]+avg_sampling_summary_n[[1]][[1]][3,1])/2,
   (avg_sampling_summary_n[[2]][[1]][1,3]+avg_sampling_summary_n[[2]][[1]][3,1])/2, 
   (avg_sampling_summary_n[[3]][[1]][1,3]+avg_sampling_summary_n[[3]][[1]][3,1])/2,
