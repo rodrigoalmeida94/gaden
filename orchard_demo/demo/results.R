@@ -1052,7 +1052,7 @@ rm(centers,s,z,i)
 
 avg_sampling_summary_total <- list('','','','')
 n <- 1
-for(s in list(avg_sampling.all,avg_sampling.main,avg_sampling.in,avg_sampling.inbet)){
+for(s in list(avg_sampling_comp.all,avg_sampling_comp.main,avg_sampling_comp.in,avg_sampling_comp.inbet)){
   avg_sampling_summary <- array(NA,dim = c(3,3))
   avg_sampling_summary[1,1] <- round(mean(as.matrix(s[1:5,1:5])))
   avg_sampling_summary[1,2] <- round(mean(as.matrix(s[1:5,5:10])))
@@ -2096,8 +2096,83 @@ names(z_test_na_sim_sample_of_16) <- 1:15
 
 z_test_comp_sim_sample_of_16 <- unlist(z_test_sum_sim_sample_of_16)*0.1*unlist(z_test_na_sim_sample_of_16)/10
 
+# Attemot comparision matrix ----
 
-# Plot example of adaptive sampling scheme
+ADP4_avg_sampling <- array(NA,dim = c(16,16))
+row.names(ADP4_avg_sampling) <- c(1:15,'Mean')
+colnames(ADP4_avg_samplingg) <- c(1:15,'Mean')
+ADP4_avg_sampling <- as.data.frame(ADP4_avg_sampling)
+ADP4_avg_sampling_na <- as.data.frame(ADP4_avg_sampling)
+
+for(master in c(1:15)){
+  for(slave in c(1:15)){
+    t_all <- c()
+
+    t_na <- c()
+    
+    bc <- boxcox(sims_avg[[slave]]~1, plotit=F)
+    lambda <- bc$x[which.max(bc$y)]
+    transformed_all <- powerTransform(na.omit(as.vector(sims_avg[[slave]])), lambda)
+    
+    pop_na <- !is.na(sims_avg[[slave]])
+    
+    m_master <- mean(powerTransform(sims_avg[[master]],lambda), na.rm = T)
+    sd_master <- sd(powerTransform(sims_avg[[master]],lambda), na.rm = T)
+    for(i in 1:100){
+      
+      s_all <- sample(transformed_all,number)
+      
+      s_all_na <- sample(pop_na,number)
+      
+      t_all <- c(t_all,!(z.test(s_all,mu=m_master,sd=sd_master) > qnorm(1-.05/2)))
+     
+      t_na <- c(t_na,any(s_all_na))
+    }
+    ADP4_avg_sampling[master,slave] <- as.numeric(sum(t_all))
+    
+    ADP4_avg_sampling_na[master,slave] <- as.numeric(sum(t_na))
+  }
+}
+rm(master,slave,t_all,t_main,t_in,t_inbet,s_in,s_inbet,s_main,s_all, transformed_all,transformed_in, transformed_inbet, m_master, sd_master)
+
+ADP4_avg_sampling_comp <- round(ADP4_avg_sampling*ADP4_avg_sampling_na*0.01)
+
+ADP4_avg_sampling_comp[,16]<-round(as.vector(apply(as.matrix(ADP4_avg_sampling_comp),1,mean,na.rm=T)))
+ADP4_avg_sampling_comp[16,16] <- NA
+ADP4_avg_sampling_comp[16,]<-round(as.vector(apply(as.matrix(ADP4_avg_sampling_comp),2,mean,na.rm=T)))
+ADP4_avg_sampling_comp[16,16] <- round(mean(as.vector(diag(as.matrix(ADP4_avg_sampling_comp))),na.rm = T))
+
+# Plot the result
+z <- 1
+for(s in list(avg_sampling_comp.all,avg_sampling_comp.main,avg_sampling_comp.in,avg_sampling_comp.inbet)){
+  tikz(file=paste0(path_to_sims,'AvgComp_',zones_files[z],'_',number,'.tex'))
+  image(1:16, 1:16, t(s),
+        col = brewer.pal(10,'RdYlGn'),
+        main=zones[z],
+        breaks = seq(0,100,10),
+        xaxt = 'n', 
+        yaxt = 'n', 
+        xlab = 'Population (Simulation number)', 
+        ylab = 'Sample (Simulation number)',
+        ylim = c(16 + 0.5, 1 - 0.5)
+  )
+  centers <- expand.grid(1:16,1:16)
+  text(centers[,2], centers[,1], c(as.matrix(s)), col= "black")
+  for(i in 1:16){text(i, i, s[i,i], col= 'black',font=2)}
+  
+  mtext(names(avg_sampling.all), at=1:ncol(s), padj = -0.2)
+  mtext(names(avg_sampling.all), at=1:nrow(s), side = 2, las = 1, adj = 1.2)
+  #add black lines
+  abline(h=1:15 + 0.5)
+  abline(v=1:15 + 0.5)
+  abline(h=c(5,10,15)+0.5,lwd=6)
+  abline(v=c(5,10,15)+0.5,lwd=6)
+  dev.off()
+  z <- z +1
+}
+rm(centers,s,z,i)
+
+# Plot example of adaptive sampling scheme ----
 for(f in 3){
   one_sim <- sims_avg[[f]]
   sample_of_4 <- list()
