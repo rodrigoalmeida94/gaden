@@ -170,6 +170,8 @@ names(sim_n_main) <- names(sims)
 
 wind_pch <- c(1,2,3)
 emission_col <- brewer.pal(3,'Reds')
+wind_col <- brewer.pal(3,'Blues')
+wind_dir_col <- brewer.pal(3,'PRGn')
 zones <- c('Environment','Main volume','In rows','In-between rows')
 zones_files <- c('Environment','Main_volume','In_rows','Inbetween_rows')
 
@@ -326,6 +328,7 @@ for(i in 2:length(sims)){
 dev.off()
 }
 
+# Make Boxplots per ethylene stage ----
 all_c <- rbind(apply(sims[[2]], MARGIN = 4,FUN = c),apply(sims[[3]], MARGIN = 4,FUN = c), apply(sims[[4]], MARGIN = 4,FUN = c),apply(sims[[5]], MARGIN = 4,FUN = c),cbind(apply(sims[[1]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
 
 all_c_main <- rbind(apply(sims[[2]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[3]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), apply(sims[[4]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),apply(sims[[5]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[1]][main_volume[[1]],main_volume[[2]],main_volume[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
@@ -353,32 +356,161 @@ all_prec_inrow <- rbind(apply(sims[[12]][in_rows[[1]],in_rows[[2]],in_rows[[3]],
 all_prec_inbet <- rbind(apply(sims[[12]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[13]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), apply(sims[[14]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),apply(sims[[15]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c),cbind(apply(sims[[11]][inbetween_rows[[1]],inbetween_rows[[2]],inbetween_rows[[3]],], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
 
 tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[1],'.tex'))
-boxplot(all_c,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[1], range=1)
-boxplot(all_c, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
-boxplot(all_entc, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
-boxplot(all_prec, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+par(mar = c(5,5,2,5))
+boxplot(all_c,log='y',boxwex=0.25, at = 1:20 - 0.25, xlim = c(0.5, 20.5), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[1], col=emission_col[3], outline=FALSE, range=0)
+boxplot(all_entc, log='y', boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE, outline=FALSE, range=0)
+boxplot(all_prec, log='y', boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE, outline=FALSE, range=0)
+par(new = T)
+plot(timesteps[1:length(sim_n[[1]])],sim_n[[1]], ylim = range(sim_n), col=emission_col[3],  xlim=range(timesteps), type = 'b', pch=wind_pch[1], lwd=3, axes=F, xlab=NA, ylab=NA)
+axis(side = 4)
+mtext(side = 4, line = 3, '$n$')
+for(i in 2:length(sims)){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 10:15){
+    p_t <- emission_col[1]
+  }
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  points(timesteps[1:length(sim_n[[i]])],sim_n[[i]], col=p_t,type = 'b',pch=p_ch, lwd=3)
+}
 dev.off()
 
 tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[2],'.tex'))
-boxplot(all_c_main,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[2], range=1)
-boxplot(all_c_main, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
-boxplot(all_entc_main, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
-boxplot(all_prec_main, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+par(mar = c(5,5,2,5))
+boxplot(all_c_main,log='y',boxwex=0.25, at = 1:20 - 0.25, xlim = c(0.5, 20.5), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[2], col=emission_col[3], outline=FALSE, range=0)
+boxplot(all_entc_main, log='y', boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE, outline=FALSE, range=0)
+boxplot(all_prec_main, log='y', boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE, outline=FALSE, range=0)
+par(new = T)
+plot(timesteps[1:length(sim_n_main[[1]])],sim_n_main[[1]], ylim = range(sim_n_main), col=emission_col[3],  xlim=range(timesteps), type = 'b', pch=wind_pch[1], lwd=3, axes=F, xlab=NA, ylab=NA)
+axis(side = 4)
+mtext(side = 4, line = 3, '$n$')
+for(i in 2:length(sims)){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 10:15){
+    p_t <- emission_col[1]
+  }
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  points(timesteps[1:length(sim_n_main[[i]])],sim_n_main[[i]], col=p_t,type = 'b',pch=p_ch, lwd=3)
+}
 dev.off()
 
 tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[3],'.tex'))
-boxplot(all_c_inrow,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[3], range=1)
-boxplot(all_c_inrow, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
-boxplot(all_entc_inrow, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
-boxplot(all_prec_inrow, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+par(mar = c(5,5,2,5))
+boxplot(all_c_inrow,log='y',boxwex=0.25, at = 1:20 - 0.25, xlim = c(0.5, 20.5), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[3], col=emission_col[3], outline=FALSE, range=0)
+boxplot(all_entc_inrow, log='y', boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE, outline=FALSE, range=0)
+boxplot(all_prec_inrow, log='y', boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE, outline=FALSE, range=0)
+par(new = T)
+plot(timesteps[1:length(sim_n_in[[1]])],sim_n_in[[1]], ylim = range(sim_n_in), col=emission_col[3],  xlim=range(timesteps), type = 'b', pch=wind_pch[1], lwd=3, axes=F, xlab=NA, ylab=NA)
+axis(side = 4)
+mtext(side = 4, line = 3, '$n$')
+for(i in 2:length(sims)){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 10:15){
+    p_t <- emission_col[1]
+  }
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  points(timesteps[1:length(sim_n_in[[i]])],sim_n_in[[i]], col=p_t,type = 'b',pch=p_ch, lwd=3)
+}
 dev.off()
 
 tikz(file = paste0(path_to_sims,'Boxplots_',zones_files[4],'.tex'))
-boxplot(all_c_inbet,log='y', xlim = c(0.5, 20.5), boxfill=rgb(1, 1, 1, alpha=1), border=rgb(1, 1, 1, alpha=1), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[4], range=1)
-boxplot(all_c_inbet, log='y', range=1, boxwex=0.25, at = 1:20 - 0.25, add=T, col=emission_col[3], axes=FALSE)
-boxplot(all_entc_inbet, log='y', range=1, boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE)
-boxplot(all_prec_inbet, log='y', range=1, boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE)
+par(mar = c(5,5,2,5))
+boxplot(all_c_inbet,log='y',boxwex=0.25, at = 1:20 - 0.25, xlim = c(0.5, 20.5), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main=zones[4], col=emission_col[3], outline=FALSE, range=0)
+boxplot(all_entc_inbet, log='y', boxwex=0.25, at = 1:20, add=T,col=emission_col[2], axes=FALSE, outline=FALSE, range=0)
+boxplot(all_prec_inbet, log='y', boxwex=0.25, at = 1:20 + 0.25, add=T, col=emission_col[1], axes=FALSE, outline=FALSE, range=0)
+par(new = T)
+plot(timesteps[1:length(sim_n_inbet[[1]])],sim_n_inbet[[1]], ylim = range(sim_n_inbet), col=emission_col[3],  xlim=range(timesteps), type = 'b', pch=wind_pch[1], lwd=3, axes=F, xlab=NA, ylab=NA)
+axis(side = 4)
+mtext(side = 4, line = 3, '$n$')
+for(i in 2:length(sims)){
+  if(i %in% 2:5){
+    p_t <- emission_col[3]
+  }
+  if(i %in% 6:10){
+    p_t <- emission_col[2]
+  }
+  if(i %in% 10:15){
+    p_t <- emission_col[1]
+  }
+  if(i %in% c(6,11)){
+    p_ch <- wind_pch[1]
+  }
+  if(i %in% c(2,3,7,8,12,13)){
+    p_ch <- wind_pch[2]
+  }
+  if(i %in% c(4,5,9,10,14,15)){
+    p_ch <- wind_pch[3]
+  }
+  points(timesteps[1:length(sim_n_inbet[[i]])],sim_n_inbet[[i]], col=p_t,type = 'b',pch=p_ch, lwd=3)
+}
 dev.off()
+
+all_0ms <- rbind(cbind(apply(sims[[1]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA),cbind(apply(sims[[6]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA),cbind(apply(sims[[11]], MARGIN = 4,FUN = c), NA,NA,NA,NA,NA))
+
+all_2ms <- rbind(apply(sims[[2]], MARGIN = 4,FUN = c),apply(sims[[3]], MARGIN = 4,FUN = c), apply(sims[[7]], MARGIN = 4,FUN = c),apply(sims[[8]], MARGIN = 4,FUN = c),apply(sims[[12]], MARGIN = 4,FUN = c),apply(sims[[13]], MARGIN = 4,FUN = c))
+
+all_5ms <- rbind(apply(sims[[4]], MARGIN = 4,FUN = c),apply(sims[[5]], MARGIN = 4,FUN = c), apply(sims[[9]], MARGIN = 4,FUN = c),apply(sims[[10]], MARGIN = 4,FUN = c),apply(sims[[14]], MARGIN = 4,FUN = c),apply(sims[[15]], MARGIN = 4,FUN = c))
+
+all_X <- rbind(apply(sims[[2]], MARGIN = 4,FUN = c),apply(sims[[4]], MARGIN = 4,FUN = c), apply(sims[[7]], MARGIN = 4,FUN = c),apply(sims[[9]], MARGIN = 4,FUN = c),apply(sims[[12]], MARGIN = 4,FUN = c),apply(sims[[14]], MARGIN = 4,FUN = c))
+
+all_Y <- rbind(apply(sims[[3]], MARGIN = 4,FUN = c),apply(sims[[5]], MARGIN = 4,FUN = c), apply(sims[[8]], MARGIN = 4,FUN = c),apply(sims[[10]], MARGIN = 4,FUN = c),apply(sims[[13]], MARGIN = 4,FUN = c),apply(sims[[15]], MARGIN = 4,FUN = c))
+
+tikz(file = paste0(path_to_sims,'Boxplots_WindSpeed.tex'), height = 5)
+boxplot(all_0ms,log='y',boxwex=0.25, at = 1:20 - 0.25, xlim = c(0.5, 20.5), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main='Wind speed', col=wind_col[1], outline=FALSE, range=0)
+boxplot(all_2ms, log='y', boxwex=0.25, at = 1:20, add=T, axes=FALSE, outline=FALSE, range=0, col=wind_col[2])
+boxplot(all_5ms, log='y', boxwex=0.25, at = 1:20 + 0.25, add=T, axes=FALSE, outline=FALSE, range=0, col=wind_col[3])
+dev.off()
+
+tikz(file = paste0(path_to_sims,'Boxplots_WindDirection.tex'), height = 5)
+boxplot(all_X,log='y',boxwex=0.25, at = 1:20 - 0.25, xlim = c(0.5, 20.5), names=timesteps, xlab='Time ($s$)', ylab = 'Ethylene concentration ($ppb$)', main='Wind direction', col=wind_dir_col[1], outline=FALSE, range=0)
+boxplot(all_Y, log='y', boxwex=0.25, at = 1:20 + 0.25, add=T, axes=FALSE, outline=FALSE, range=0, col=wind_dir_col[3])
+dev.off()
+
+tikz(file = paste0(path_to_sims,'Legend_Wind.tex'),height = 0.7)
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("top", c("0 $ms^{-1}$", "2 $ms^{-1}$", "5 $ms^{-1}$"),bty = "n", xpd = TRUE, horiz = TRUE, fill = wind_col)
+legend('top',inset=c(0,0.6), c("$\\vec{x}$", "$\\vec{y}$"), xpd = TRUE, horiz = TRUE, bty = "n", fill=c(wind_dir_col[c(1,3)]))
+dev.off()
+
 
 # Variance ----
 z <- 1
