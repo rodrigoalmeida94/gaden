@@ -636,6 +636,7 @@ rm(z,s,i,p_ch,p_t)
 
 # Testing random sampling ----
 avg_sampling_summary_n <- list()
+avg_sampling_with_all_n <- list()
 numbering <- 1
 for(number in number_of_samples){
 # Construct results table
@@ -867,6 +868,43 @@ for(s in list(random_sampling_na.all*random_sampling.all*0.01,random_sampling_na
   dev.off()
 }
 
+z <- 1
+for(s in list(list(random_sampling_na.all,random_sampling.all,random_sampling_na.all*random_sampling.all*0.01),
+                list(random_sampling_na.main,random_sampling.main,random_sampling_na.main*random_sampling.main*0.01),
+                list(random_sampling_na.in,random_sampling.in,random_sampling_na.in*random_sampling.in*0.01),
+                list(random_sampling_na.inbet,random_sampling.inbet,random_sampling_na.inbet*random_sampling.inbet*0.01))){
+  tikz(file = paste0(path_to_sims,'RandomSamplingWithAll_',zones_files[z],'_',number,'.tex'))
+  plot(timesteps,s[[3]][1,], ylim = c(0,100), xlim=range(timesteps), col=emission_col[3],pch=wind_pch[1], type = 'b', xlab = 'Time ($s$)',ylab = 'Confidence level of a random sample', main = zones[z], lwd=3, lty=1)
+  points(timesteps,s[[1]][1,], col=p_t,pch=p_ch, type = 'b', lwd=3, lty=3) # NA
+  points(timesteps,s[[2]][1,], col=p_t,pch=p_ch, type = 'b', lwd=3, lty=4) # Normal
+  z =z+ 1
+  for(i in 2:length(s)){
+    if(i %in% 2:5){
+      p_t <- emission_col[3]
+    }
+    if(i %in% 6:10){
+      p_t <- emission_col[2]
+    }
+    if(i %in% 11:15){
+      p_t <- emission_col[1]
+    }
+    
+    if(i %in% c(6,11)){
+      p_ch <- wind_pch[1]
+    }
+    if(i %in% c(2,3,7,8,12,13)){
+      p_ch <- wind_pch[2]
+    }
+    if(i %in% c(4,5,9,10,14,15)){
+      p_ch <- wind_pch[3]
+    }
+    points(timesteps,s[[3]][i,], col=p_t,pch=p_ch, type = 'b', lwd=3, lty=1)
+    points(timesteps,s[[1]][i,], col=p_t,pch=p_ch, type = 'b', lwd=3, lty=3) # NA
+  points(timesteps,s[[2]][i,], col=p_t,pch=p_ch, type = 'b', lwd=3, lty=4)
+  }
+  dev.off()
+}
+
 rm(z, s,i)
 
 # Make table with range
@@ -1029,8 +1067,8 @@ image(1:16, 1:16, t(s),
       breaks = seq(0,100,10),
       xaxt = 'n', 
       yaxt = 'n', 
-      xlab = 'Population (Simulation number)', 
-      ylab = 'Sample (Simulation number)',
+      xlab = 'Sample (Simulation number)', 
+      ylab = 'Population (Simulation number)',
       ylim = c(16 + 0.5, 1 - 0.5)
 )
 centers <- expand.grid(1:16,1:16)
@@ -1051,6 +1089,7 @@ rm(centers,s,z,i)
 
 
 avg_sampling_summary_total <- list('','','','')
+avg_sampling_with_all <- list('','','','')
 n <- 1
 for(s in list(avg_sampling_comp.all,avg_sampling_comp.main,avg_sampling_comp.in,avg_sampling_comp.inbet)){
   avg_sampling_summary <- array(NA,dim = c(3,3))
@@ -1064,9 +1103,11 @@ for(s in list(avg_sampling_comp.all,avg_sampling_comp.main,avg_sampling_comp.in,
   avg_sampling_summary[2,3] <- round(mean(as.matrix(s[5:10,10:15])))
   avg_sampling_summary[3,2] <- round(mean(as.matrix(s[10:15,5:10])))
   avg_sampling_summary_total[[n]] <- avg_sampling_summary
+  avg_sampling_with_all[[n]] <- s
   n <- n+1
 }
 avg_sampling_summary_n[[numbering]] <- avg_sampling_summary_total
+avg_sampling_with_all_n[[numbering]] <- avg_sampling_with_all
 numbering <- numbering +1
 }
 
@@ -1594,8 +1635,8 @@ for(s in list(round(reg_sampling.1,1),round(reg_sampling.4,1),round(reg_sampling
         breaks = seq(0,1,0.1),
         xaxt = 'n', 
         yaxt = 'n', 
-        xlab = 'Population (Simulation number)', 
-        ylab = 'Sample (Simulation number)',
+        xlab = 'Sample (Simulation number)', 
+        ylab = 'Population (Simulation number)',
         ylim = c(16 + 0.5, 1 - 0.5)
   )
   centers <- expand.grid(1:16,1:16)
@@ -2096,15 +2137,15 @@ names(z_test_na_sim_sample_of_16) <- 1:15
 
 z_test_comp_sim_sample_of_16 <- unlist(z_test_sum_sim_sample_of_16)*0.1*unlist(z_test_na_sim_sample_of_16)/10
 
-# Attemot comparision matrix ----
+# Attempt comparision matrix ----
 
 ADP4_avg_sampling <- array(NA,dim = c(16,16))
 row.names(ADP4_avg_sampling) <- c(1:15,'Mean')
-colnames(ADP4_avg_samplingg) <- c(1:15,'Mean')
+colnames(ADP4_avg_sampling) <- c(1:15,'Mean')
 ADP4_avg_sampling <- as.data.frame(ADP4_avg_sampling)
 ADP4_avg_sampling_na <- as.data.frame(ADP4_avg_sampling)
 
-for(master in c(1:15)){
+for(master in c(2:15)){
   for(slave in c(1:15)){
     t_all <- c()
 
@@ -2120,20 +2161,57 @@ for(master in c(1:15)){
     sd_master <- sd(powerTransform(sims_avg[[master]],lambda), na.rm = T)
     for(i in 1:100){
       
-      s_all <- sample(transformed_all,number)
+      x <- sample(inbetween_rows[[1]],1)
+      y <- sample(inbetween_rows[[2]],1)
+      z <- sample(inbetween_rows[[3]],1)
+      e <- one_sim[x,y,z]
       
-      s_all_na <- sample(pop_na,number)
+      if(length(e)==0){e <- 0}
+      if(is.na(e)){e <- 0}
       
-      t_all <- c(t_all,!(z.test(s_all,mu=m_master,sd=sd_master) > qnorm(1-.05/2)))
+      sample_4 <- e
+      for(sample_number in 1:3){
+        input <- as.data.frame(t(c(x,y,z,dir,vel,e)))
+        names(input) <- c('x','y','z','dir','vel','e')
+        
+        trans_x <- round(predict(model_x, input))
+        input$trans_x <- trans_x
+        trans_z <- round(predict(model_z, input))
+        input$trans_z <- trans_z
+        trans_y <- round(predict(model_y, input))
+        
+        x <- x + trans_x[[1]]
+        if(x<=0){x<-1}
+        y <- y + trans_y[[1]]
+        if(y<=0){y<-1}
+        z <- z + trans_z[[1]]
+        if(z<=0){z<-1}
+        e <- one_sim[x,y,z]
+        
+        if(length(e)==0){e <- 0}
+        if(is.na(e)){e <- 0}
+        sample_4 <- c(sample_4,e)
+      }
+      
+      for(i in 1:length(sample_4)){
+        if(sample_4[i] ==0){
+          sample_4[i] <- NA
+      }}
+      s_all <- powerTransform(sample_4, lambda)
+      
+      s_all_na <- !is.na(sample_4)
+      
+      t_all <- c(t_all,!(z.test_s(s_all,mu=m_master,sd=sd_master) > qnorm(1-.05/2)))
      
       t_na <- c(t_na,any(s_all_na))
     }
-    ADP4_avg_sampling[master,slave] <- as.numeric(sum(t_all))
-    
+    print(master)
+    print(slave)
+    ADP4_avg_sampling[master,slave] <- as.numeric(sum(t_all, na.rm = T))
     ADP4_avg_sampling_na[master,slave] <- as.numeric(sum(t_na))
   }
 }
-rm(master,slave,t_all,t_main,t_in,t_inbet,s_in,s_inbet,s_main,s_all, transformed_all,transformed_in, transformed_inbet, m_master, sd_master)
+#rm(master,slave,t_all,t_main,t_in,t_inbet,s_in,s_inbet,s_main,s_all, transformed_all,transformed_in, transformed_inbet, m_master, sd_master)
 
 ADP4_avg_sampling_comp <- round(ADP4_avg_sampling*ADP4_avg_sampling_na*0.01)
 
@@ -2222,25 +2300,85 @@ for(f in 3){
 }
 
 # Make table summary confidence levels ----
-confidence_table <- data.frame(rep('',8))
-confidence_table$`Sampling strategy` <- c('Random sampling','','','Regular grid','','', 'Adaptive sampling','')
-confidence_table$`$n$` <- c(1,4,16,1,4,16,4,16)
-confidence_table$`$S=S$` <- c(20,51,83,30,60,40,mean(z_test_comp_sim_sample_of_4),mean(z_test_comp_sim_sample_of_16))
-confidence_table$`$E_3=E_3$` <- c(avg_sampling_summary_n[[1]][[1]][1,1],avg_sampling_summary_n[[2]][[1]][1,1], avg_sampling_summary_n[[3]][[1]][1,1], (sum(reg_sampling.1[1:5,1:5])/25)*100, (sum(reg_sampling.4[1:5,1:5])/25)*100, (sum(reg_sampling.16[1:5,1:5])/25)*100,0,0)
-confidence_table$`$E_2=E_2$` <- c(avg_sampling_summary_n[[1]][[1]][2,2],avg_sampling_summary_n[[2]][[1]][2,2], avg_sampling_summary_n[[3]][[1]][2,2], (sum(reg_sampling.1[6:10,6:10])/25)*100, (sum(reg_sampling.4[6:10,6:10],na.rm = T)/25)*100, (sum(reg_sampling.16[6:10,6:10])/25)*100,0,0)
-confidence_table$`$E_1=E_1$` <- c(avg_sampling_summary_n[[1]][[1]][3,3],avg_sampling_summary_n[[2]][[1]][3,3], avg_sampling_summary_n[[3]][[1]][3,3], (sum(reg_sampling.1[11:15,11:15])/25)*100, (sum(reg_sampling.4[11:15,11:15])/25)*100, (sum(reg_sampling.16[11:15,11:15])/25)*100,0,0)
+confidence_table <- data.frame(rep('',17))
+confidence_table$`Sampling strategy` <- c('Random sampling Environment','','', 'Random sampling Main volume','','', 'Random sampling In rows','','', 'Random sampling In-between rows','','','Regular grid','','', 'Adaptive sampling','')
+confidence_table$`$n$` <- c(1,4,16,1,4,16,1,4,16,1,4,16,1,4,16,4,16)
+confidence_table$`$S=S$` <- c(mean(c(64,18,7,19,9,58,16,7,17,12,41,21,9,19,9)),mean(c(89,52,35,55,38,93,48,34,57,30,90,48,30,46,31)),mean(c(92,87,78,91,79,96,89,77,90,74,93,95,78,89,75)), 
+                              mean(c(96,58,29,60,19,93,48,24,54,14,97,49,22,44,20)),mean(c(71,95,73,93,52,74,84,61,93,53,85,93,52,88,48)),mean(c(8,93,92,96,86,12,97,98,95,92,14,98,97,96,92)),
+                              mean(c(70,74,70,75,58,73,62,58,68,41,84,60,56,62,54)),mean(c(0,81,84,90,87,1,88,78,89,89,4,84,90,89,87)),mean(c(0,86,56,75,53,0,81,62,76,62,0,89,56,92,79)),
+                              mean(c(98,75,14,76,12,97,78,21,81,13,100,77,11,70,7)),mean(c(53,98,43,97,32,63,96,41,96,34,72,96,42,97,33)),mean(c(0,94,36,96,67,0,98,49,96,78,0,94,44,98,68)), 
+                              30,60,40,
+                              mean(z_test_comp_sim_sample_of_4),
+                              0)#mean(z_test_comp_sim_sample_of_16))
+
+confidence_table$`$sd$` <- c(sd(c(64,18,7,19,9,58,16,7,17,12,41,21,9,19,9)),sd(c(89,52,35,55,38,93,48,34,57,30,90,48,30,46,31)),sd(c(92,87,78,91,79,96,89,77,90,74,93,95,78,89,75)), 
+                              sd(c(96,58,29,60,19,93,48,24,54,14,97,49,22,44,20)),sd(c(71,95,73,93,52,74,84,61,93,53,85,93,52,88,48)),sd(c(8,93,92,96,86,12,97,98,95,92,14,98,97,96,92)),
+                              sd(c(70,74,70,75,58,73,62,58,68,41,84,60,56,62,54)),sd(c(0,81,84,90,87,1,88,78,89,89,4,84,90,89,87)),sd(c(0,86,56,75,53,0,81,62,76,62,0,89,56,92,79)),
+                              sd(c(98,75,14,76,12,97,78,21,81,13,100,77,11,70,7)),sd(c(53,98,43,97,32,63,96,41,96,34,72,96,42,97,33)),sd(c(0,94,36,96,67,0,98,49,96,78,0,94,44,98,68)),
+                             0,0,0,
+                             sd(z_test_comp_sim_sample_of_4),
+                             0)#sd(z_test_comp_sim_sample_of_16))
+
+confidence_table$`$E_3=E_3$` <- c(
+  avg_sampling_summary_n[[1]][[1]][1,1],avg_sampling_summary_n[[2]][[1]][1,1], avg_sampling_summary_n[[3]][[1]][1,1], 
+  avg_sampling_summary_n[[1]][[2]][1,1],avg_sampling_summary_n[[2]][[2]][1,1], avg_sampling_summary_n[[3]][[2]][1,1],
+  avg_sampling_summary_n[[1]][[3]][1,1],avg_sampling_summary_n[[2]][[3]][1,1], avg_sampling_summary_n[[3]][[3]][1,1], 
+  avg_sampling_summary_n[[1]][[4]][1,1],avg_sampling_summary_n[[2]][[4]][1,1], avg_sampling_summary_n[[3]][[4]][1,1],
+  (sum(reg_sampling.1[1:5,1:5])/25)*100, (sum(reg_sampling.4[1:5,1:5])/25)*100, (sum(reg_sampling.16[1:5,1:5])/25)*100,0,0)
+
+confidence_table$`$E_2=E_2$` <- c(
+  avg_sampling_summary_n[[1]][[1]][2,2],avg_sampling_summary_n[[2]][[1]][2,2], avg_sampling_summary_n[[3]][[1]][2,2], 
+  avg_sampling_summary_n[[1]][[2]][2,2],avg_sampling_summary_n[[2]][[2]][2,2], avg_sampling_summary_n[[3]][[2]][2,2],
+  avg_sampling_summary_n[[1]][[3]][2,2],avg_sampling_summary_n[[2]][[3]][2,2], avg_sampling_summary_n[[3]][[3]][2,2], 
+  avg_sampling_summary_n[[1]][[4]][2,2],avg_sampling_summary_n[[2]][[4]][2,2], avg_sampling_summary_n[[3]][[4]][2,2],
+  (sum(reg_sampling.1[6:10,6:10])/25)*100, (sum(reg_sampling.4[6:10,6:10],na.rm = T)/25)*100, (sum(reg_sampling.16[6:10,6:10])/25)*100,0,0)
+
+confidence_table$`$E_1=E_1$` <- c(avg_sampling_summary_n[[1]][[1]][3,3],avg_sampling_summary_n[[2]][[1]][3,3], avg_sampling_summary_n[[3]][[1]][3,3],
+                                  avg_sampling_summary_n[[1]][[2]][3,3],avg_sampling_summary_n[[2]][[2]][3,3], avg_sampling_summary_n[[3]][[2]][3,3],
+  avg_sampling_summary_n[[1]][[3]][3,3],avg_sampling_summary_n[[2]][[3]][3,3], avg_sampling_summary_n[[3]][[3]][3,3], 
+  avg_sampling_summary_n[[1]][[4]][3,3],avg_sampling_summary_n[[2]][[4]][3,3], avg_sampling_summary_n[[3]][[4]][3,3],
+                                  (sum(reg_sampling.1[11:15,11:15])/25)*100, (sum(reg_sampling.4[11:15,11:15])/25)*100, (sum(reg_sampling.16[11:15,11:15])/25)*100,0,0)
+
 confidence_table$`Error 1` <- c(
   (avg_sampling_summary_n[[1]][[1]][1,2]+avg_sampling_summary_n[[1]][[1]][2,1]+avg_sampling_summary_n[[1]][[1]][2,3]+avg_sampling_summary_n[[1]][[1]][3,2])/4,
   (avg_sampling_summary_n[[2]][[1]][1,2]+avg_sampling_summary_n[[2]][[1]][2,1]+avg_sampling_summary_n[[2]][[1]][2,3]+avg_sampling_summary_n[[2]][[1]][3,2])/4, 
   (avg_sampling_summary_n[[3]][[1]][1,2]+avg_sampling_summary_n[[3]][[1]][2,1]+avg_sampling_summary_n[[3]][[1]][2,3]+avg_sampling_summary_n[[3]][[1]][3,2])/4,
+  
+  (avg_sampling_summary_n[[1]][[2]][1,2]+avg_sampling_summary_n[[1]][[2]][2,1]+avg_sampling_summary_n[[1]][[2]][2,3]+avg_sampling_summary_n[[1]][[2]][3,2])/4,
+  (avg_sampling_summary_n[[2]][[2]][1,2]+avg_sampling_summary_n[[2]][[2]][2,1]+avg_sampling_summary_n[[2]][[2]][2,3]+avg_sampling_summary_n[[2]][[2]][3,2])/4, 
+  (avg_sampling_summary_n[[3]][[2]][1,2]+avg_sampling_summary_n[[3]][[2]][2,1]+avg_sampling_summary_n[[3]][[2]][2,3]+avg_sampling_summary_n[[3]][[2]][3,2])/4,
+  
+  (avg_sampling_summary_n[[1]][[3]][1,2]+avg_sampling_summary_n[[1]][[3]][2,1]+avg_sampling_summary_n[[1]][[3]][2,3]+avg_sampling_summary_n[[1]][[3]][3,2])/4,
+  (avg_sampling_summary_n[[2]][[3]][1,2]+avg_sampling_summary_n[[2]][[3]][2,1]+avg_sampling_summary_n[[2]][[3]][2,3]+avg_sampling_summary_n[[2]][[3]][3,2])/4, 
+  (avg_sampling_summary_n[[3]][[3]][1,2]+avg_sampling_summary_n[[3]][[3]][2,1]+avg_sampling_summary_n[[3]][[3]][2,3]+avg_sampling_summary_n[[3]][[3]][3,2])/4,
+  
+  (avg_sampling_summary_n[[1]][[4]][1,2]+avg_sampling_summary_n[[1]][[4]][2,1]+avg_sampling_summary_n[[1]][[4]][2,3]+avg_sampling_summary_n[[1]][[4]][3,2])/4,
+  (avg_sampling_summary_n[[2]][[4]][1,2]+avg_sampling_summary_n[[2]][[4]][2,1]+avg_sampling_summary_n[[2]][[4]][2,3]+avg_sampling_summary_n[[2]][[4]][3,2])/4, 
+  (avg_sampling_summary_n[[3]][[4]][1,2]+avg_sampling_summary_n[[3]][[4]][2,1]+avg_sampling_summary_n[[3]][[4]][2,3]+avg_sampling_summary_n[[3]][[4]][3,2])/4,
+  
   sum(reg_sampling.1[c(6:10,11:15),c(6:10,11:15)],na.rm = T), sum(reg_sampling.4[c(6:10,11:15),c(6:10,11:15)], na.rm = T), sum(reg_sampling.16[c(6:10,11:15),c(6:10,11:15)], na.rm=T),0,0)
 confidence_table$`Error 2` <- c(
   (avg_sampling_summary_n[[1]][[1]][1,3]+avg_sampling_summary_n[[1]][[1]][3,1])/2,
   (avg_sampling_summary_n[[2]][[1]][1,3]+avg_sampling_summary_n[[2]][[1]][3,1])/2, 
   (avg_sampling_summary_n[[3]][[1]][1,3]+avg_sampling_summary_n[[3]][[1]][3,1])/2,
+  
+  (avg_sampling_summary_n[[1]][[2]][1,3]+avg_sampling_summary_n[[1]][[2]][3,1])/2,
+  (avg_sampling_summary_n[[2]][[2]][1,3]+avg_sampling_summary_n[[2]][[2]][3,1])/2, 
+  (avg_sampling_summary_n[[3]][[2]][1,3]+avg_sampling_summary_n[[3]][[2]][3,1])/2,
+  
+  (avg_sampling_summary_n[[1]][[3]][1,3]+avg_sampling_summary_n[[1]][[3]][3,1])/2,
+  (avg_sampling_summary_n[[2]][[3]][1,3]+avg_sampling_summary_n[[2]][[3]][3,1])/2, 
+  (avg_sampling_summary_n[[3]][[3]][1,3]+avg_sampling_summary_n[[3]][[3]][3,1])/2,
+  
+  (avg_sampling_summary_n[[1]][[4]][1,3]+avg_sampling_summary_n[[1]][[4]][3,1])/2,
+  (avg_sampling_summary_n[[2]][[4]][1,3]+avg_sampling_summary_n[[2]][[4]][3,1])/2, 
+  (avg_sampling_summary_n[[3]][[4]][1,3]+avg_sampling_summary_n[[3]][[4]][3,1])/2,
+  
   ((sum(reg_sampling.1[1:5,11:15],na.rm = T)+sum(reg_sampling.1[11:15,1:5],na.rm = T))/50)*100, 
   ((sum(reg_sampling.4[1:5,11:15],na.rm = T)+sum(reg_sampling.4[11:15,1:5],na.rm = T))/50)*100, 
   ((sum(reg_sampling.16[1:5,11:15],na.rm = T)+sum(reg_sampling.16[11:15,1:5],na.rm = T))/50)*100,0,0)
 
+confidence_table <- confidence_table[-1]
 
-print(xtable(confidence_table, type = "latex", caption = 'Confidence level of different sampling strategies and sample numbers.', digits = 0, label='tbl:confidence_sampling'), file = paste0(path_to_sims,"ConfidenceSampling.tex"))
+
+print(xtable(confidence_table, type = "latex", caption = 'Confidence level of different sampling strategies and sample numbers.', digits = 0, label='tbl:confidence_sampling'), include.rownames=FALSE, file = paste0(path_to_sims,"ConfidenceSampling.tex"))
