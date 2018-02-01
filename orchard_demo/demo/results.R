@@ -4730,3 +4730,43 @@ print(
   include.rownames = FALSE,
   file = paste0(path_to_sims, "ConfidenceSampling.tex")
 )
+
+
+# Plot wind speed to average ethylene in zones ----
+
+tikz(file = paste0(path_to_sims, 'WindSpeedEthylene.tex'),
+     height = 3.5)
+r <- range(c(
+  log(c(mean(unlist(sim_avg_main[c(1,6,11)])),mean(unlist(sim_avg_main[c(2,3,7,8,12,13)])))),
+       log(c(mean(unlist(sim_avg_all[c(1,6,11)])),mean(unlist(sim_avg_all[c(2,3,7,8,12,13)])))),
+             log(c(mean(unlist(sim_avg_in[c(1,6,11)])),mean(unlist(sim_avg_in[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_in[c(4,5,9,10,14,15)])))),
+             log(c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)]))))
+             ))
+
+plot(c(0,2,5),
+     log(c(mean(unlist(sim_avg_all[c(1,6,11)])),mean(unlist(sim_avg_all[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_all[c(4,5,9,10,14,15)])))), 
+     pch=21, ylab = '$log$ Ethylene concentration ($ppb$)',xlab='Wind speed ($ms^{-1}$)', ylim=range(r), bg='black')
+     
+points(c(0,2,5),
+       log(c(mean(unlist(sim_avg_main[c(1,6,11)])),mean(unlist(sim_avg_main[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_main[c(4,5,9,10,14,15)])))), 
+       bg=zones_col[1], pch=21)
+points(c(0,2,5),
+       log(c(mean(unlist(sim_avg_in[c(1,6,11)])),mean(unlist(sim_avg_in[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_in[c(4,5,9,10,14,15)])))), 
+       bg=zones_col[2], pch=21)
+points(c(0,2,5),
+       log(c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_inbet[c(4,5,9,10,14,15)])))), 
+bg=zones_col[3], pch=21)
+
+trend_all <- line(c(0,2,5),log(c(mean(unlist(sim_avg_all[c(1,6,11)])),mean(unlist(sim_avg_all[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_all[c(4,5,9,10,14,15)])))))
+trend_main <- line(c(0,2,5),log(c(mean(unlist(sim_avg_main[c(1,6,11)])),mean(unlist(sim_avg_main[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_main[c(4,5,9,10,14,15)])))))
+trend_in <- line(c(0,2,5),log(c(mean(unlist(sim_avg_in[c(1,6,11)])),mean(unlist(sim_avg_in[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_in[c(4,5,9,10,14,15)])))))
+trend_inbet <- line(c(0,2,5),log(c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_inbet[c(4,5,9,10,14,15)])))))
+
+abline(trend_all)
+abline(trend_main,lwd=3, col=zones_col[1])
+abline(trend_in,lwd=3, col=zones_col[2])
+abline(trend_inbet,lwd=3, col=zones_col[3])
+
+legend('topright',paste(zones,'$b=$', round(c(trend_all$coefficients[2],trend_main$coefficients[2],trend_in$coefficients[2],trend_inbet$coefficients[2]),2)),fill=c('black',zones_col), bty = 'n')
+dev.off()
+
