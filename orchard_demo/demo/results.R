@@ -1842,7 +1842,7 @@ for (number in number_of_samples) {
       lty = 4
     ) # Normal
     z = z + 1
-    for (i in 2:length(s)) {
+    for (i in 2:length(s[[1]])) {
       if (i %in% 2:5) {
         p_t <- emission_col[3]
       }
@@ -3649,7 +3649,7 @@ for (s in list(sims_drone_avg_pos1, sims_drone_avg_pos2)) {
 }
 rm(z)
 
-# Adaptive sampling ----
+# Define Adaptive sampling ----
 translation_all <- list()
 point_all <- list()
 for (i in 1:15) {
@@ -4109,268 +4109,6 @@ model_z <-
                importance = T)
 
 # Testing adaptive sampling ----
-# 4 samples
-sim_sample_of_4 <- list()
-for (f in 1:15) {
-  one_sim <- sims_avg[[f]]
-  sample_of_4 <- list()
-  if (f %in% c(1, 6, 11)) {
-    dir <- -1
-  }
-  if (f %in% c(2, 4, 7, 9, 12, 14)) {
-    dir <- 0
-  }
-  if (f %in% c(3, 5, 8, 10, 13, 15)) {
-    dir <- 90
-  }
-  
-  if (f %in% c(1, 6, 11)) {
-    vel <- 0
-  }
-  if (f %in% c(2, 3, 7, 8, 12, 13)) {
-    vel <- 2
-  }
-  if (f %in% c(4, 5, 9, 10, 14, 15)) {
-    vel <- 5
-  }
-  
-  for (repetition in 1:100) {
-    x <- sample(inbetween_rows[[1]], 1)
-    y <- sample(inbetween_rows[[2]], 1)
-    z <- sample(inbetween_rows[[3]], 1)
-    e <- one_sim[x, y, z]
-    
-    if (length(e) == 0) {
-      e <- 0
-    }
-    if (is.na(e)) {
-      e <- 0
-    }
-    
-    sample_4 <- e
-    for (sample_number in 1:3) {
-      input <- as.data.frame(t(c(x, y, z, dir, vel, e)))
-      names(input) <- c('x', 'y', 'z', 'dir', 'vel', 'e')
-      
-      trans_x <- round(predict(model_x, input))
-      input$trans_x <- trans_x
-      trans_z <- round(predict(model_z, input))
-      input$trans_z <- trans_z
-      trans_y <- round(predict(model_y, input))
-      
-      x <- x + trans_x[[1]]
-      if (x <= 0) {
-        x <- 1
-      }
-      y <- y + trans_y[[1]]
-      if (y <= 0) {
-        y <- 1
-      }
-      z <- z + trans_z[[1]]
-      if (z <= 0) {
-        z <- 1
-      }
-      e <- one_sim[x, y, z]
-      
-      if (length(e) == 0) {
-        e <- 0
-      }
-      if (is.na(e)) {
-        e <- 0
-      }
-      sample_4 <- c(sample_4, e)
-    }
-    sample_of_4[[repetition]] <- sample_4
-  }
-  sim_sample_of_4[[f]] <- sample_of_4
-}
-rm(
-  sample_4,
-  sample_of_4,
-  x,
-  y,
-  z,
-  e,
-  trans_x,
-  trans_y,
-  trans_z,
-  input,
-  sample_number,
-  repetition,
-  dir,
-  vel,
-  f,
-  one_sim
-)
-
-mean_sim_sample_of_4 <-
-  lapply(sim_sample_of_4, function(x)
-    lapply(x, mean))
-for (i in 1:15) {
-  for (z in 1:100) {
-    if (mean_sim_sample_of_4[[i]][[z]] == 0) {
-      mean_sim_sample_of_4[[i]][[z]] <- NA
-    }
-  }
-}
-rm(i, z)
-#Log transform
-mean_sim_sample_of_4 <-
-  lapply(mean_sim_sample_of_4, function(x)
-    lapply(x, log))
-
-z_test_mean_sim_sample_of_4 <- list()
-for (i in 1:15) {
-  z_test_mean_sim_sample_of_4[[i]] <-
-    lapply(mean_sim_sample_of_4[[i]], function(x)
-      z.test_n(x, 4, log(sim_avg_all[[i]]), log(sim_std_all[[i]])))
-}
-
-z_test_sum_sim_sample_of_4 <-
-  lapply(z_test_mean_sim_sample_of_4, function(x)
-    sum(unlist(x) < 1.96, na.rm = T))
-z_test_na_sim_sample_of_4 <-
-  lapply(z_test_mean_sim_sample_of_4, function(x)
-    sum(!is.na(unlist(x))))
-names(z_test_sum_sim_sample_of_4) <- 1:15
-names(z_test_na_sim_sample_of_4) <- 1:15
-
-z_test_comp_sim_sample_of_4 <-
-  unlist(z_test_sum_sim_sample_of_4) * 0.1 * unlist(z_test_na_sim_sample_of_4) /
-  10
-
-# 16 samples
-sim_sample_of_16 <- list()
-for (f in 1:15) {
-  one_sim <- sims_avg[[f]]
-  sample_of_16 <- list()
-  if (f %in% c(1, 6, 11)) {
-    dir <- -1
-  }
-  if (f %in% c(2, 4, 7, 9, 12, 14)) {
-    dir <- 0
-  }
-  if (f %in% c(3, 5, 8, 10, 13, 15)) {
-    dir <- 90
-  }
-  
-  if (f %in% c(1, 6, 11)) {
-    vel <- 0
-  }
-  if (f %in% c(2, 3, 7, 8, 12, 13)) {
-    vel <- 2
-  }
-  if (f %in% c(4, 5, 9, 10, 14, 15)) {
-    vel <- 5
-  }
-  
-  for (repetition in 1:100) {
-    x <- sample(inbetween_rows[[1]], 1)
-    y <- sample(inbetween_rows[[2]], 1)
-    z <- sample(inbetween_rows[[3]], 1)
-    e <- one_sim[x, y, z]
-    
-    if (length(e) == 0) {
-      e <- 0
-    }
-    if (is.na(e)) {
-      e <- 0
-    }
-    
-    sample_16 <- e
-    for (sample_number in 1:15) {
-      input <- as.data.frame(t(c(x, y, z, dir, vel, e)))
-      names(input) <- c('x', 'y', 'z', 'dir', 'vel', 'e')
-      
-      trans_x <- round(predict(model_x, input))
-      input$trans_x <- trans_x
-      trans_z <- round(predict(model_z, input))
-      input$trans_z <- trans_z
-      trans_y <- round(predict(model_y, input))
-      
-      x <- x + trans_x[[1]]
-      if (x <= 0) {
-        x <- 1
-      }
-      y <- y + trans_y[[1]]
-      if (y <= 0) {
-        y <- 1
-      }
-      z <- z + trans_z[[1]]
-      if (z <= 0) {
-        z <- 1
-      }
-      e <- one_sim[x, y, z]
-      
-      if (length(e) == 0) {
-        e <- 0
-      }
-      if (is.na(e)) {
-        e <- 0
-      }
-      sample_16 <- c(sample_16, e)
-    }
-    sample_of_16[[repetition]] <- sample_16
-  }
-  sim_sample_of_16[[f]] <- sample_of_16
-}
-rm(
-  sample_16,
-  sample_of_16,
-  x,
-  y,
-  z,
-  e,
-  trans_x,
-  trans_y,
-  trans_z,
-  input,
-  sample_number,
-  repetition,
-  dir,
-  vel,
-  f,
-  one_sim
-)
-
-mean_sim_sample_of_16 <-
-  lapply(sim_sample_of_16, function(x)
-    lapply(x, mean))
-for (i in 1:15) {
-  for (z in 1:100) {
-    if (mean_sim_sample_of_16[[i]][[z]] == 0) {
-      mean_sim_sample_of_16[[i]][[z]] <- NA
-    }
-  }
-}
-rm(i, z)
-#Log transform
-mean_sim_sample_of_16 <-
-  lapply(mean_sim_sample_of_16, function(x)
-    lapply(x, log))
-
-z_test_mean_sim_sample_of_16 <- list()
-for (i in 1:15) {
-  z_test_mean_sim_sample_of_16[[i]] <-
-    lapply(mean_sim_sample_of_16[[i]], function(x)
-      z.test_n(x, 16, log(sim_avg_all[[i]]), log(sim_std_all[[i]])))
-}
-
-z_test_sum_sim_sample_of_16 <-
-  lapply(z_test_mean_sim_sample_of_16, function(x)
-    sum(unlist(x) < 1.96, na.rm = T))
-z_test_na_sim_sample_of_16 <-
-  lapply(z_test_mean_sim_sample_of_16, function(x)
-    sum(!is.na(unlist(x))))
-names(z_test_sum_sim_sample_of_16) <- 1:15
-names(z_test_na_sim_sample_of_16) <- 1:15
-
-z_test_comp_sim_sample_of_16 <-
-  unlist(z_test_sum_sim_sample_of_16) * 0.1 * unlist(z_test_na_sim_sample_of_16) /
-  10
-
-# Attempt comparision matrix ----
-
 # For 4 points
 ADP4_avg_sampling <- array(NA, dim = c(16, 16))
 row.names(ADP4_avg_sampling) <- c(1:15, 'Mean')
@@ -4531,7 +4269,7 @@ colnames(ADP16_avg_sampling) <- c(1:15, 'Mean')
 ADP16_avg_sampling <- as.data.frame(ADP16_avg_sampling)
 ADP16_avg_sampling_na <- as.data.frame(ADP16_avg_sampling)
 
-for (master in c(2:15)) {
+for (master in c(1:15)) {
   for (slave in c(1:15)) {
     t_all <- c()
     
@@ -4618,7 +4356,7 @@ for (master in c(2:15)) {
     as.numeric(sum(t_all, na.rm = T))
   ADP16_avg_sampling_na[master, slave] <- as.numeric(sum(t_na))
 }
-}
+
 #rm(master,slave,t_all,t_main,t_in,t_inbet,s_in,s_inbet,s_main,s_all, transformed_all,transformed_in, transformed_inbet, m_master, sd_master)
 
 ADP16_avg_sampling_comp <-
@@ -4639,7 +4377,7 @@ ADP16_avg_sampling_comp[16, 16] <-
   )), na.rm = T))
 
 # Plot the result
-tikz(file = paste0(path_to_sims, 'AdpSampling4.tex'))
+tikz(file = paste0(path_to_sims, 'AdpSampling16.tex'))
 image(
   1:16,
   1:16,
