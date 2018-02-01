@@ -4229,7 +4229,7 @@ image(
   1:16,
   t(ADP4_avg_sampling_comp),
   col = brewer.pal(10, 'RdYlGn'),
-  main = zones[z],
+  main = '$n=4$',
   breaks = seq(0, 100, 10),
   xaxt = 'n',
   yaxt = 'n',
@@ -4240,15 +4240,15 @@ image(
 centers <- expand.grid(1:16, 1:16)
 text(centers[, 2], centers[, 1], c(as.matrix(ADP4_avg_sampling_comp)), col = "black")
 for (i in 1:16) {
-  text(i, i, s[i, i], col = 'black', font = 2)
+  text(i, i, ADP4_avg_sampling_comp[i, i], col = 'black', font = 2)
 }
 
 mtext(names(ADP4_avg_sampling_comp),
-      at = 1:ncol(s),
+      at = 1:ncol(ADP4_avg_sampling_comp),
       padj = -0.2)
 mtext(
   names(ADP4_avg_sampling_comp),
-  at = 1:nrow(s),
+  at = 1:nrow(ADP4_avg_sampling_comp),
   side = 2,
   las = 1,
   adj = 1.2
@@ -4259,8 +4259,7 @@ abline(v = 1:15 + 0.5)
 abline(h = c(5, 10, 15) + 0.5, lwd = 6)
 abline(v = c(5, 10, 15) + 0.5, lwd = 6)
 dev.off()
-z <- z + 1
-rm(centers, s, z, i)
+rm(centers, i)
 
 # For 16 points
 ADP16_avg_sampling <- array(NA, dim = c(16, 16))
@@ -4383,7 +4382,7 @@ image(
   1:16,
   t(ADP16_avg_sampling_comp),
   col = brewer.pal(10, 'RdYlGn'),
-  main = zones[z],
+  main = '$n=16',
   breaks = seq(0, 100, 10),
   xaxt = 'n',
   yaxt = 'n',
@@ -4394,15 +4393,15 @@ image(
 centers <- expand.grid(1:16, 1:16)
 text(centers[, 2], centers[, 1], c(as.matrix(ADP16_avg_sampling_comp)), col = "black")
 for (i in 1:16) {
-  text(i, i, s[i, i], col = 'black', font = 2)
+  text(i, i, ADP16_avg_sampling_comp[i, i], col = 'black', font = 2)
 }
 
 mtext(names(ADP16_avg_sampling_comp),
-      at = 1:ncol(s),
+      at = 1:ncol(ADP16_avg_sampling_comp),
       padj = -0.2)
 mtext(
   names(ADP16_avg_sampling_comp),
-  at = 1:nrow(s),
+  at = 1:nrow(ADP16_avg_sampling_comp),
   side = 2,
   las = 1,
   adj = 1.2
@@ -4413,8 +4412,7 @@ abline(v = 1:15 + 0.5)
 abline(h = c(5, 10, 15) + 0.5, lwd = 6)
 abline(v = c(5, 10, 15) + 0.5, lwd = 6)
 dev.off()
-z <- z + 1
-rm(centers, s, z, i)
+rm(centers, i)
 
 # Plot example of adaptive sampling scheme ----
 for (f in 3) {
@@ -4514,93 +4512,44 @@ confidence_table$`Sampling strategy` <-
     ''
   )
 confidence_table$`$n$` <- c(1, 4, 16, 1, 4, 16, 1, 4, 16, 1, 4, 16, 1, 4, 16, 4, 16)
-confidence_table$`$S=S$` <-
-  c(
-    mean(c(
-      64, 18, 7, 19, 9, 58, 16, 7, 17, 12, 41, 21, 9, 19, 9
-    )),
-    mean(c(
-      89, 52, 35, 55, 38, 93, 48, 34, 57, 30, 90, 48, 30, 46, 31
-    )),
-    mean(c(
-      92, 87, 78, 91, 79, 96, 89, 77, 90, 74, 93, 95, 78, 89, 75
-    )),
-    mean(c(
-      96, 58, 29, 60, 19, 93, 48, 24, 54, 14, 97, 49, 22, 44, 20
-    )),
-    mean(c(
-      71, 95, 73, 93, 52, 74, 84, 61, 93, 53, 85, 93, 52, 88, 48
-    )),
-    mean(c(
-      8, 93, 92, 96, 86, 12, 97, 98, 95, 92, 14, 98, 97, 96, 92
-    )),
-    mean(c(
-      70, 74, 70, 75, 58, 73, 62, 58, 68, 41, 84, 60, 56, 62, 54
-    )),
-    mean(c(
-      0, 81, 84, 90, 87, 1, 88, 78, 89, 89, 4, 84, 90, 89, 87
-    )),
-    mean(c(
-      0, 86, 56, 75, 53, 0, 81, 62, 76, 62, 0, 89, 56, 92, 79
-    )),
-    mean(c(
-      98, 75, 14, 76, 12, 97, 78, 21, 81, 13, 100, 77, 11, 70, 7
-    )),
-    mean(c(
-      53, 98, 43, 97, 32, 63, 96, 41, 96, 34, 72, 96, 42, 97, 33
-    )),
-    mean(c(
-      0, 94, 36, 96, 67, 0, 98, 49, 96, 78, 0, 94, 44, 98, 68
-    )),
+confidence_table$`$S=S$` <- c( 
+  avg_sampling_with_all_n[[1]][[1]][16,16],
+  avg_sampling_with_all_n[[2]][[1]][16,16],
+  avg_sampling_with_all_n[[3]][[1]][16,16],
+  avg_sampling_with_all_n[[1]][[2]][16,16],
+  avg_sampling_with_all_n[[2]][[2]][16,16],
+  avg_sampling_with_all_n[[3]][[2]][16,16],
+  avg_sampling_with_all_n[[1]][[3]][16,16],
+  avg_sampling_with_all_n[[2]][[3]][16,16],
+  avg_sampling_with_all_n[[3]][[3]][16,16],
+  avg_sampling_with_all_n[[1]][[4]][16,16],
+  avg_sampling_with_all_n[[2]][[4]][16,16],
+  avg_sampling_with_all_n[[3]][[4]][16,16],
     30,
     60,
     40,
-    mean(z_test_comp_sim_sample_of_4),
+  ADP4_avg_sampling_comp[16,16],
     0
   )#mean(z_test_comp_sim_sample_of_16))
 
 confidence_table$`$sd$` <-
   c(
-    sd(c(
-      64, 18, 7, 19, 9, 58, 16, 7, 17, 12, 41, 21, 9, 19, 9
-    )),
-    sd(c(
-      89, 52, 35, 55, 38, 93, 48, 34, 57, 30, 90, 48, 30, 46, 31
-    )),
-    sd(c(
-      92, 87, 78, 91, 79, 96, 89, 77, 90, 74, 93, 95, 78, 89, 75
-    )),
-    sd(c(
-      96, 58, 29, 60, 19, 93, 48, 24, 54, 14, 97, 49, 22, 44, 20
-    )),
-    sd(c(
-      71, 95, 73, 93, 52, 74, 84, 61, 93, 53, 85, 93, 52, 88, 48
-    )),
-    sd(c(
-      8, 93, 92, 96, 86, 12, 97, 98, 95, 92, 14, 98, 97, 96, 92
-    )),
-    sd(c(
-      70, 74, 70, 75, 58, 73, 62, 58, 68, 41, 84, 60, 56, 62, 54
-    )),
-    sd(c(
-      0, 81, 84, 90, 87, 1, 88, 78, 89, 89, 4, 84, 90, 89, 87
-    )),
-    sd(c(
-      0, 86, 56, 75, 53, 0, 81, 62, 76, 62, 0, 89, 56, 92, 79
-    )),
-    sd(c(
-      98, 75, 14, 76, 12, 97, 78, 21, 81, 13, 100, 77, 11, 70, 7
-    )),
-    sd(c(
-      53, 98, 43, 97, 32, 63, 96, 41, 96, 34, 72, 96, 42, 97, 33
-    )),
-    sd(c(
-      0, 94, 36, 96, 67, 0, 98, 49, 96, 78, 0, 94, 44, 98, 68
-    )),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[1]][[1]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[2]][[1]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[3]][[1]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[1]][[2]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[2]][[2]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[3]][[2]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[1]][[3]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[2]][[3]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[3]][[3]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[1]][[4]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[2]][[4]]))[1:15]),
+  sd(diag(as.matrix(avg_sampling_with_all_n[[3]][[4]]))[1:15]),
     0,
     0,
     0,
-    sd(z_test_comp_sim_sample_of_4),
+    sd(diag(as.matrix(ADP4_avg_sampling_comp))[1:15]),
     0
   )#sd(z_test_comp_sim_sample_of_16))
 
@@ -4620,7 +4569,7 @@ confidence_table$`$E_3=E_3$` <- c(
   (sum(reg_sampling.1[1:5, 1:5]) / 25) * 100,
   (sum(reg_sampling.4[1:5, 1:5]) / 25) * 100,
   (sum(reg_sampling.16[1:5, 1:5]) / 25) * 100,
-  0,
+  mean(as.matrix(ADP4_avg_sampling_comp[1:5, 1:5])),
   0
 )
 
@@ -4640,7 +4589,7 @@ confidence_table$`$E_2=E_2$` <- c(
   (sum(reg_sampling.1[6:10, 6:10]) / 25) * 100,
   (sum(reg_sampling.4[6:10, 6:10], na.rm = T) / 25) * 100,
   (sum(reg_sampling.16[6:10, 6:10]) / 25) * 100,
-  0,
+  mean(as.matrix(ADP4_avg_sampling_comp[6:10, 6:10])),
   0
 )
 
@@ -4662,7 +4611,7 @@ confidence_table$`$E_1=E_1$` <-
       100,
     (sum(reg_sampling.4[11:15, 11:15]) / 25) * 100,
     (sum(reg_sampling.16[11:15, 11:15]) / 25) * 100,
-    0,
+    mean(as.matrix(ADP4_avg_sampling_comp[11:15, 11:15])),
     0
   )
 
@@ -4722,7 +4671,7 @@ confidence_table$`Error 1` <- c(
   sum(reg_sampling.1[c(6:10, 11:15), c(6:10, 11:15)], na.rm = T),
   sum(reg_sampling.4[c(6:10, 11:15), c(6:10, 11:15)], na.rm = T),
   sum(reg_sampling.16[c(6:10, 11:15), c(6:10, 11:15)], na.rm = T),
-  0,
+  mean(as.matrix(ADP4_avg_sampling_comp[c(6:10, 11:15), c(6:10, 11:15)]), na.rm = T),
   0
 )
 confidence_table$`Error 2` <- c(
@@ -4763,7 +4712,7 @@ confidence_table$`Error 2` <- c(
   ((
     sum(reg_sampling.16[1:5, 11:15], na.rm = T) + sum(reg_sampling.16[11:15, 1:5], na.rm = T)
   ) / 50) * 100,
-  0,
+  mean(c(as.matrix(ADP4_avg_sampling_comp[1:5, 11:15]),as.matrix(ADP4_avg_sampling_comp[11:15, 1:5])), na.rm = T),
   0
 )
 
