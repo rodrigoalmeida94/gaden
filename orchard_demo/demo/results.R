@@ -10,6 +10,7 @@ library(fields)
 library(MASS)
 library(xtable)
 library(randomForest)
+library(fmsb)
 
 path_to_sims <-
   '/Users/rodrigoalmeida/Dropbox/Rodrigo/Thesis/Simulations/figures/'
@@ -734,50 +735,50 @@ boxplot(
   outline = FALSE,
   range = 0
 )
-par(new = T)
-plot(
-  timesteps[1:length(sim_n[[1]])],
-  sim_n[[1]],
-  ylim = range(sim_n),
-  col = emission_col[3],
-  xlim = range(timesteps),
-  type = 'b',
-  pch = wind_pch[1],
-  lwd = 3,
-  axes = F,
-  xlab = NA,
-  ylab = NA
-)
-axis(side = 4)
-mtext(side = 4, line = 3, '$n$')
-for (i in 2:length(sims)) {
-  if (i %in% 2:5) {
-    p_t <- emission_col[3]
-  }
-  if (i %in% 6:10) {
-    p_t <- emission_col[2]
-  }
-  if (i %in% 10:15) {
-    p_t <- emission_col[1]
-  }
-  if (i %in% c(6, 11)) {
-    p_ch <- wind_pch[1]
-  }
-  if (i %in% c(2, 3, 7, 8, 12, 13)) {
-    p_ch <- wind_pch[2]
-  }
-  if (i %in% c(4, 5, 9, 10, 14, 15)) {
-    p_ch <- wind_pch[3]
-  }
-  points(
-    timesteps[1:length(sim_n[[i]])],
-    sim_n[[i]],
-    col = p_t,
-    type = 'b',
-    pch = p_ch,
-    lwd = 3
-  )
-}
+#par(new = T)
+# plot(
+#   timesteps[1:length(sim_n[[1]])],
+#   sim_n[[1]],
+#   ylim = range(sim_n),
+#   col = emission_col[3],
+#   xlim = range(timesteps),
+#   type = 'b',
+#   pch = wind_pch[1],
+#   lwd = 3,
+#   axes = F,
+#   xlab = NA,
+#   ylab = NA
+# )
+# axis(side = 4)
+# mtext(side = 4, line = 3, '$n$')
+# for (i in 2:length(sims)) {
+#   if (i %in% 2:5) {
+#     p_t <- emission_col[3]
+#   }
+#   if (i %in% 6:10) {
+#     p_t <- emission_col[2]
+#   }
+#   if (i %in% 10:15) {
+#     p_t <- emission_col[1]
+#   }
+#   if (i %in% c(6, 11)) {
+#     p_ch <- wind_pch[1]
+#   }
+#   if (i %in% c(2, 3, 7, 8, 12, 13)) {
+#     p_ch <- wind_pch[2]
+#   }
+#   if (i %in% c(4, 5, 9, 10, 14, 15)) {
+#     p_ch <- wind_pch[3]
+#   }
+#   points(
+#     timesteps[1:length(sim_n[[i]])],
+#     sim_n[[i]],
+#     col = p_t,
+#     type = 'b',
+#     pch = p_ch,
+#     lwd = 3
+#   )
+# }
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'Boxplots_', zones_files[2], '.tex'))
@@ -818,50 +819,50 @@ boxplot(
   outline = FALSE,
   range = 0
 )
-par(new = T)
-plot(
-  timesteps[1:length(sim_n_main[[1]])],
-  sim_n_main[[1]],
-  ylim = range(sim_n_main),
-  col = emission_col[3],
-  xlim = range(timesteps),
-  type = 'b',
-  pch = wind_pch[1],
-  lwd = 3,
-  axes = F,
-  xlab = NA,
-  ylab = NA
-)
-axis(side = 4)
-mtext(side = 4, line = 3, '$n$')
-for (i in 2:length(sims)) {
-  if (i %in% 2:5) {
-    p_t <- emission_col[3]
-  }
-  if (i %in% 6:10) {
-    p_t <- emission_col[2]
-  }
-  if (i %in% 10:15) {
-    p_t <- emission_col[1]
-  }
-  if (i %in% c(6, 11)) {
-    p_ch <- wind_pch[1]
-  }
-  if (i %in% c(2, 3, 7, 8, 12, 13)) {
-    p_ch <- wind_pch[2]
-  }
-  if (i %in% c(4, 5, 9, 10, 14, 15)) {
-    p_ch <- wind_pch[3]
-  }
-  points(
-    timesteps[1:length(sim_n_main[[i]])],
-    sim_n_main[[i]],
-    col = p_t,
-    type = 'b',
-    pch = p_ch,
-    lwd = 3
-  )
-}
+#par(new = T)
+# plot(
+#   timesteps[1:length(sim_n_main[[1]])],
+#   sim_n_main[[1]],
+#   ylim = range(sim_n_main),
+#   col = emission_col[3],
+#   xlim = range(timesteps),
+#   type = 'b',
+#   pch = wind_pch[1],
+#   lwd = 3,
+#   axes = F,
+#   xlab = NA,
+#   ylab = NA
+# )
+# axis(side = 4)
+# mtext(side = 4, line = 3, '$n$')
+# for (i in 2:length(sims)) {
+#   if (i %in% 2:5) {
+#     p_t <- emission_col[3]
+#   }
+#   if (i %in% 6:10) {
+#     p_t <- emission_col[2]
+#   }
+#   if (i %in% 10:15) {
+#     p_t <- emission_col[1]
+#   }
+#   if (i %in% c(6, 11)) {
+#     p_ch <- wind_pch[1]
+#   }
+#   if (i %in% c(2, 3, 7, 8, 12, 13)) {
+#     p_ch <- wind_pch[2]
+#   }
+#   if (i %in% c(4, 5, 9, 10, 14, 15)) {
+#     p_ch <- wind_pch[3]
+#   }
+#   points(
+#     timesteps[1:length(sim_n_main[[i]])],
+#     sim_n_main[[i]],
+#     col = p_t,
+#     type = 'b',
+#     pch = p_ch,
+#     lwd = 3
+#   )
+# }
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'Boxplots_', zones_files[3], '.tex'))
@@ -902,50 +903,50 @@ boxplot(
   outline = FALSE,
   range = 0
 )
-par(new = T)
-plot(
-  timesteps[1:length(sim_n_in[[1]])],
-  sim_n_in[[1]],
-  ylim = range(sim_n_in),
-  col = emission_col[3],
-  xlim = range(timesteps),
-  type = 'b',
-  pch = wind_pch[1],
-  lwd = 3,
-  axes = F,
-  xlab = NA,
-  ylab = NA
-)
-axis(side = 4)
-mtext(side = 4, line = 3, '$n$')
-for (i in 2:length(sims)) {
-  if (i %in% 2:5) {
-    p_t <- emission_col[3]
-  }
-  if (i %in% 6:10) {
-    p_t <- emission_col[2]
-  }
-  if (i %in% 10:15) {
-    p_t <- emission_col[1]
-  }
-  if (i %in% c(6, 11)) {
-    p_ch <- wind_pch[1]
-  }
-  if (i %in% c(2, 3, 7, 8, 12, 13)) {
-    p_ch <- wind_pch[2]
-  }
-  if (i %in% c(4, 5, 9, 10, 14, 15)) {
-    p_ch <- wind_pch[3]
-  }
-  points(
-    timesteps[1:length(sim_n_in[[i]])],
-    sim_n_in[[i]],
-    col = p_t,
-    type = 'b',
-    pch = p_ch,
-    lwd = 3
-  )
-}
+# par(new = T)
+# plot(
+#   timesteps[1:length(sim_n_in[[1]])],
+#   sim_n_in[[1]],
+#   ylim = range(sim_n_in),
+#   col = emission_col[3],
+#   xlim = range(timesteps),
+#   type = 'b',
+#   pch = wind_pch[1],
+#   lwd = 3,
+#   axes = F,
+#   xlab = NA,
+#   ylab = NA
+# )
+# axis(side = 4)
+# mtext(side = 4, line = 3, '$n$')
+# for (i in 2:length(sims)) {
+#   if (i %in% 2:5) {
+#     p_t <- emission_col[3]
+#   }
+#   if (i %in% 6:10) {
+#     p_t <- emission_col[2]
+#   }
+#   if (i %in% 10:15) {
+#     p_t <- emission_col[1]
+#   }
+#   if (i %in% c(6, 11)) {
+#     p_ch <- wind_pch[1]
+#   }
+#   if (i %in% c(2, 3, 7, 8, 12, 13)) {
+#     p_ch <- wind_pch[2]
+#   }
+#   if (i %in% c(4, 5, 9, 10, 14, 15)) {
+#     p_ch <- wind_pch[3]
+#   }
+#   points(
+#     timesteps[1:length(sim_n_in[[i]])],
+#     sim_n_in[[i]],
+#     col = p_t,
+#     type = 'b',
+#     pch = p_ch,
+#     lwd = 3
+#   )
+# }
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'Boxplots_', zones_files[4], '.tex'))
@@ -986,50 +987,50 @@ boxplot(
   outline = FALSE,
   range = 0
 )
-par(new = T)
-plot(
-  timesteps[1:length(sim_n_inbet[[1]])],
-  sim_n_inbet[[1]],
-  ylim = range(sim_n_inbet),
-  col = emission_col[3],
-  xlim = range(timesteps),
-  type = 'b',
-  pch = wind_pch[1],
-  lwd = 3,
-  axes = F,
-  xlab = NA,
-  ylab = NA
-)
-axis(side = 4)
-mtext(side = 4, line = 3, '$n$')
-for (i in 2:length(sims)) {
-  if (i %in% 2:5) {
-    p_t <- emission_col[3]
-  }
-  if (i %in% 6:10) {
-    p_t <- emission_col[2]
-  }
-  if (i %in% 10:15) {
-    p_t <- emission_col[1]
-  }
-  if (i %in% c(6, 11)) {
-    p_ch <- wind_pch[1]
-  }
-  if (i %in% c(2, 3, 7, 8, 12, 13)) {
-    p_ch <- wind_pch[2]
-  }
-  if (i %in% c(4, 5, 9, 10, 14, 15)) {
-    p_ch <- wind_pch[3]
-  }
-  points(
-    timesteps[1:length(sim_n_inbet[[i]])],
-    sim_n_inbet[[i]],
-    col = p_t,
-    type = 'b',
-    pch = p_ch,
-    lwd = 3
-  )
-}
+# par(new = T)
+# plot(
+#   timesteps[1:length(sim_n_inbet[[1]])],
+#   sim_n_inbet[[1]],
+#   ylim = range(sim_n_inbet),
+#   col = emission_col[3],
+#   xlim = range(timesteps),
+#   type = 'b',
+#   pch = wind_pch[1],
+#   lwd = 3,
+#   axes = F,
+#   xlab = NA,
+#   ylab = NA
+# )
+# axis(side = 4)
+# mtext(side = 4, line = 3, '$n$')
+# for (i in 2:length(sims)) {
+#   if (i %in% 2:5) {
+#     p_t <- emission_col[3]
+#   }
+#   if (i %in% 6:10) {
+#     p_t <- emission_col[2]
+#   }
+#   if (i %in% 10:15) {
+#     p_t <- emission_col[1]
+#   }
+#   if (i %in% c(6, 11)) {
+#     p_ch <- wind_pch[1]
+#   }
+#   if (i %in% c(2, 3, 7, 8, 12, 13)) {
+#     p_ch <- wind_pch[2]
+#   }
+#   if (i %in% c(4, 5, 9, 10, 14, 15)) {
+#     p_ch <- wind_pch[3]
+#   }
+#   points(
+#     timesteps[1:length(sim_n_inbet[[i]])],
+#     sim_n_inbet[[i]],
+#     col = p_t,
+#     type = 'b',
+#     pch = p_ch,
+#     lwd = 3
+#   )
+# }
 dev.off()
 
 all_0ms <-
@@ -1384,6 +1385,8 @@ rm(z, s, i, p_ch, p_t)
 # Testing random sampling ----
 avg_sampling_summary_n <- list()
 avg_sampling_with_all_n <- list()
+random_sampling_to_save <- list()
+random_sampling_na_to_save <- list()
 numbering <- 1
 for (number in number_of_samples) {
   # Construct results table
@@ -2204,6 +2207,8 @@ for (number in number_of_samples) {
   }
   avg_sampling_summary_n[[numbering]] <- avg_sampling_summary_total
   avg_sampling_with_all_n[[numbering]] <- avg_sampling_with_all
+  random_sampling_to_save[[numbering]] <- random_sampling
+  random_sampling_na_to_save[[numbering]] <- random_sampling_na
   numbering <- numbering + 1
 }
 
@@ -4768,5 +4773,449 @@ abline(trend_in,lwd=3, col=zones_col[2])
 abline(trend_inbet,lwd=3, col=zones_col[3])
 
 legend('topright',paste(zones,'$b=$', round(c(trend_all$coefficients[2],trend_main$coefficients[2],trend_in$coefficients[2],trend_inbet$coefficients[2]),2)),fill=c('black',zones_col), bty = 'n')
+dev.off()
+
+# Make spider plots ----
+# Composite confidence level
+data=as.data.frame(matrix(c(confidence_table$`$S=S$`[confidence_table$`$n$`==1][1:5], confidence_table$`$S=S$`[confidence_table$`$n$`==4][1:5], confidence_table$`$S=S$`[confidence_table$`$n$`==16][1:5]), ncol=5, byrow = T))
+colnames(data)=c(zones, 'Regular grid')
+rownames(data)=c('$n=1$','$n=4$','$n=16$')
+data=rbind(rep(100,5) , rep(0,5) , data)
+
+colors_border=c( rgb(0.2,0.5,0.5,0.9), rgb(0.8,0.2,0.5,0.9) , rgb(0.7,0.5,0.1,0.9) )
+colors_in=c( rgb(0.2,0.5,0.5,0.4), rgb(0.8,0.2,0.5,0.4) , rgb(0.7,0.5,0.1,0.4) )
+tikz(file = paste0(path_to_sims, 'RadarComposite.tex'))
+radarchart( data  , axistype=1 , 
+            #custom polygon
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #custom the grid
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=0.8,
+            #custom labels
+            vlcex=0.8 
+)
+legend('topleft', legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_in , cex=1.2, pt.cex=3)
+dev.off()
+
+# NA level
+
+
+# Confidence level
+for(f in random_sampling_to_save){
+random_sampling.all <-
+  f[, grepl("*.all" , names(random_sampling))]
+random_sampling.main <-
+  f[, grepl("*.main" , names(random_sampling))]
+random_sampling.in <-
+  f[, grepl("\\.in$" , names(random_sampling))]
+random_sampling.inbet <-
+  f[, grepl("*.inbet" , names(random_sampling))]
+to_plot <- c(to_plot, mean(random_sampling.all, na.rm=T),mean(random_sampling.main, na.rm=T),mean(random_sampling.in, na.rm=T),mean(random_sampling.inbet, na.rm=T))
+}
+
+data=as.data.frame(matrix(to_plot, ncol=4, byrow = T))
+colnames(data)=c(zones)
+rownames(data)=c('$n=1$','$n=4$','$n=16$')
+data=rbind(rep(100,4) , rep(0,4) , data)
+
+tikz(file = paste0(path_to_sims, 'RadarConfidence.tex'))
+radarchart( data  , axistype=1 , 
+            #custom polygon
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #custom the grid
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=0.8,
+            #custom labels
+            vlcex=0.8 
+)
+legend('topleft', legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_in , cex=1.2, pt.cex=3)
+dev.off()
+
+for(f in random_sampling_na_to_save){
+random_sampling_na.all <-
+  f[, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.main <-
+  f[, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.in <-
+  f[, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.inbet <-
+  f[, grepl("*.inbet" , names(random_sampling_na))]
+
+}
+
+data=as.data.frame(matrix(to_plot, ncol=4, byrow = T))
+colnames(data)=c(zones)
+rownames(data)=c('$n=1$','$n=4$','$n=16$')
+data=rbind(rep(100,4) , rep(0,4) , data)
+
+tikz(file = paste0(path_to_sims, 'RadarNA.tex'))
+radarchart( data  , axistype=1 , 
+            #custom polygon
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #custom the grid
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=0.8,
+            #custom labels
+            vlcex=0.8 
+)
+legend('topleft', legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_in , cex=1.2, pt.cex=3)
+dev.off()
+
+# Plot mean confidence and NA
+# Confidence
+  random_sampling.all_1 <-
+    random_sampling_to_save[[1]][, grepl("*.all" , names(random_sampling))]
+  random_sampling.main_1 <-
+    random_sampling_to_save[[1]][, grepl("*.main" , names(random_sampling))]
+  random_sampling.in_1 <-
+    random_sampling_to_save[[1]][, grepl("\\.in$" , names(random_sampling))]
+  random_sampling.inbet_1 <-
+    random_sampling_to_save[[1]][, grepl("*.inbet" , names(random_sampling))]
+  
+  random_sampling.all_1 <- apply(random_sampling.all_1, MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.main_1 <- apply(random_sampling.main_1,MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.in_1 <- apply(random_sampling.in_1,MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.inbet_1 <- apply(random_sampling.inbet_1, MARGIN = 2, FUN =mean,na.rm=T)
+  
+  random_sampling.all_4 <-
+    random_sampling_to_save[[2]][, grepl("*.all" , names(random_sampling))]
+  random_sampling.main_4 <-
+    random_sampling_to_save[[2]][, grepl("*.main" , names(random_sampling))]
+  random_sampling.in_4 <-
+    random_sampling_to_save[[2]][, grepl("\\.in$" , names(random_sampling))]
+  random_sampling.inbet_4 <-
+    random_sampling_to_save[[2]][, grepl("*.inbet" , names(random_sampling))]
+  
+  random_sampling.all_4 <- apply(random_sampling.all_4, MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.main_4 <- apply(random_sampling.main_4,MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.in_4 <- apply(random_sampling.in_4,MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.inbet_4 <- apply(random_sampling.inbet_4,MARGIN = 2, FUN =mean,na.rm=T)
+  
+  random_sampling.all_16 <-
+    random_sampling_to_save[[3]][, grepl("*.all" , names(random_sampling))]
+  random_sampling.main_16 <-
+    random_sampling_to_save[[3]][, grepl("*.main" , names(random_sampling))]
+  random_sampling.in_16 <-
+    random_sampling_to_save[[3]][, grepl("\\.in$" , names(random_sampling))]
+  random_sampling.inbet_16 <-
+    random_sampling_to_save[[3]][, grepl("*.inbet" , names(random_sampling))]
+  
+  random_sampling.all_16 <- apply(random_sampling.all_16, MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.main_16 <- apply(random_sampling.main_16, MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.in_16 <- apply(random_sampling.in_16, MARGIN = 2, FUN =mean,na.rm=T)
+  random_sampling.inbet_16 <- apply(random_sampling.inbet_16, MARGIN = 2, FUN =mean,na.rm=T)
+  
+  tikz(file = paste0(
+    path_to_sims,
+    'MeanConfidence_',
+    zones_files[1],
+    '.tex'
+  ))
+  plot(
+    timesteps,
+    random_sampling.all_1,
+    ylim = c(0, 100),
+    xlim = range(timesteps),
+    type = 'b',
+    xlab = 'Time ($s$)',
+    ylab = 'Confidence level of a random sample',
+    main = zones[1],
+    lwd = 3,
+    pch=1
+  )
+  points(
+      timesteps,
+      random_sampling.all_4,
+      type = 'b',
+      lwd = 3,
+      pch=2
+    )
+  points(
+    timesteps,
+    random_sampling.all_16,
+    type = 'b',
+    lwd = 3,
+    pch=3
+  )
+  dev.off()
+  
+  tikz(file = paste0(
+    path_to_sims,
+    'MeanConfidence_',
+    zones_files[2],
+    '.tex'
+  ))
+  plot(
+    timesteps,
+    random_sampling.main_1,
+    ylim = c(0, 100),
+    xlim = range(timesteps),
+    type = 'b',
+    xlab = 'Time ($s$)',
+    ylab = 'Confidence level of a random sample',
+    main = zones[2],
+    lwd = 3,
+    pch=1
+  )
+  points(
+    timesteps,
+    random_sampling.main_4,
+    type = 'b',
+    lwd = 3,
+    pch=2
+  )
+  points(
+    timesteps,
+    random_sampling.main_16,
+    type = 'b',
+    lwd = 3,
+    pch=3
+  )
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanConfidence_',
+  zones_files[3],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling.in_1,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Confidence level of a random sample',
+  main = zones[3],
+  lwd = 3,
+  pch=1
+)
+points(
+  timesteps,
+  random_sampling.in_4,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling.in_16,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanConfidence_',
+  zones_files[4],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling.inbet_1,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Confidence level of a random sample',
+  main = zones[4],
+  lwd = 3,
+  pch=1
+)
+points(
+  timesteps,
+  random_sampling.inbet_4,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling.inbet_16,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
+dev.off()
+
+# NA
+random_sampling_na.all_1 <-
+  random_sampling_na_to_save[[1]][, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.main_1 <-
+  random_sampling_na_to_save[[1]][, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.in_1 <-
+  random_sampling_na_to_save[[1]][, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.inbet_1 <-
+  random_sampling_na_to_save[[1]][, grepl("*.inbet" , names(random_sampling_na))]
+
+random_sampling_na.all_1 <- apply(random_sampling_na.all_1, MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.main_1 <- apply(random_sampling_na.main_1,MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.in_1 <- apply(random_sampling_na.in_1,MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.inbet_1 <- apply(random_sampling_na.inbet_1, MARGIN = 2, FUN =mean,na.rm=T)
+
+random_sampling_na.all_4 <-
+  random_sampling_na_to_save[[2]][, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.main_4 <-
+  random_sampling_na_to_save[[2]][, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.in_4 <-
+  random_sampling_na_to_save[[2]][, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.inbet_4 <-
+  random_sampling_na_to_save[[2]][, grepl("*.inbet" , names(random_sampling_na))]
+
+random_sampling_na.all_4 <- apply(random_sampling_na.all_4, MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.main_4 <- apply(random_sampling_na.main_4,MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.in_4 <- apply(random_sampling_na.in_4,MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.inbet_4 <- apply(random_sampling_na.inbet_4,MARGIN = 2, FUN =mean,na.rm=T)
+
+random_sampling_na.all_16 <-
+  random_sampling_na_to_save[[3]][, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.main_16 <-
+  random_sampling_na_to_save[[3]][, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.in_16 <-
+  random_sampling_na_to_save[[3]][, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.inbet_16 <-
+  random_sampling_na_to_save[[3]][, grepl("*.inbet" , names(random_sampling_na))]
+
+random_sampling_na.all_16 <- apply(random_sampling_na.all_16, MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.main_16 <- apply(random_sampling_na.main_16, MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.in_16 <- apply(random_sampling_na.in_16, MARGIN = 2, FUN =mean,na.rm=T)
+random_sampling_na.inbet_16 <- apply(random_sampling_na.inbet_16, MARGIN = 2, FUN =mean,na.rm=T)
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanNA_',
+  zones_files[1],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.all_1,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Probability of ethylene existing in a random sample',
+  main = zones[1],
+  lwd = 3,
+  pch=1
+)
+points(
+  timesteps,
+  random_sampling_na.all_4,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.all_16,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanNA_',
+  zones_files[2],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.main_1,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Probability of ethylene existing in a random sample',
+  main = zones[2],
+  lwd = 3,
+  pch=1
+)
+points(
+  timesteps,
+  random_sampling_na.main_4,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.main_16,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanNA_',
+  zones_files[3],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.in_1,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Probability of ethylene existing in a random sample',
+  main = zones[3],
+  lwd = 3,
+  pch=1
+)
+points(
+  timesteps,
+  random_sampling_na.in_4,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.in_16,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanNA_',
+  zones_files[4],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.inbet_1,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Probability of ethylene existing in a random sample',
+  main = zones[4],
+  lwd = 3,
+  pch=1
+)
+points(
+  timesteps,
+  random_sampling_na.inbet_4,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.inbet_16,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
 dev.off()
 
