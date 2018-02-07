@@ -4796,10 +4796,8 @@ radarchart( data  , axistype=1 ,
 legend('topleft', legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_in , cex=1.2, pt.cex=3)
 dev.off()
 
-# NA level
-
-
 # Confidence level
+to_plot <- 0
 for(f in random_sampling_to_save){
 random_sampling.all <-
   f[, grepl("*.all" , names(random_sampling))]
@@ -4809,7 +4807,10 @@ random_sampling.in <-
   f[, grepl("\\.in$" , names(random_sampling))]
 random_sampling.inbet <-
   f[, grepl("*.inbet" , names(random_sampling))]
+if(length(to_plot)==1){to_plot <- c(mean(random_sampling.all, na.rm=T),mean(random_sampling.main, na.rm=T),mean(random_sampling.in, na.rm=T),mean(random_sampling.inbet, na.rm=T))}
+else{
 to_plot <- c(to_plot, mean(random_sampling.all, na.rm=T),mean(random_sampling.main, na.rm=T),mean(random_sampling.in, na.rm=T),mean(random_sampling.inbet, na.rm=T))
+}
 }
 
 data=as.data.frame(matrix(to_plot, ncol=4, byrow = T))
@@ -4829,6 +4830,8 @@ radarchart( data  , axistype=1 ,
 legend('topleft', legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_in , cex=1.2, pt.cex=3)
 dev.off()
 
+# NA
+to_plot <- c()
 for(f in random_sampling_na_to_save){
 random_sampling_na.all <-
   f[, grepl("*.all" , names(random_sampling_na))]
@@ -4838,7 +4841,7 @@ random_sampling_na.in <-
   f[, grepl("\\.in$" , names(random_sampling_na))]
 random_sampling_na.inbet <-
   f[, grepl("*.inbet" , names(random_sampling_na))]
-
+to_plot <- c(to_plot, mean(random_sampling_na.all, na.rm=T),mean(random_sampling_na.main, na.rm=T),mean(random_sampling_na.in, na.rm=T),mean(random_sampling_na.inbet, na.rm=T))
 }
 
 data=as.data.frame(matrix(to_plot, ncol=4, byrow = T))
@@ -4859,7 +4862,465 @@ legend('topleft', legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=col
 dev.off()
 
 # Plot mean confidence and NA
-# Confidence
+
+# Bar plots 1 sample
+# Confidence 1p - Get data for bar plots ----
+random_sampling.all_1_prec <-
+  random_sampling_to_save[[1]][11:15, grepl("*.all" , names(random_sampling))]
+random_sampling.all_1_prec <- c(mean(as.matrix(random_sampling.all_1_prec), na.rm = T),sd(as.matrix(random_sampling.all_1_prec), na.rm = T)) 
+
+random_sampling.all_1_entc <-
+  random_sampling_to_save[[1]][6:10, grepl("*.all" , names(random_sampling))]
+random_sampling.all_1_entc <- c(mean(as.matrix(random_sampling.all_1_entc), na.rm = T),sd(as.matrix(random_sampling.all_1_entc), na.rm = T))
+
+random_sampling.all_1_c <-
+  random_sampling_to_save[[1]][1:5, grepl("*.all" , names(random_sampling))]
+random_sampling.all_1_c <- c(mean(as.matrix(random_sampling.all_1_c), na.rm = T),sd(as.matrix(random_sampling.all_1_c), na.rm = T))
+
+random_sampling.main_1_prec <-
+  random_sampling_to_save[[1]][11:15, grepl("*.main" , names(random_sampling))]
+random_sampling.main_1_prec <- c(mean(as.matrix(random_sampling.main_1_prec), na.rm = T),sd(as.matrix(random_sampling.main_1_prec), na.rm = T))
+
+random_sampling.main_1_entc <-
+  random_sampling_to_save[[1]][6:10, grepl("*.main" , names(random_sampling))]
+random_sampling.main_1_entc <- c(mean(as.matrix(random_sampling.main_1_entc), na.rm = T),sd(as.matrix(random_sampling.main_1_entc), na.rm = T))
+
+random_sampling.main_1_c <- random_sampling_to_save[[1]][1:5, grepl("*.main" , names(random_sampling))]
+random_sampling.main_1_c <- c(mean(as.matrix(random_sampling.main_1_c), na.rm = T),sd(as.matrix(random_sampling.main_1_c), na.rm = T)) 
+
+random_sampling.in_1_prec <-
+  random_sampling_to_save[[1]][11:15, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_1_prec <- c(mean(as.matrix(random_sampling.in_1_prec), na.rm = T),sd(as.matrix(random_sampling.in_1_prec), na.rm = T))
+
+random_sampling.in_1_entc <-
+  random_sampling_to_save[[1]][6:10, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_1_entc <- c(mean(as.matrix(random_sampling.in_1_entc), na.rm = T),sd(as.matrix(random_sampling.in_1_entc), na.rm = T))
+
+random_sampling.in_1_c <- random_sampling_to_save[[1]][1:5, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_1_c <- c(mean(as.matrix(random_sampling.in_1_c), na.rm = T),sd(as.matrix(random_sampling.in_1_c), na.rm = T)) 
+
+random_sampling.inbet_1_prec <-
+  random_sampling_to_save[[1]][11:15, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_1_prec <- c(mean(as.matrix(random_sampling.inbet_1_prec), na.rm = T),sd(as.matrix(random_sampling.inbet_1_prec), na.rm = T))
+
+random_sampling.inbet_1_entc <-
+  random_sampling_to_save[[1]][6:10, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_1_entc <- c(mean(as.matrix(random_sampling.inbet_1_entc), na.rm = T),sd(as.matrix(random_sampling.inbet_1_entc), na.rm = T))
+
+random_sampling.inbet_1_c <- random_sampling_to_save[[1]][1:5, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_1_c <- c(mean(as.matrix(random_sampling.inbet_1_c), na.rm = T),sd(as.matrix(random_sampling.inbet_1_c), na.rm = T)) 
+
+# Confidence 1p - Plot bar data ----
+x.mean <- data.frame(prec=c(random_sampling.all_1_prec[1],random_sampling.main_1_prec[1], random_sampling.in_1_prec[1], random_sampling.inbet_1_prec[1]),
+                entc=c(random_sampling.all_1_entc[1],random_sampling.main_1_entc[1], random_sampling.in_1_entc[1], random_sampling.inbet_1_entc[1]),
+                c=c(random_sampling.all_1_c[1],random_sampling.main_1_c[1], random_sampling.in_1_c[1], random_sampling.inbet_1_c[1]))
+
+x.mean = as.matrix(x.mean)
+row.names(x.mean) <- zones
+x.mean = t(x.mean)
+
+x.sd <- data.frame(prec=c(random_sampling.all_1_prec[2],random_sampling.main_1_prec[2], random_sampling.in_1_prec[2], random_sampling.inbet_1_prec[2]),
+                     entc=c(random_sampling.all_1_entc[2],random_sampling.main_1_entc[2], random_sampling.in_1_entc[2], random_sampling.inbet_1_entc[2]),
+                     c=c(random_sampling.all_1_c[2],random_sampling.main_1_c[2], random_sampling.in_1_c[2], random_sampling.inbet_1_c[2]))
+
+x.sd = as.matrix(x.sd)
+row.names(x.sd) <- zones
+x.sd = t(x.sd)
+
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotConfidence_1p.tex'
+))
+barplt <- barplot(x.mean, beside = T, ylim = c(0,105), col=emission_col,main = '$n=1$', ylab='Confidence level of a random sample')
+arrows(x0=barplt, y0= x.mean+x.sd, y1=x.mean-x.sd, angle=90,code=3, length = 0.1)
+dev.off()
+
+# NA 1p - Get data for bar plots ----
+random_sampling_na.all_1_prec <-
+  random_sampling_na_to_save[[1]][11:15, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_1_prec <- c(mean(as.matrix(random_sampling_na.all_1_prec), na.rm = T),sd(as.matrix(random_sampling_na.all_1_prec), na.rm = T)) 
+
+random_sampling_na.all_1_entc <-
+  random_sampling_na_to_save[[1]][6:10, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_1_entc <- c(mean(as.matrix(random_sampling_na.all_1_entc), na.rm = T),sd(as.matrix(random_sampling_na.all_1_entc), na.rm = T))
+
+random_sampling_na.all_1_c <-
+  random_sampling_na_to_save[[1]][1:5, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_1_c <- c(mean(as.matrix(random_sampling_na.all_1_c), na.rm = T),sd(as.matrix(random_sampling_na.all_1_c), na.rm = T))
+
+random_sampling_na.main_1_prec <-
+  random_sampling_na_to_save[[1]][11:15, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_1_prec <- c(mean(as.matrix(random_sampling_na.main_1_prec), na.rm = T),sd(as.matrix(random_sampling_na.main_1_prec), na.rm = T))
+
+random_sampling_na.main_1_entc <-
+  random_sampling_na_to_save[[1]][6:10, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_1_entc <- c(mean(as.matrix(random_sampling_na.main_1_entc), na.rm = T),sd(as.matrix(random_sampling_na.main_1_entc), na.rm = T))
+
+random_sampling_na.main_1_c <- random_sampling_na_to_save[[1]][1:5, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_1_c <- c(mean(as.matrix(random_sampling_na.main_1_c), na.rm = T),sd(as.matrix(random_sampling_na.main_1_c), na.rm = T)) 
+
+random_sampling_na.in_1_prec <-
+  random_sampling_na_to_save[[1]][11:15, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_1_prec <- c(mean(as.matrix(random_sampling_na.in_1_prec), na.rm = T),sd(as.matrix(random_sampling_na.in_1_prec), na.rm = T))
+
+random_sampling_na.in_1_entc <-
+  random_sampling_na_to_save[[1]][6:10, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_1_entc <- c(mean(as.matrix(random_sampling_na.in_1_entc), na.rm = T),sd(as.matrix(random_sampling_na.in_1_entc), na.rm = T))
+
+random_sampling_na.in_1_c <- random_sampling_na_to_save[[1]][1:5, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_1_c <- c(mean(as.matrix(random_sampling_na.in_1_c), na.rm = T),sd(as.matrix(random_sampling_na.in_1_c), na.rm = T)) 
+
+random_sampling_na.inbet_1_prec <-
+  random_sampling_na_to_save[[1]][11:15, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_1_prec <- c(mean(as.matrix(random_sampling_na.inbet_1_prec), na.rm = T),sd(as.matrix(random_sampling_na.inbet_1_prec), na.rm = T))
+
+random_sampling_na.inbet_1_entc <-
+  random_sampling_na_to_save[[1]][6:10, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_1_entc <- c(mean(as.matrix(random_sampling_na.inbet_1_entc), na.rm = T),sd(as.matrix(random_sampling_na.inbet_1_entc), na.rm = T))
+
+random_sampling_na.inbet_1_c <- random_sampling_na_to_save[[1]][1:5, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_1_c <- c(mean(as.matrix(random_sampling_na.inbet_1_c), na.rm = T),sd(as.matrix(random_sampling_na.inbet_1_c), na.rm = T)) 
+
+# NA 1p - Plot bar data ----
+x_na.mean <- data.frame(prec=c(random_sampling_na.all_1_prec[1],random_sampling_na.main_1_prec[1], random_sampling_na.in_1_prec[1], random_sampling_na.inbet_1_prec[1]),
+                     entc=c(random_sampling_na.all_1_entc[1],random_sampling_na.main_1_entc[1], random_sampling_na.in_1_entc[1], random_sampling_na.inbet_1_entc[1]),
+                     c=c(random_sampling_na.all_1_c[1],random_sampling_na.main_1_c[1], random_sampling_na.in_1_c[1], random_sampling_na.inbet_1_c[1]))
+
+x_na.mean = as.matrix(x_na.mean)
+row.names(x_na.mean) <- zones
+x_na.mean = t(x_na.mean)
+
+x_na.sd <- data.frame(prec=c(random_sampling_na.all_1_prec[2],random_sampling_na.main_1_prec[2], random_sampling_na.in_1_prec[2], random_sampling_na.inbet_1_prec[2]),
+                   entc=c(random_sampling_na.all_1_entc[2],random_sampling_na.main_1_entc[2], random_sampling_na.in_1_entc[2], random_sampling_na.inbet_1_entc[2]),
+                   c=c(random_sampling_na.all_1_c[2],random_sampling_na.main_1_c[2], random_sampling_na.in_1_c[2], random_sampling_na.inbet_1_c[2]))
+
+x_na.sd = as.matrix(x_na.sd)
+row.names(x_na.sd) <- zones
+x_na.sd = t(x_na.sd)
+
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotNA_1p.tex'
+))
+barplt <- barplot(x_na.mean, beside = T, ylim = c(0,105), col=emission_col,main = '$n=1$', ylab='Probability of ethylene existing in a random sample')
+arrows(x0=barplt, y0= x_na.mean+x_na.sd, y1=x_na.mean-x_na.sd, angle=90,code=3, length = 0.1)
+dev.off()
+
+# Composite 1p - Plot bar data ----
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotComposite_1p.tex'
+))
+barplt <- barplot(x_na.mean*x.mean*0.01, beside = T, ylim = c(0,105), col=emission_col,main = '$n=1$', ylab='Composite confidence level of a random sample')
+arrows(x0=barplt, y0= (x_na.mean*x.mean*0.01)+(x_na.sd+x.sd), y1=(x_na.mean*x.mean*0.01)-(x_na.sd+x.sd), angle=90,code=3, length = 0.1)
+dev.off()
+
+
+# Bar plots 4 sample
+# Confidence 4p - Get data for bar plots ----
+random_sampling.all_4_prec <-
+  random_sampling_to_save[[2]][11:15, grepl("*.all" , names(random_sampling))]
+random_sampling.all_4_prec <- c(mean(as.matrix(random_sampling.all_4_prec), na.rm = T),sd(as.matrix(random_sampling.all_4_prec), na.rm = T)) 
+
+random_sampling.all_4_entc <-
+  random_sampling_to_save[[2]][6:10, grepl("*.all" , names(random_sampling))]
+random_sampling.all_4_entc <- c(mean(as.matrix(random_sampling.all_4_entc), na.rm = T),sd(as.matrix(random_sampling.all_4_entc), na.rm = T))
+
+random_sampling.all_4_c <-
+  random_sampling_to_save[[2]][1:5, grepl("*.all" , names(random_sampling))]
+random_sampling.all_4_c <- c(mean(as.matrix(random_sampling.all_4_c), na.rm = T),sd(as.matrix(random_sampling.all_4_c), na.rm = T))
+
+random_sampling.main_4_prec <-
+  random_sampling_to_save[[2]][11:15, grepl("*.main" , names(random_sampling))]
+random_sampling.main_4_prec <- c(mean(as.matrix(random_sampling.main_4_prec), na.rm = T),sd(as.matrix(random_sampling.main_4_prec), na.rm = T))
+
+random_sampling.main_4_entc <-
+  random_sampling_to_save[[2]][6:10, grepl("*.main" , names(random_sampling))]
+random_sampling.main_4_entc <- c(mean(as.matrix(random_sampling.main_4_entc), na.rm = T),sd(as.matrix(random_sampling.main_4_entc), na.rm = T))
+
+random_sampling.main_4_c <- random_sampling_to_save[[2]][1:5, grepl("*.main" , names(random_sampling))]
+random_sampling.main_4_c <- c(mean(as.matrix(random_sampling.main_4_c), na.rm = T),sd(as.matrix(random_sampling.main_4_c), na.rm = T)) 
+
+random_sampling.in_4_prec <-
+  random_sampling_to_save[[2]][11:15, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_4_prec <- c(mean(as.matrix(random_sampling.in_4_prec), na.rm = T),sd(as.matrix(random_sampling.in_4_prec), na.rm = T))
+
+random_sampling.in_4_entc <-
+  random_sampling_to_save[[2]][6:10, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_4_entc <- c(mean(as.matrix(random_sampling.in_4_entc), na.rm = T),sd(as.matrix(random_sampling.in_4_entc), na.rm = T))
+
+random_sampling.in_4_c <- random_sampling_to_save[[2]][1:5, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_4_c <- c(mean(as.matrix(random_sampling.in_4_c), na.rm = T),sd(as.matrix(random_sampling.in_4_c), na.rm = T)) 
+
+random_sampling.inbet_4_prec <-
+  random_sampling_to_save[[2]][11:15, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_4_prec <- c(mean(as.matrix(random_sampling.inbet_4_prec), na.rm = T),sd(as.matrix(random_sampling.inbet_4_prec), na.rm = T))
+
+random_sampling.inbet_4_entc <-
+  random_sampling_to_save[[2]][6:10, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_4_entc <- c(mean(as.matrix(random_sampling.inbet_4_entc), na.rm = T),sd(as.matrix(random_sampling.inbet_4_entc), na.rm = T))
+
+random_sampling.inbet_4_c <- random_sampling_to_save[[2]][1:5, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_4_c <- c(mean(as.matrix(random_sampling.inbet_4_c), na.rm = T),sd(as.matrix(random_sampling.inbet_4_c), na.rm = T)) 
+
+# Confidence 4p - Plot bar data ----
+x.mean <- data.frame(prec=c(random_sampling.all_4_prec[1],random_sampling.main_4_prec[1], random_sampling.in_4_prec[1], random_sampling.inbet_4_prec[1]),
+                     entc=c(random_sampling.all_4_entc[1],random_sampling.main_4_entc[1], random_sampling.in_4_entc[1], random_sampling.inbet_4_entc[1]),
+                     c=c(random_sampling.all_4_c[1],random_sampling.main_4_c[1], random_sampling.in_4_c[1], random_sampling.inbet_4_c[1]))
+
+x.mean = as.matrix(x.mean)
+row.names(x.mean) <- zones
+x.mean = t(x.mean)
+
+x.sd <- data.frame(prec=c(random_sampling.all_4_prec[2],random_sampling.main_4_prec[2], random_sampling.in_4_prec[2], random_sampling.inbet_4_prec[2]),
+                   entc=c(random_sampling.all_4_entc[2],random_sampling.main_4_entc[2], random_sampling.in_4_entc[2], random_sampling.inbet_4_entc[2]),
+                   c=c(random_sampling.all_4_c[2],random_sampling.main_4_c[2], random_sampling.in_4_c[2], random_sampling.inbet_4_c[2]))
+
+x.sd = as.matrix(x.sd)
+row.names(x.sd) <- zones
+x.sd = t(x.sd)
+
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotConfidence_4p.tex'
+))
+barplt <- barplot(x.mean, beside = T, ylim = c(0,105), col=emission_col,main = '$n=4$', ylab='Confidence level of a random sample')
+arrows(x0=barplt, y0= x.mean+x.sd, y1=x.mean-x.sd, angle=90,code=3, length = 0.1)
+dev.off()
+
+# NA 4p - Get data for bar plots ----
+random_sampling_na.all_4_prec <-
+  random_sampling_na_to_save[[2]][11:15, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_4_prec <- c(mean(as.matrix(random_sampling_na.all_4_prec), na.rm = T),sd(as.matrix(random_sampling_na.all_4_prec), na.rm = T)) 
+
+random_sampling_na.all_4_entc <-
+  random_sampling_na_to_save[[2]][6:10, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_4_entc <- c(mean(as.matrix(random_sampling_na.all_4_entc), na.rm = T),sd(as.matrix(random_sampling_na.all_4_entc), na.rm = T))
+
+random_sampling_na.all_4_c <-
+  random_sampling_na_to_save[[2]][1:5, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_4_c <- c(mean(as.matrix(random_sampling_na.all_4_c), na.rm = T),sd(as.matrix(random_sampling_na.all_4_c), na.rm = T))
+
+random_sampling_na.main_4_prec <-
+  random_sampling_na_to_save[[2]][11:15, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_4_prec <- c(mean(as.matrix(random_sampling_na.main_4_prec), na.rm = T),sd(as.matrix(random_sampling_na.main_4_prec), na.rm = T))
+
+random_sampling_na.main_4_entc <-
+  random_sampling_na_to_save[[2]][6:10, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_4_entc <- c(mean(as.matrix(random_sampling_na.main_4_entc), na.rm = T),sd(as.matrix(random_sampling_na.main_4_entc), na.rm = T))
+
+random_sampling_na.main_4_c <- random_sampling_na_to_save[[2]][1:5, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_4_c <- c(mean(as.matrix(random_sampling_na.main_4_c), na.rm = T),sd(as.matrix(random_sampling_na.main_4_c), na.rm = T)) 
+
+random_sampling_na.in_4_prec <-
+  random_sampling_na_to_save[[2]][11:15, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_4_prec <- c(mean(as.matrix(random_sampling_na.in_4_prec), na.rm = T),sd(as.matrix(random_sampling_na.in_4_prec), na.rm = T))
+
+random_sampling_na.in_4_entc <-
+  random_sampling_na_to_save[[2]][6:10, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_4_entc <- c(mean(as.matrix(random_sampling_na.in_4_entc), na.rm = T),sd(as.matrix(random_sampling_na.in_4_entc), na.rm = T))
+
+random_sampling_na.in_4_c <- random_sampling_na_to_save[[2]][1:5, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_4_c <- c(mean(as.matrix(random_sampling_na.in_4_c), na.rm = T),sd(as.matrix(random_sampling_na.in_4_c), na.rm = T)) 
+
+random_sampling_na.inbet_4_prec <-
+  random_sampling_na_to_save[[2]][11:15, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_4_prec <- c(mean(as.matrix(random_sampling_na.inbet_4_prec), na.rm = T),sd(as.matrix(random_sampling_na.inbet_4_prec), na.rm = T))
+
+random_sampling_na.inbet_4_entc <-
+  random_sampling_na_to_save[[2]][6:10, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_4_entc <- c(mean(as.matrix(random_sampling_na.inbet_4_entc), na.rm = T),sd(as.matrix(random_sampling_na.inbet_4_entc), na.rm = T))
+
+random_sampling_na.inbet_4_c <- random_sampling_na_to_save[[2]][1:5, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_4_c <- c(mean(as.matrix(random_sampling_na.inbet_4_c), na.rm = T),sd(as.matrix(random_sampling_na.inbet_4_c), na.rm = T)) 
+
+# NA 4p - Plot bar data ----
+x_na.mean <- data.frame(prec=c(random_sampling_na.all_4_prec[1],random_sampling_na.main_4_prec[1], random_sampling_na.in_4_prec[1], random_sampling_na.inbet_4_prec[1]),
+                        entc=c(random_sampling_na.all_4_entc[1],random_sampling_na.main_4_entc[1], random_sampling_na.in_4_entc[1], random_sampling_na.inbet_4_entc[1]),
+                        c=c(random_sampling_na.all_4_c[1],random_sampling_na.main_4_c[1], random_sampling_na.in_4_c[1], random_sampling_na.inbet_4_c[1]))
+
+x_na.mean = as.matrix(x_na.mean)
+row.names(x_na.mean) <- zones
+x_na.mean = t(x_na.mean)
+
+x_na.sd <- data.frame(prec=c(random_sampling_na.all_4_prec[2],random_sampling_na.main_4_prec[2], random_sampling_na.in_4_prec[2], random_sampling_na.inbet_4_prec[2]),
+                      entc=c(random_sampling_na.all_4_entc[2],random_sampling_na.main_4_entc[2], random_sampling_na.in_4_entc[2], random_sampling_na.inbet_4_entc[2]),
+                      c=c(random_sampling_na.all_4_c[2],random_sampling_na.main_4_c[2], random_sampling_na.in_4_c[2], random_sampling_na.inbet_4_c[2]))
+
+x_na.sd = as.matrix(x_na.sd)
+row.names(x_na.sd) <- zones
+x_na.sd = t(x_na.sd)
+
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotNA_4p.tex'
+))
+barplt <- barplot(x_na.mean, beside = T, ylim = c(0,105), col=emission_col,main = '$n=4$', ylab='Probability of ethylene existing in a random sample')
+arrows(x0=barplt, y0= x_na.mean+x_na.sd, y1=x_na.mean-x_na.sd, angle=90,code=3, length = 0.1)
+dev.off()
+
+# Composite 4p - Plot bar data ----
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotComposite_4p.tex'
+))
+barplt <- barplot(x_na.mean*x.mean*0.01, beside = T, ylim = c(0,105), col=emission_col,main = '$n=4$', ylab='Composite confidence level of a random sample')
+arrows(x0=barplt, y0= (x_na.mean*x.mean*0.01)+(x_na.sd+x.sd), y1=(x_na.mean*x.mean*0.01)-(x_na.sd+x.sd), angle=90,code=3, length = 0.1)
+dev.off()
+
+# Bar plots 16 sample
+# Confidence 16p - Get data for bar plots ----
+random_sampling.all_16_prec <-
+  random_sampling_to_save[[3]][11:15, grepl("*.all" , names(random_sampling))]
+random_sampling.all_16_prec <- c(mean(as.matrix(random_sampling.all_16_prec), na.rm = T),sd(as.matrix(random_sampling.all_16_prec), na.rm = T)) 
+
+random_sampling.all_16_entc <-
+  random_sampling_to_save[[3]][6:10, grepl("*.all" , names(random_sampling))]
+random_sampling.all_16_entc <- c(mean(as.matrix(random_sampling.all_16_entc), na.rm = T),sd(as.matrix(random_sampling.all_16_entc), na.rm = T))
+
+random_sampling.all_16_c <-
+  random_sampling_to_save[[3]][1:5, grepl("*.all" , names(random_sampling))]
+random_sampling.all_16_c <- c(mean(as.matrix(random_sampling.all_16_c), na.rm = T),sd(as.matrix(random_sampling.all_16_c), na.rm = T))
+
+random_sampling.main_16_prec <-
+  random_sampling_to_save[[3]][11:15, grepl("*.main" , names(random_sampling))]
+random_sampling.main_16_prec <- c(mean(as.matrix(random_sampling.main_16_prec), na.rm = T),sd(as.matrix(random_sampling.main_16_prec), na.rm = T))
+
+random_sampling.main_16_entc <-
+  random_sampling_to_save[[3]][6:10, grepl("*.main" , names(random_sampling))]
+random_sampling.main_16_entc <- c(mean(as.matrix(random_sampling.main_16_entc), na.rm = T),sd(as.matrix(random_sampling.main_16_entc), na.rm = T))
+
+random_sampling.main_16_c <- random_sampling_to_save[[3]][1:5, grepl("*.main" , names(random_sampling))]
+random_sampling.main_16_c <- c(mean(as.matrix(random_sampling.main_16_c), na.rm = T),sd(as.matrix(random_sampling.main_16_c), na.rm = T)) 
+
+random_sampling.in_16_prec <-
+  random_sampling_to_save[[3]][11:15, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_16_prec <- c(mean(as.matrix(random_sampling.in_16_prec), na.rm = T),sd(as.matrix(random_sampling.in_16_prec), na.rm = T))
+
+random_sampling.in_16_entc <-
+  random_sampling_to_save[[3]][6:10, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_16_entc <- c(mean(as.matrix(random_sampling.in_16_entc), na.rm = T),sd(as.matrix(random_sampling.in_16_entc), na.rm = T))
+
+random_sampling.in_16_c <- random_sampling_to_save[[3]][1:5, grepl("\\.in$" , names(random_sampling))]
+random_sampling.in_16_c <- c(mean(as.matrix(random_sampling.in_16_c), na.rm = T),sd(as.matrix(random_sampling.in_16_c), na.rm = T)) 
+
+random_sampling.inbet_16_prec <-
+  random_sampling_to_save[[3]][11:15, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_16_prec <- c(mean(as.matrix(random_sampling.inbet_16_prec), na.rm = T),sd(as.matrix(random_sampling.inbet_16_prec), na.rm = T))
+
+random_sampling.inbet_16_entc <-
+  random_sampling_to_save[[3]][6:10, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_16_entc <- c(mean(as.matrix(random_sampling.inbet_16_entc), na.rm = T),sd(as.matrix(random_sampling.inbet_16_entc), na.rm = T))
+
+random_sampling.inbet_16_c <- random_sampling_to_save[[3]][1:5, grepl("*.inbet" , names(random_sampling))]
+random_sampling.inbet_16_c <- c(mean(as.matrix(random_sampling.inbet_16_c), na.rm = T),sd(as.matrix(random_sampling.inbet_16_c), na.rm = T)) 
+
+# Confidence 16p - Plot bar data ----
+x.mean <- data.frame(prec=c(random_sampling.all_16_prec[1],random_sampling.main_16_prec[1], random_sampling.in_16_prec[1], random_sampling.inbet_16_prec[1]),
+                     entc=c(random_sampling.all_16_entc[1],random_sampling.main_16_entc[1], random_sampling.in_16_entc[1], random_sampling.inbet_16_entc[1]),
+                     c=c(random_sampling.all_16_c[1],random_sampling.main_16_c[1], random_sampling.in_16_c[1], random_sampling.inbet_16_c[1]))
+
+x.mean = as.matrix(x.mean)
+row.names(x.mean) <- zones
+x.mean = t(x.mean)
+
+x.sd <- data.frame(prec=c(random_sampling.all_16_prec[2],random_sampling.main_16_prec[2], random_sampling.in_16_prec[2], random_sampling.inbet_16_prec[2]),
+                   entc=c(random_sampling.all_16_entc[2],random_sampling.main_16_entc[2], random_sampling.in_16_entc[2], random_sampling.inbet_16_entc[2]),
+                   c=c(random_sampling.all_16_c[2],random_sampling.main_16_c[2], random_sampling.in_16_c[2], random_sampling.inbet_16_c[2]))
+
+x.sd = as.matrix(x.sd)
+row.names(x.sd) <- zones
+x.sd = t(x.sd)
+
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotConfidence_16p.tex'
+))
+barplt <- barplot(x.mean, beside = T, ylim = c(0,105), col=emission_col,main = '$n=16$', ylab='Confidence level of a random sample')
+arrows(x0=barplt, y0= x.mean+x.sd, y1=x.mean-x.sd, angle=90,code=3, length = 0.1)
+dev.off()
+
+# NA 16p - Get data for bar plots ----
+random_sampling_na.all_16_prec <-
+  random_sampling_na_to_save[[3]][11:15, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_16_prec <- c(mean(as.matrix(random_sampling_na.all_16_prec), na.rm = T),sd(as.matrix(random_sampling_na.all_16_prec), na.rm = T)) 
+
+random_sampling_na.all_16_entc <-
+  random_sampling_na_to_save[[3]][6:10, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_16_entc <- c(mean(as.matrix(random_sampling_na.all_16_entc), na.rm = T),sd(as.matrix(random_sampling_na.all_16_entc), na.rm = T))
+
+random_sampling_na.all_16_c <-
+  random_sampling_na_to_save[[3]][1:5, grepl("*.all" , names(random_sampling_na))]
+random_sampling_na.all_16_c <- c(mean(as.matrix(random_sampling_na.all_16_c), na.rm = T),sd(as.matrix(random_sampling_na.all_16_c), na.rm = T))
+
+random_sampling_na.main_16_prec <-
+  random_sampling_na_to_save[[3]][11:15, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_16_prec <- c(mean(as.matrix(random_sampling_na.main_16_prec), na.rm = T),sd(as.matrix(random_sampling_na.main_16_prec), na.rm = T))
+
+random_sampling_na.main_16_entc <-
+  random_sampling_na_to_save[[3]][6:10, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_16_entc <- c(mean(as.matrix(random_sampling_na.main_16_entc), na.rm = T),sd(as.matrix(random_sampling_na.main_16_entc), na.rm = T))
+
+random_sampling_na.main_16_c <- random_sampling_na_to_save[[3]][1:5, grepl("*.main" , names(random_sampling_na))]
+random_sampling_na.main_16_c <- c(mean(as.matrix(random_sampling_na.main_16_c), na.rm = T),sd(as.matrix(random_sampling_na.main_16_c), na.rm = T)) 
+
+random_sampling_na.in_16_prec <-
+  random_sampling_na_to_save[[3]][11:15, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_16_prec <- c(mean(as.matrix(random_sampling_na.in_16_prec), na.rm = T),sd(as.matrix(random_sampling_na.in_16_prec), na.rm = T))
+
+random_sampling_na.in_16_entc <-
+  random_sampling_na_to_save[[3]][6:10, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_16_entc <- c(mean(as.matrix(random_sampling_na.in_16_entc), na.rm = T),sd(as.matrix(random_sampling_na.in_16_entc), na.rm = T))
+
+random_sampling_na.in_16_c <- random_sampling_na_to_save[[3]][1:5, grepl("\\.in$" , names(random_sampling_na))]
+random_sampling_na.in_16_c <- c(mean(as.matrix(random_sampling_na.in_16_c), na.rm = T),sd(as.matrix(random_sampling_na.in_16_c), na.rm = T)) 
+
+random_sampling_na.inbet_16_prec <-
+  random_sampling_na_to_save[[3]][11:15, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_16_prec <- c(mean(as.matrix(random_sampling_na.inbet_16_prec), na.rm = T),sd(as.matrix(random_sampling_na.inbet_16_prec), na.rm = T))
+
+random_sampling_na.inbet_16_entc <-
+  random_sampling_na_to_save[[3]][6:10, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_16_entc <- c(mean(as.matrix(random_sampling_na.inbet_16_entc), na.rm = T),sd(as.matrix(random_sampling_na.inbet_16_entc), na.rm = T))
+
+random_sampling_na.inbet_16_c <- random_sampling_na_to_save[[2]][1:5, grepl("*.inbet" , names(random_sampling_na))]
+random_sampling_na.inbet_16_c <- c(mean(as.matrix(random_sampling_na.inbet_16_c), na.rm = T),sd(as.matrix(random_sampling_na.inbet_16_c), na.rm = T)) 
+
+# NA 16p - Plot bar data ----
+x_na.mean <- data.frame(prec=c(random_sampling_na.all_16_prec[1],random_sampling_na.main_16_prec[1], random_sampling_na.in_16_prec[1], random_sampling_na.inbet_16_prec[1]),
+                        entc=c(random_sampling_na.all_16_entc[1],random_sampling_na.main_16_entc[1], random_sampling_na.in_16_entc[1], random_sampling_na.inbet_16_entc[1]),
+                        c=c(random_sampling_na.all_16_c[1],random_sampling_na.main_16_c[1], random_sampling_na.in_16_c[1], random_sampling_na.inbet_16_c[1]))
+
+x_na.mean = as.matrix(x_na.mean)
+row.names(x_na.mean) <- zones
+x_na.mean = t(x_na.mean)
+
+x_na.sd <- data.frame(prec=c(random_sampling_na.all_16_prec[2],random_sampling_na.main_16_prec[2], random_sampling_na.in_16_prec[2], random_sampling_na.inbet_16_prec[2]),
+                      entc=c(random_sampling_na.all_16_entc[2],random_sampling_na.main_16_entc[2], random_sampling_na.in_16_entc[2], random_sampling_na.inbet_16_entc[2]),
+                      c=c(random_sampling_na.all_16_c[2],random_sampling_na.main_16_c[2], random_sampling_na.in_16_c[2], random_sampling_na.inbet_16_c[2]))
+
+x_na.sd = as.matrix(x_na.sd)
+row.names(x_na.sd) <- zones
+x_na.sd = t(x_na.sd)
+
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotNA_16p.tex'
+))
+barplt <- barplot(x_na.mean, beside = T, ylim = c(0,105), col=emission_col,main = '$n=16$', ylab='Probability of ethylene existing in a random sample')
+arrows(x0=barplt, y0= x_na.mean+x_na.sd, y1=x_na.mean-x_na.sd, angle=90,code=3, length = 0.1)
+dev.off()
+
+# Composite 16p - Plot bar data ----
+tikz(file = paste0(
+  path_to_sims,
+  'BarPlotComposite_16p.tex'
+))
+barplt <- barplot(x_na.mean*x.mean*0.01, beside = T, ylim = c(0,105), col=emission_col,main = '$n=16$', ylab='Composite confidence level of a random sample')
+arrows(x0=barplt, y0= (x_na.mean*x.mean*0.01)+(x_na.sd+x.sd), y1=(x_na.mean*x.mean*0.01)-(x_na.sd+x.sd), angle=90,code=3, length = 0.1)
+dev.off()
+
+# Confidence ----
   random_sampling.all_1 <-
     random_sampling_to_save[[1]][, grepl("*.all" , names(random_sampling))]
   random_sampling.main_1 <-
