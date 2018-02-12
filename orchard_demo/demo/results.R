@@ -4336,7 +4336,6 @@ for (master in c(1:15)) {
         }
         sample_16 <- c(sample_16, e)
       }
-    }
     
     for (i in 1:length(sample_16)) {
       if (sample_16[i] == 0) {
@@ -4353,12 +4352,14 @@ for (master in c(1:15)) {
       ))
     
     t_na <- c(t_na, any(s_all_na))
-  }
+    }
+    
   print(master)
   print(slave)
   ADP16_avg_sampling[master, slave] <-
     as.numeric(sum(t_all, na.rm = T))
   ADP16_avg_sampling_na[master, slave] <- as.numeric(sum(t_na))
+  }
 }
 
 #rm(master,slave,t_all,t_main,t_in,t_inbet,s_in,s_inbet,s_main,s_all, transformed_all,transformed_in, transformed_inbet, m_master, sd_master)
@@ -4387,7 +4388,7 @@ image(
   1:16,
   t(ADP16_avg_sampling_comp),
   col = brewer.pal(10, 'RdYlGn'),
-  main = '$n=16',
+  main = '$n=16$',
   breaks = seq(0, 100, 10),
   xaxt = 'n',
   yaxt = 'n',
@@ -4534,7 +4535,7 @@ confidence_table$`$S=S$` <- c(
     60,
     40,
   ADP4_avg_sampling_comp[16,16],
-    0
+  ADP16_avg_sampling_comp[16,16]
   )#mean(z_test_comp_sim_sample_of_16))
 
 confidence_table$`$sd$` <-
@@ -4555,7 +4556,7 @@ confidence_table$`$sd$` <-
     0,
     0,
     sd(diag(as.matrix(ADP4_avg_sampling_comp))[1:15]),
-    0
+  sd(diag(as.matrix(ADP16_avg_sampling_comp))[1:15])
   )#sd(z_test_comp_sim_sample_of_16))
 
 confidence_table$`$E_3=E_3$` <- c(
@@ -4575,7 +4576,7 @@ confidence_table$`$E_3=E_3$` <- c(
   (sum(reg_sampling.4[1:5, 1:5]) / 25) * 100,
   (sum(reg_sampling.16[1:5, 1:5]) / 25) * 100,
   mean(as.matrix(ADP4_avg_sampling_comp[1:5, 1:5])),
-  0
+  mean(as.matrix(ADP16_avg_sampling_comp[1:5, 1:5]))
 )
 
 confidence_table$`$E_2=E_2$` <- c(
@@ -4595,7 +4596,7 @@ confidence_table$`$E_2=E_2$` <- c(
   (sum(reg_sampling.4[6:10, 6:10], na.rm = T) / 25) * 100,
   (sum(reg_sampling.16[6:10, 6:10]) / 25) * 100,
   mean(as.matrix(ADP4_avg_sampling_comp[6:10, 6:10])),
-  0
+  mean(as.matrix(ADP16_avg_sampling_comp[6:10, 6:10]))
 )
 
 confidence_table$`$E_1=E_1$` <-
@@ -4617,7 +4618,7 @@ confidence_table$`$E_1=E_1$` <-
     (sum(reg_sampling.4[11:15, 11:15]) / 25) * 100,
     (sum(reg_sampling.16[11:15, 11:15]) / 25) * 100,
     mean(as.matrix(ADP4_avg_sampling_comp[11:15, 11:15])),
-    0
+    mean(as.matrix(ADP16_avg_sampling_comp[11:15, 11:15]))
   )
 
 confidence_table$`Error 1` <- c(
@@ -4677,7 +4678,7 @@ confidence_table$`Error 1` <- c(
   sum(reg_sampling.4[c(6:10, 11:15), c(6:10, 11:15)], na.rm = T),
   sum(reg_sampling.16[c(6:10, 11:15), c(6:10, 11:15)], na.rm = T),
   mean(as.matrix(ADP4_avg_sampling_comp[c(6:10, 11:15), c(6:10, 11:15)]), na.rm = T),
-  0
+  mean(as.matrix(ADP16_avg_sampling_comp[c(6:10, 11:15), c(6:10, 11:15)]), na.rm = T)
 )
 confidence_table$`Error 2` <- c(
   (avg_sampling_summary_n[[1]][[1]][1, 3] + avg_sampling_summary_n[[1]][[1]][3, 1]) /
@@ -4718,7 +4719,7 @@ confidence_table$`Error 2` <- c(
     sum(reg_sampling.16[1:5, 11:15], na.rm = T) + sum(reg_sampling.16[11:15, 1:5], na.rm = T)
   ) / 50) * 100,
   mean(c(as.matrix(ADP4_avg_sampling_comp[1:5, 11:15]),as.matrix(ADP4_avg_sampling_comp[11:15, 1:5])), na.rm = T),
-  0
+  mean(c(as.matrix(ADP16_avg_sampling_comp[1:5, 11:15]),as.matrix(ADP16_avg_sampling_comp[11:15, 1:5])), na.rm = T)
 )
 
 confidence_table <- confidence_table[-1]
@@ -4772,7 +4773,7 @@ abline(trend_main,lwd=3, col=zones_col[1])
 abline(trend_in,lwd=3, col=zones_col[2])
 abline(trend_inbet,lwd=3, col=zones_col[3])
 
-legend('topright',paste(zones,'$b=$', round(c(trend_all$coefficients[2],trend_main$coefficients[2],trend_in$coefficients[2],trend_inbet$coefficients[2]),2)),fill=c('black',zones_col), bty = 'n')
+legend('top',paste(zones,'$b=$', round(c(trend_all$coefficients[2],trend_main$coefficients[2],trend_in$coefficients[2],trend_inbet$coefficients[2]),2)),fill=c('black',zones_col), bty = 'n', xjust=0)
 dev.off()
 
 # Make spider plots ----
@@ -5379,7 +5380,8 @@ dev.off()
     ylab = 'Confidence level of a random sample',
     main = zones[1],
     lwd = 3,
-    pch=1
+    pch=1,
+    cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
   )
   points(
       timesteps,
@@ -5413,7 +5415,8 @@ dev.off()
     ylab = 'Confidence level of a random sample',
     main = zones[2],
     lwd = 3,
-    pch=1
+    pch=1,
+    cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
   )
   points(
     timesteps,
@@ -5447,7 +5450,8 @@ plot(
   ylab = 'Confidence level of a random sample',
   main = zones[3],
   lwd = 3,
-  pch=1
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
 )
 points(
   timesteps,
@@ -5481,7 +5485,8 @@ plot(
   ylab = 'Confidence level of a random sample',
   main = zones[4],
   lwd = 3,
-  pch=1
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
 )
 points(
   timesteps,
@@ -5559,7 +5564,8 @@ plot(
   ylab = 'Probability of ethylene existing in a random sample',
   main = zones[1],
   lwd = 3,
-  pch=1
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
 )
 points(
   timesteps,
@@ -5593,7 +5599,8 @@ plot(
   ylab = 'Probability of ethylene existing in a random sample',
   main = zones[2],
   lwd = 3,
-  pch=1
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
 )
 points(
   timesteps,
@@ -5627,7 +5634,8 @@ plot(
   ylab = 'Probability of ethylene existing in a random sample',
   main = zones[3],
   lwd = 3,
-  pch=1
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
 )
 points(
   timesteps,
@@ -5661,7 +5669,8 @@ plot(
   ylab = 'Probability of ethylene existing in a random sample',
   main = zones[4],
   lwd = 3,
-  pch=1
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
 )
 points(
   timesteps,
@@ -5679,4 +5688,155 @@ points(
 )
 legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
 dev.off()
+
+# Composite 
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanComposite_',
+  zones_files[1],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.all_1*random_sampling.all_1*0.01,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Composite confidence level of a random sample',
+  main = zones[1],
+  lwd = 3,
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
+)
+points(
+  timesteps,
+  random_sampling_na.all_4*random_sampling.all_4*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.all_16*random_sampling.all_16*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanComposite_',
+  zones_files[2],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.main_1*random_sampling.main_1*0.01,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Composite confidence level of a random sample',
+  main = zones[2],
+  lwd = 3,
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
+)
+points(
+  timesteps,
+  random_sampling_na.main_4*random_sampling.main_4*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.main_16*random_sampling.main_16*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanComposite_',
+  zones_files[3],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.in_1*random_sampling.in_1*0.01,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Composite confidence level of a random sample',
+  main = zones[3],
+  lwd = 3,
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
+)
+points(
+  timesteps,
+  random_sampling_na.in_4*random_sampling.in_4*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.in_16*random_sampling.in_16*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'MeanComposite_',
+  zones_files[4],
+  '.tex'
+))
+plot(
+  timesteps,
+  random_sampling_na.inbet_1*random_sampling.inbet_1*0.01,
+  ylim = c(0, 100),
+  xlim = range(timesteps),
+  type = 'b',
+  xlab = 'Time ($s$)',
+  ylab = 'Composite confidence level of a random sample',
+  main = zones[4],
+  lwd = 3,
+  pch=1,
+  cex.lab=1.5, cex.axis=1.5, cex.main=2, cex.sub=2
+)
+points(
+  timesteps,
+  random_sampling_na.inbet_4*random_sampling.inbet_4*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=2
+)
+points(
+  timesteps,
+  random_sampling_na.inbet_16*random_sampling.inbet_16*0.01,
+  type = 'b',
+  lwd = 3,
+  pch=3
+)
+legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
+dev.off()
+
+
+
+# Height histogram -----
+plot(apply(sims[[1]],MARGIN = c(3), FUN = function(x) sum(!is.na(x))), 1:59, type='b' )
+for(i in 2:15){
+  lines(apply(sims[[i]],MARGIN = c(3), FUN = function(x) sum(!is.na(x))), 1:59, type='b')
+}
 
