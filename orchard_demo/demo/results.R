@@ -5835,8 +5835,40 @@ dev.off()
 
 
 # Height histogram -----
-plot(apply(sims[[1]],MARGIN = c(3), FUN = function(x) sum(!is.na(x))), 1:59, type='b' )
-for(i in 2:15){
-  lines(apply(sims[[i]],MARGIN = c(3), FUN = function(x) sum(!is.na(x))), 1:59, type='b')
-}
+height_dist <- lapply(sims, FUN = function(y) apply(y,MARGIN = c(3), FUN = function(x) sum(!is.na(x))/length(x))*100)
 
+tikz(file = paste0(
+  path_to_sims,
+  'HeightDist.tex'
+))
+plot(height_dist[[1]], (1:59)*0.1, type='b', xlab='Occupied cells (\\%)', ylab='Height ($m$)', col=emission_col[3], pch=wind_pch[1], lwd = 3, xlim = c(0,50), ylim = c(0.1,6))
+for(i in 2:15){
+  if (i %in% 2:5) {
+    p_t <- emission_col[3]
+  }
+  if (i %in% 6:10) {
+    p_t <- emission_col[2]
+  }
+  if (i %in% 11:15) {
+    p_t <- emission_col[1]
+  }
+  
+  if (i %in% c(6, 11)) {
+    p_ch <- wind_pch[1]
+  }
+  if (i %in% c(2, 3, 7, 8, 12, 13)) {
+    p_ch <- wind_pch[2]
+  }
+  if (i %in% c(4, 5, 9, 10, 14, 15)) {
+    p_ch <- wind_pch[3]
+  }
+  points(height_dist[[i]], (1:59)*0.1, type='b', col=p_t, pch=p_ch, lwd = 3)
+}
+# 0 ms
+lines((height_dist[[1]]+height_dist[[6]]+height_dist[[11]])/3, (1:59)*0.1, lwd=3)
+lines((height_dist[[2]]+height_dist[[4]]+height_dist[[7]]+height_dist[[9]]+height_dist[[12]]+height_dist[[14]])/6, (1:59)*0.1, lwd=3, lty=2)
+lines((height_dist[[3]]+height_dist[[5]]+height_dist[[8]]+height_dist[[10]]+height_dist[[13]]+height_dist[[15]])/6, (1:59)*0.1, lwd=3, lty=3)
+abline(v=5,col='red',lwd=3)
+abline(h=3, col='green', lwd=3)
+legend('topright',c('No wind','$\\vec{x}$','$\\vec{y}$','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,3,1,1))
+dev.off()
