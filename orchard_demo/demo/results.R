@@ -781,6 +781,12 @@ boxplot(
 # }
 dev.off()
 
+tikz(file = paste0(path_to_sims,'Legend_boxplots_sims.tex'), height = 0.3)
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("top", c("Pre-climacteric", "Entering climacteric", "Climacteric"), xpd = TRUE, horiz = TRUE, bty = "n", fill = emission_col)
+dev.off()
+
 tikz(file = paste0(path_to_sims, 'Boxplots_', zones_files[2], '.tex'))
 par(mar = c(5, 5, 2, 5))
 boxplot(
@@ -5837,11 +5843,15 @@ dev.off()
 # Height histogram -----
 height_dist <- lapply(sims, FUN = function(y) apply(y,MARGIN = c(3), FUN = function(x) sum(!is.na(x))/length(x))*100)
 
+x_dist <- lapply(sims, FUN = function(y) apply(y,MARGIN = c(1), FUN = function(x) sum(!is.na(x))/length(x))*100)
+
+y_dist <- lapply(sims, FUN = function(y) apply(y,MARGIN = c(2), FUN = function(x) sum(!is.na(x))/length(x))*100)
+
 tikz(file = paste0(
   path_to_sims,
   'HeightDist.tex'
 ))
-plot(height_dist[[1]], (1:59)*0.1, type='b', xlab='Occupied cells (\\%)', ylab='Height ($m$)', col=emission_col[3], pch=wind_pch[1], lwd = 3, xlim = c(0,50), ylim = c(0.1,6))
+plot(height_dist[[1]], (1:59)*0.1, type='b', xlab='Occupied cells (\\%)', ylab='$z$ ($m$)', col=emission_col[3], pch=wind_pch[1], lwd = 3, xlim = c(0,50), ylim = c(0.1,6))
 for(i in 2:15){
   if (i %in% 2:5) {
     p_t <- emission_col[3]
@@ -5871,4 +5881,76 @@ lines((height_dist[[3]]+height_dist[[5]]+height_dist[[8]]+height_dist[[10]]+heig
 abline(v=5,col='red',lwd=3)
 abline(h=3, col='green', lwd=3)
 legend('topright',c('No wind','$\\vec{x}$','$\\vec{y}$','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,3,1,1))
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'XDist.tex'
+))
+plot( (1:199)*0.1,x_dist[[1]], type='b', ylab='Occupied cells (\\%)', xlab='$x$ ($m$)', col=emission_col[3], pch=wind_pch[1], lwd = 3, ylim = c(0,60), xlim = c(0.1,20))
+for(i in 2:15){
+  if (i %in% 2:5) {
+    p_t <- emission_col[3]
+  }
+  if (i %in% 6:10) {
+    p_t <- emission_col[2]
+  }
+  if (i %in% 11:15) {
+    p_t <- emission_col[1]
+  }
+  
+  if (i %in% c(6, 11)) {
+    p_ch <- wind_pch[1]
+  }
+  if (i %in% c(2, 3, 7, 8, 12, 13)) {
+    p_ch <- wind_pch[2]
+  }
+  if (i %in% c(4, 5, 9, 10, 14, 15)) {
+    p_ch <- wind_pch[3]
+  }
+  points((1:199)*0.1,x_dist[[i]], type='b', col=p_t, pch=p_ch, lwd = 3)
+}
+# 0 ms
+lines((1:199)*0.1,(x_dist[[1]]+x_dist[[6]]+x_dist[[11]])/3, lwd=3)
+lines((1:199)*0.1, (x_dist[[2]]+x_dist[[4]]+x_dist[[7]]+x_dist[[9]]+x_dist[[12]]+x_dist[[14]])/6, lwd=3, lty=2)
+lines((1:199)*0.1,(x_dist[[3]]+x_dist[[5]]+x_dist[[8]]+x_dist[[10]]+x_dist[[13]]+x_dist[[15]])/6, lwd=3, lty=3)
+#abline(v=5,col='red',lwd=3)
+#abline(h=3, col='green', lwd=3)
+#legend('topright',c('No wind','$\\vec{x}$','$\\vec{y}$','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,3,1,1))
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'YDist.tex'
+))
+plot((1:164)*0.1,y_dist[[1]], type='b', ylab='Occupied cells (\\%)', xlab='$y$ ($m$)', col=emission_col[3], pch=wind_pch[1], lwd = 3, ylim = c(0,60), xlim = c(0.1,16.5))
+for(i in 2:15){
+  if (i %in% 2:5) {
+    p_t <- emission_col[3]
+  }
+  if (i %in% 6:10) {
+    p_t <- emission_col[2]
+  }
+  if (i %in% 11:15) {
+    p_t <- emission_col[1]
+  }
+  
+  if (i %in% c(6, 11)) {
+    p_ch <- wind_pch[1]
+  }
+  if (i %in% c(2, 3, 7, 8, 12, 13)) {
+    p_ch <- wind_pch[2]
+  }
+  if (i %in% c(4, 5, 9, 10, 14, 15)) {
+    p_ch <- wind_pch[3]
+  }
+  points((1:164)*0.1,y_dist[[i]], type='b', col=p_t, pch=p_ch, lwd = 3)
+}
+# 0 ms
+lines((1:164)*0.1,(y_dist[[1]]+y_dist[[6]]+y_dist[[11]])/3, lwd=3)
+lines((1:164)*0.1, (y_dist[[2]]+y_dist[[4]]+y_dist[[7]]+y_dist[[9]]+y_dist[[12]]+y_dist[[14]])/6, lwd=3, lty=2)
+lines((1:164)*0.1,(y_dist[[3]]+y_dist[[5]]+y_dist[[8]]+y_dist[[10]]+y_dist[[13]]+y_dist[[15]])/6, lwd=3, lty=3)
+#abline(v=5,col='red',lwd=3)
+#abline(h=3, col='green', lwd=3)
+#legend('topright',c('No wind','$\\vec{x}$','$\\vec{y}$','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,3,1,1))
 dev.off()
