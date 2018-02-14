@@ -291,6 +291,128 @@ names(sim_var_main) <- names(sims)
 names(sim_max_main) <- names(sims)
 names(sim_n_main) <- names(sims)
 
+# DRONE SIMS
+drone_sim_avg <- list()
+drone_sim_std <- list()
+drone_sim_var <- list()
+drone_sim_max <- list()
+drone_sim_n <- list()
+
+drone_sim_avg_main <- list()
+drone_sim_std_main <- list()
+drone_sim_var_main <- list()
+drone_sim_max_main <- list()
+drone_sim_n_main <- list()
+
+drone_sim_avg_in <- list()
+drone_sim_std_in <- list()
+drone_sim_var_in <- list()
+drone_sim_max_in <- list()
+drone_sim_n_in <- list()
+
+drone_sim_avg_inbet <- list()
+drone_sim_std_inbet <- list()
+drone_sim_var_inbet <- list()
+drone_sim_max_inbet <- list()
+drone_sim_n_inbet <- list()
+
+for (sim in sims_drone) {
+  is.na(sim) <- !sim
+  
+  drone_sim_avg <- c(drone_sim_avg, list(apply(sim, 4, mean, na.rm = T)))
+  drone_sim_avg_main <-
+    c(drone_sim_avg_main, list(apply(sim[main_volume[[1]], main_volume[[2]], main_volume[[3]], ], 4, mean, na.rm =
+                                 T)))
+  drone_sim_avg_in <-
+    c(drone_sim_avg_in, list(apply(sim[in_rows[[1]], in_rows[[2]], in_rows[[3]], ], 4, mean, na.rm =
+                               T)))
+  drone_sim_avg_inbet <-
+    c(drone_sim_avg_inbet, list(apply(sim[inbetween_rows[[1]], inbetween_rows[[2]], inbetween_rows[[3]], ], 4, mean, na.rm =
+                                  T)))
+  
+  drone_sim_std <- c(drone_sim_std, list(apply(sim, 4, sd, na.rm = T)))
+  drone_sim_std_main <-
+    c(drone_sim_std_main, list(apply(sim[main_volume[[1]], main_volume[[2]], main_volume[[3]], ], 4, sd, na.rm =
+                                 T)))
+  drone_sim_std_in <-
+    c(drone_sim_std_in, list(apply(sim[in_rows[[1]], in_rows[[2]], in_rows[[3]], ], 4, sd, na.rm =
+                               T)))
+  drone_sim_std_inbet <-
+    c(drone_sim_std_inbet, list(apply(sim[inbetween_rows[[1]], inbetween_rows[[2]], inbetween_rows[[3]], ], 4, sd, na.rm =
+                                  T)))
+  
+  drone_sim_var <- c(drone_sim_var, list(apply(sim, 4, var, na.rm = T)))
+  drone_sim_var_main <-
+    c(drone_sim_var_main, list(apply(sim[main_volume[[1]], main_volume[[2]], main_volume[[3]], ], 4, var, na.rm =
+                                 T)))
+  drone_sim_var_in <-
+    c(drone_sim_var_in, list(apply(sim[in_rows[[1]], in_rows[[2]], in_rows[[3]], ], 4, var, na.rm =
+                               T)))
+  drone_sim_var_inbet <-
+    c(drone_sim_var_inbet, list(apply(sim[inbetween_rows[[1]], inbetween_rows[[2]], inbetween_rows[[3]], ], 4, var, na.rm =
+                                  T)))
+  
+  drone_sim_max <- c(drone_sim_max, list(apply(sim, 4, max, na.rm = T)))
+  drone_sim_max_main <-
+    c(drone_sim_max_main, list(apply(sim[main_volume[[1]], main_volume[[2]], main_volume[[3]], ], 4, max, na.rm =
+                                 T)))
+  drone_sim_max_in <-
+    c(drone_sim_max_in, list(apply(sim[in_rows[[1]], in_rows[[2]], in_rows[[3]], ], 4, max, na.rm =
+                               T)))
+  drone_sim_max_inbet <-
+    c(drone_sim_max_inbet, list(apply(sim[inbetween_rows[[1]], inbetween_rows[[2]], inbetween_rows[[3]], ], 4, max, na.rm =
+                                  T)))
+  
+  #is.na(sim) <- !sim
+  drone_sim_n <-
+    c(drone_sim_n, list(apply(sim, 4, function(x)
+      length(which(
+        !is.na(x)
+      )))))
+  drone_sim_n_main <-
+    c(drone_sim_n_main, list(apply(sim[main_volume[[1]], main_volume[[2]], main_volume[[3]], ], 4, function(x)
+      length(which(
+        !is.na(x)
+      )))))
+  drone_sim_n_in <-
+    c(drone_sim_n_in, list(apply(sim[in_rows[[1]], in_rows[[2]], in_rows[[3]], ], 4, function(x)
+      length(which(
+        !is.na(x)
+      )))))
+  drone_sim_n_inbet <-
+    c(drone_sim_n_inbet, list(apply(sim[inbetween_rows[[1]], inbetween_rows[[2]], inbetween_rows[[3]], ], 4, function(x)
+      length(which(
+        !is.na(x)
+      )))))
+}
+
+rm(sim)
+
+names(drone_sim_avg) <- names(sims_drone)
+names(drone_sim_std) <- names(sims_drone)
+names(drone_sim_var) <- names(sims_drone)
+names(drone_sim_max) <- names(sims_drone)
+names(drone_sim_n) <- names(sims_drone)
+
+names(drone_sim_avg_in) <- names(sims_drone)
+names(drone_sim_std_in) <- names(sims_drone)
+names(drone_sim_var_in) <- names(sims_drone)
+names(drone_sim_max_in) <- names(sims_drone)
+names(drone_sim_n_in) <- names(sims_drone)
+
+names(drone_sim_avg_inbet) <- names(sims_drone)
+names(drone_sim_std_inbet) <- names(sims_drone)
+names(drone_sim_var_inbet) <- names(sims_drone)
+names(drone_sim_max_inbet) <- names(sims_drone)
+names(drone_sim_n_inbet) <- names(sims_drone)
+
+names(drone_sim_avg_main) <- names(sims_drone)
+names(drone_sim_std_main) <- names(sims_drone)
+names(drone_sim_var_main) <- names(sims_drone)
+names(drone_sim_max_main) <- names(sims_drone)
+names(drone_sim_n_main) <- names(sims_drone)
+
+
 wind_pch <- c(1, 2, 3)
 emission_col <- brewer.pal(3, 'Reds')
 wind_col <- brewer.pal(3, 'Blues')
@@ -785,6 +907,12 @@ tikz(file = paste0(path_to_sims,'Legend_boxplots_sims.tex'), height = 0.3)
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
 plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
 legend("top", c("Pre-climacteric", "Entering climacteric", "Climacteric"), xpd = TRUE, horiz = TRUE, bty = "n", fill = emission_col)
+dev.off()
+
+tikz(file = paste0(path_to_sims,'Legend_Conf.tex'), height = 0.3)
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0))
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("top", c("$n=1$", "$n=4$", "$n=16$"), xpd = TRUE, horiz = TRUE, bty = "n", pch=c(1,2,3))
 dev.off()
 
 tikz(file = paste0(path_to_sims, 'Boxplots_', zones_files[2], '.tex'))
@@ -2295,6 +2423,61 @@ print(
   ),
   file = paste0(path_to_sims, "MeanConcentration.tex")
 )
+
+
+# Make average table DRONE ----
+drone_table_avg <-
+  data.frame(
+    as.array(lapply(drone_sim_avg, mean)),
+    as.array(lapply(drone_sim_std, mean)),
+    c(1:6),
+    as.array(lapply(drone_sim_avg_main, mean)),
+    as.array(lapply(drone_sim_std_main, mean)),
+    c(1:6),
+    as.array(lapply(drone_sim_avg_in, mean)),
+    as.array(lapply(drone_sim_std_in, mean)),
+    c(1:6),
+    as.array(lapply(drone_sim_avg_inbet, mean)),
+    as.array(lapply(drone_sim_std_inbet, mean)),
+    c(1:6),
+    row.names = 1:6
+  )
+drone_table_avg[1, 3] <- mean(unlist(drone_table_avg[1:3, 1]))
+drone_table_avg[2, 3] <- mean(unlist(drone_table_avg[1:3, 2])) ^ 2
+drone_table_avg[4, 3] <- mean(unlist(drone_table_avg[4:6, 1]))
+drone_table_avg[5, 3] <- mean(unlist(drone_table_avg[4:6, 2])) ^ 2
+
+drone_table_avg[1, 6] <- mean(unlist(drone_table_avg[1:3, 3]))
+drone_table_avg[2, 6] <- mean(unlist(drone_table_avg[1:3, 4])) ^ 2
+drone_table_avg[4, 6] <- mean(unlist(drone_table_avg[4:6, 3]))
+drone_table_avg[5, 6] <- mean(unlist(drone_table_avg[4:6, 4])) ^ 2
+
+drone_table_avg[1, 9] <- mean(unlist(drone_table_avg[1:3, 5]))
+drone_table_avg[2, 9] <- mean(unlist(drone_table_avg[1:3, 6])) ^ 2
+drone_table_avg[4, 9] <- mean(unlist(drone_table_avg[4:6, 5]))
+drone_table_avg[5, 9] <- mean(unlist(drone_table_avg[4:6, 6])) ^ 2
+
+drone_table_avg[1, 12] <- mean(unlist(drone_table_avg[1:3, 7]))
+drone_table_avg[2, 12] <- mean(unlist(drone_table_avg[1:3, 8])) ^ 2
+drone_table_avg[4, 12] <- mean(unlist(drone_table_avg[4:6, 7]))
+drone_table_avg[5, 12] <- mean(unlist(drone_table_avg[4:6, 8])) ^ 2
+
+colnames(drone_table_avg) <-
+  c(zones[1], '', '', zones[2], '', '', zones[3], '', '', zones[4], '', '')
+
+drone_table_avg[c(3, 6), c(3, 6, 9, 12)] <- ''
+
+print(
+  xtable(
+    drone_table_avg,
+    type = "latex",
+    caption = 'Average concentration of ethylene ($ppb$) in the different drone simulations and zones.',
+    digits = 2,
+    label = 'tbl:drone_avg_concentration'
+  ),
+  file = paste0(path_to_sims, "DroneMeanConcentration.tex")
+)
+
 
 # Make average plot ----
 
@@ -4752,7 +4935,7 @@ r <- range(c(
   log(c(mean(unlist(sim_avg_main[c(1,6,11)])),mean(unlist(sim_avg_main[c(2,3,7,8,12,13)])))),
        log(c(mean(unlist(sim_avg_all[c(1,6,11)])),mean(unlist(sim_avg_all[c(2,3,7,8,12,13)])))),
              log(c(mean(unlist(sim_avg_in[c(1,6,11)])),mean(unlist(sim_avg_in[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_in[c(4,5,9,10,14,15)])))),
-             log(c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)]))))
+  log(c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_inbet[c(4,5,9,10,14,15)]))))
              ))
 
 plot(c(0,2,5),
@@ -4779,7 +4962,43 @@ abline(trend_main,lwd=3, col=zones_col[1])
 abline(trend_in,lwd=3, col=zones_col[2])
 abline(trend_inbet,lwd=3, col=zones_col[3])
 
-legend('top',paste(zones,'$b=$', round(c(trend_all$coefficients[2],trend_main$coefficients[2],trend_in$coefficients[2],trend_inbet$coefficients[2]),2)),fill=c('black',zones_col), bty = 'n', xjust=0)
+legend('top',paste(zones,'$a=$',round(c(trend_all$coefficients[1],trend_main$coefficients[1],trend_in$coefficients[1],trend_inbet$coefficients[1]),1),'$b=$', round(c(trend_all$coefficients[2],trend_main$coefficients[2],trend_in$coefficients[2],trend_inbet$coefficients[2]),1)),fill=c('black',zones_col), bty = 'n', xjust=0)
+dev.off()
+
+tikz(file = paste0(path_to_sims, 'WindSpeedEthyleneNotLog.tex'),
+     height = 3.5)
+r <- range(c(
+  (c(mean(unlist(sim_avg_main[c(1,6,11)])),mean(unlist(sim_avg_main[c(2,3,7,8,12,13)])))),
+  (c(mean(unlist(sim_avg_all[c(1,6,11)])),mean(unlist(sim_avg_all[c(2,3,7,8,12,13)])))),
+  (c(mean(unlist(sim_avg_in[c(1,6,11)])),mean(unlist(sim_avg_in[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_in[c(4,5,9,10,14,15)])))),
+  (c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_inbet[c(4,5,9,10,14,15)]))))
+))
+
+plot(c(0,2,5),
+     (c(mean(unlist(sim_avg_all[c(1,6,11)])),mean(unlist(sim_avg_all[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_all[c(4,5,9,10,14,15)])))), 
+     pch=21, ylab = 'Ethylene concentration ($ppb$)',xlab='Wind speed ($ms^{-1}$)', ylim=range(r), bg='black')
+
+points(c(0,2,5),
+       (c(mean(unlist(sim_avg_main[c(1,6,11)])),mean(unlist(sim_avg_main[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_main[c(4,5,9,10,14,15)])))), 
+       bg=zones_col[1], pch=21)
+points(c(0,2,5),
+       (c(mean(unlist(sim_avg_in[c(1,6,11)])),mean(unlist(sim_avg_in[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_in[c(4,5,9,10,14,15)])))), 
+       bg=zones_col[2], pch=21)
+points(c(0,2,5),
+       (c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_inbet[c(4,5,9,10,14,15)])))), 
+       bg=zones_col[3], pch=21)
+
+trend_all <- line(c(0,2,5),(c(mean(unlist(sim_avg_all[c(1,6,11)])),mean(unlist(sim_avg_all[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_all[c(4,5,9,10,14,15)])))))
+trend_main <- line(c(0,2,5),(c(mean(unlist(sim_avg_main[c(1,6,11)])),mean(unlist(sim_avg_main[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_main[c(4,5,9,10,14,15)])))))
+trend_in <- line(c(0,2,5),(c(mean(unlist(sim_avg_in[c(1,6,11)])),mean(unlist(sim_avg_in[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_in[c(4,5,9,10,14,15)])))))
+trend_inbet <- line(c(0,2,5),(c(mean(unlist(sim_avg_inbet[c(1,6,11)])),mean(unlist(sim_avg_inbet[c(2,3,7,8,12,13)])),mean(unlist(sim_avg_inbet[c(4,5,9,10,14,15)])))))
+
+abline(trend_all)
+abline(trend_main,lwd=3, col=zones_col[1])
+abline(trend_in,lwd=3, col=zones_col[2])
+abline(trend_inbet,lwd=3, col=zones_col[3])
+
+legend('top',paste(zones,'$a=$',round(c(trend_all$coefficients[1],trend_main$coefficients[1],trend_in$coefficients[1],trend_inbet$coefficients[1]),1),'$b=$', round(c(trend_all$coefficients[2],trend_main$coefficients[2],trend_in$coefficients[2],trend_inbet$coefficients[2]),1)),fill=c('black',zones_col), bty = 'n', xjust=0)
 dev.off()
 
 # Make spider plots ----
@@ -5508,7 +5727,7 @@ points(
   lwd = 3,
   pch=3
 )
-legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
+#legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
 dev.off()
 
 # NA
@@ -5692,7 +5911,7 @@ points(
   lwd = 3,
   pch=3
 )
-legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
+#legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
 dev.off()
 
 # Composite 
@@ -5835,7 +6054,7 @@ points(
   lwd = 3,
   pch=3
 )
-legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
+#legend('bottomright', rownames(data[-c(1,2),]), pch= 1:3)
 dev.off()
 
 
@@ -5954,3 +6173,107 @@ lines((1:164)*0.1,(y_dist[[3]]+y_dist[[5]]+y_dist[[8]]+y_dist[[10]]+y_dist[[13]]
 #abline(h=3, col='green', lwd=3)
 #legend('topright',c('No wind','$\\vec{x}$','$\\vec{y}$','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,3,1,1))
 dev.off()
+
+# Height dist For DRONE ----
+height_dist <- lapply(sims_drone, FUN = function(y) apply(y,MARGIN = c(3), FUN = function(x) sum(!is.na(x))/length(x))*100)
+
+x_dist <- lapply(sims_drone, FUN = function(y) apply(y,MARGIN = c(1), FUN = function(x) sum(!is.na(x))/length(x))*100)
+
+y_dist <- lapply(sims_drone, FUN = function(y) apply(y,MARGIN = c(2), FUN = function(x) sum(!is.na(x))/length(x))*100)
+
+tikz(file = paste0(
+  path_to_sims,
+  'DroneHeightDist.tex'
+))
+plot(height_dist[[1]], (1:59)*0.1, type='b', xlab='Occupied cells (\\%)', ylab='$z$ ($m$)', col=emission_col[1], pch=2, lwd = 3, xlim = c(0,50), ylim = c(0.1,6))
+for(i in 2:length(height_dist)){
+  if (i %in% c(3,6)) {
+    p_t <- emission_col[3]
+  }
+  if (i %in% c(2,5)) {
+    p_t <- emission_col[2]
+  }
+  if (i %in% 4) {
+    p_t <- emission_col[1]
+  }
+  
+  if (i %in% 1:3) {
+    p_ch <- wind_pch[1]
+  }
+  if (i %in% 4:6) {
+    p_ch <- wind_pch[2]
+  }
+  points(height_dist[[i]], (1:59)*0.1, type='b', col=p_t, pch=p_ch, lwd = 3)
+}
+# 0 ms
+lines((height_dist[[1]]+height_dist[[2]]+height_dist[[3]])/3, (1:59)*0.1, lwd=3)
+lines((height_dist[[4]]+height_dist[[5]]+height_dist[[6]])/3, (1:59)*0.1, lwd=3, lty=2)
+abline(v=5,col='red',lwd=3)
+abline(h=3, col='green', lwd=3)
+legend('topright',c('Position 1','Position 2','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,1,1))
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'DroneXDist.tex'
+))
+plot( (1:199)*0.1,x_dist[[1]], type='b', ylab='Occupied cells (\\%)', xlab='$x$ ($m$)', col=emission_col[1], pch=wind_pch[2], lwd = 3, ylim = c(0,60), xlim = c(0.1,20))
+for(i in 2:length(height_dist)){
+  if (i %in% c(3,6)) {
+    p_t <- emission_col[3]
+  }
+  if (i %in% c(2,5)) {
+    p_t <- emission_col[2]
+  }
+  if (i %in% 4) {
+    p_t <- emission_col[1]
+  }
+  
+  if (i %in% 1:3) {
+    p_ch <- wind_pch[1]
+  }
+  if (i %in% 4:6) {
+    p_ch <- wind_pch[2]
+  }
+  points((1:199)*0.1,x_dist[[i]], type='b', col=p_t, pch=p_ch, lwd = 3)
+}
+# 0 ms
+lines((1:199)*0.1,(x_dist[[1]]+x_dist[[2]]+x_dist[[3]])/3, lwd=3)
+lines((1:199)*0.1, (x_dist[[4]]+x_dist[[5]]+x_dist[[6]])/3, lwd=3, lty=2)
+#abline(v=5,col='red',lwd=3)
+#abline(h=3, col='green', lwd=3)
+#legend('topright',c('No wind','$\\vec{x}$','$\\vec{y}$','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,3,1,1))
+dev.off()
+
+tikz(file = paste0(
+  path_to_sims,
+  'DroneYDist.tex'
+))
+plot((1:164)*0.1,y_dist[[1]], type='b', ylab='Occupied cells (\\%)', xlab='$y$ ($m$)', col=emission_col[1], pch=wind_pch[2], lwd = 3, ylim = c(0,60), xlim = c(0.1,16.5))
+for(i in 2:length(height_dist)){
+  if (i %in% c(3,6)) {
+    p_t <- emission_col[3]
+  }
+  if (i %in% c(2,5)) {
+    p_t <- emission_col[2]
+  }
+  if (i %in% 4) {
+    p_t <- emission_col[1]
+  }
+  
+  if (i %in% 1:3) {
+    p_ch <- wind_pch[1]
+  }
+  if (i %in% 4:6) {
+    p_ch <- wind_pch[2]
+  }
+  points((1:164)*0.1,y_dist[[i]], type='b', col=p_t, pch=p_ch, lwd = 3)
+}
+# 0 ms
+lines((1:164)*0.1,(y_dist[[1]]+y_dist[[2]]+y_dist[[3]])/3, lwd=3)
+lines((1:164)*0.1, (y_dist[[4]]+y_dist[[5]]+y_dist[[6]])/3, lwd=3, lty=2)
+#abline(v=5,col='red',lwd=3)
+#abline(h=3, col='green', lwd=3)
+#legend('topright',c('No wind','$\\vec{x}$','$\\vec{y}$','$5\\%$','Tree height'),bty='n', col=c(rep('black',3),'red','green'),lty=c(1,2,3,1,1))
+dev.off()
+
