@@ -443,7 +443,7 @@ for (n in 1:15) {
     stage <- 1
   }
   
-  pdf(paste0(path_to_sims, names(sims)[[n]], '_XY.pdf'))
+  pdf(paste0(path_to_sims, names(sims)[[n]], '_XY.pdf'), family = 'CMU Sans Serif')
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image(
     X,
@@ -473,7 +473,7 @@ for (n in 1:15) {
   )
   dev.off()
   
-  pdf(paste0(path_to_sims, names(sims)[[n]], '_XZ.pdf'))
+  pdf(paste0(path_to_sims, names(sims)[[n]], '_XZ.pdf'), family = 'CMU Sans Serif')
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image(
     X,
@@ -503,7 +503,7 @@ for (n in 1:15) {
   )
   dev.off()
   
-  pdf(paste0(path_to_sims, names(sims)[[n]], '_YZ.pdf'))
+  pdf(paste0(path_to_sims, names(sims)[[n]], '_YZ.pdf'), family = 'CMU Sans Serif')
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image.plot(
     Y,
@@ -3581,7 +3581,7 @@ for (n in 1:6) {
     point <- c(125, s_1p[2], 20)
   }
   
-  pdf(paste0(path_to_sims, names(sims_drone)[[n]], '_XY.pdf'))
+  pdf(paste0(path_to_sims, names(sims_drone)[[n]], '_XY.pdf'), family = 'CMU Sans Serif')
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image(
     X,
@@ -3616,7 +3616,7 @@ for (n in 1:6) {
          cex = 2)
   dev.off()
   
-  pdf(paste0(path_to_sims, names(sims_drone)[[n]], '_XZ.pdf'))
+  pdf(paste0(path_to_sims, names(sims_drone)[[n]], '_XZ.pdf'), family = 'CMU Sans Serif')
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image(
     X,
@@ -3651,7 +3651,7 @@ for (n in 1:6) {
          cex = 2)
   dev.off()
   
-  pdf(paste0(path_to_sims, names(sims_drone)[[n]], '_YZ.pdf'))
+  pdf(paste0(path_to_sims, names(sims_drone)[[n]], '_YZ.pdf'), family = 'CMU Sans Serif')
   #plot(coords$x*10,coords$y*10,xlim=c(25,174),ylim=c(25,141), ann=FALSE)
   image.plot(
     Y,

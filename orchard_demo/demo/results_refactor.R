@@ -6,6 +6,9 @@ library(fields)
 library(MASS)
 library(xtable)
 library(fmsb)
+library(extrafont)
+font_import()
+loadfonts()
 
 # Start ----
 # Load simulation data
@@ -81,6 +84,7 @@ powerTransform <- function(y, lambda1, lambda2 = NULL, method = "boxcox") {
   }
 
 # Setting up ----
+
 
 X <- 1:199
 Y <- 1:164
@@ -922,6 +926,37 @@ legend(
 )
 dev.off()
 
+tikz(file = paste0(path_to_sims, 'Legend_EthEvo.tex'),
+     height = 0.7)
+par(
+  fig = c(0, 1, 0, 1),
+  oma = c(0, 0, 0, 0),
+  mar = c(0, 0, 0, 0)
+)
+plot(
+  0,
+  0,
+  type = "n",
+  bty = "n",
+  xaxt = "n",
+  yaxt = "n"
+)
+legend(
+  "top",
+  c("0 $ms^{-1}$", "2 $ms^{-1}$", "5 $ms^{-1}$"),
+  xpd = TRUE, horiz = TRUE, bty = "n", pch=wind_pch
+)
+legend(
+  'top',
+  inset = c(0, 0.6),
+  c("$\\vec{x}$", "$\\vec{y}$"),
+  xpd = TRUE,
+  horiz = TRUE,
+  bty = "n",
+  fill = c(wind_dir_col[c(1, 3)])
+)
+dev.off()
+
 
 # Variance ----
 z <- 1
@@ -1500,55 +1535,35 @@ measures_s_4p_na <- measures_s_1p
 measures_s_4p_na <-
   rapply(measures_s_4p_na, function(x)
     ifelse(x != 0, 0, x), how = "replace")
-measures_s_4p_na <-
-  rapply(measures_s_4p_na, function(x)
-    ifelse(is.na(x), 0, x), how = "replace")
 
-measures_s_1p_na <- measures_s_4p_na
+measures_s_16p_na <- measures_s_1p
+measures_s_16p_na <-
+  rapply(measures_s_16p_na, function(x)
+    ifelse(x != 0, 0, x), how = "replace")
 
-measures_s_16p_na <- measures_s_4p_na
-
-measures_s_4p_z <- measures_s_1p
-measures_s_4p_z <-
-  rapply(measures_s_4p_z, function(x)
-    ifelse(x != 0, NA, x), how = "replace")
-
-measures_s_1p_z <- measures_s_4p_z
-
-measures_s_16p_z <- measures_s_4p_z
-
-# Calculate NA
-for (s in 1:15) {
-  for (t in 1:length(measures_s_1p[[s]])) {
-    measures_s_1p_na[[s]][[t]] <-
-      measures_s_1p_na[[s]][[t]] + as.numeric(!is.na(measures_s_1p[[s]][[t]]))
-  }
-}
-measures_s_1p_na <- lapply(measures_s_1p_na, function(x)
-  (x) * 100)
 
 for (p in 1:4) {
   for (s in 1:15) {
     for (t in 1:length(measures_s_1p[[s]])) {
       measures_s_4p_na[[s]][[t]] <-
-        measures_s_4p_na[[s]][[t]] + as.numeric(!is.na(measures_s_4p[[p]][[s]][[t]]))
+        measures_s_4p_na[[s]][[t]] + as.numeric(measures_s_4p[[p]][[s]][[t]])
     }
   }
 }
 measures_s_4p_na <- lapply(measures_s_4p_na, function(x)
-  (x / 4) * 100)
+  (x / 4))
 
 for (p in 1:16) {
   for (s in 1:15) {
     for (t in 1:length(measures_s_1p[[s]])) {
       measures_s_16p_na[[s]][[t]] <-
-        measures_s_16p_na[[s]][[t]] + as.numeric(!is.na(measures_s_16p[[p]][[s]][[t]]))
+        measures_s_16p_na[[s]][[t]] + as.numeric(measures_s_16p[[p]][[s]][[t]])
     }
   }
 }
 measures_s_16p_na <-
   lapply(measures_s_16p_na, function(x)
-    (x / 16) * 100)
+    (x / 16))
 
 # Calculate Z-score
 
@@ -1556,74 +1571,37 @@ for (s in 1:15) {
   for (t in 1:length(measures_s_1p[[s]])) {
     measures_s_1p_z[[s]][[t]] <-
       z.test_s(
-        powerTransform(measures_s_1p[[s]][[t]], lambda_values[[s]][[t]]),
-        mu = powerTransform(sim_avg_main[[s]][[t]], lambda_values[[s]][[t]]),
-        sd = powerTransform(sim_std_main[[s]][[t]], lambda_values[[s]][[t]])
+        measures_s_1p[[s]][[t]],
+        mu = sim_avg_main[[s]][[t]],
+        sd = sim_std_main[[s]][[t]]
       )
   }
 }
 
 for (s in 1:15) {
-  for (t in 1:length(measures_s_1p[[s]])) {
+  for (t in 1:length(measures_s_4p[[s]])) {
     measures_s_4p_z[[s]][[t]] <-
       z.test_s(
-        powerTransform(
-          c(
-            measures_s_4p[[1]][[s]][[t]],
-            measures_s_4p[[2]][[s]][[t]],
-            measures_s_4p[[3]][[s]][[t]],
-            measures_s_4p[[4]][[s]][[t]]
-          ),
-          lambda_values[[s]][[t]]
-        ),
-        mu = powerTransform(sim_avg_main[[s]][[t]], lambda_values[[s]][[t]]),
-        sd = powerTransform(sim_std_main[[s]][[t]], lambda_values[[s]][[t]])
+        measures_s_1p[[s]][[t]],
+        mu = sim_avg_main[[s]][[t]],
+        sd = sim_std_main[[s]][[t]]
       )
   }
 }
 
-for (s in 1:15) {
-  for (t in 1:length(measures_s_1p[[s]])) {
-    measures_s_16p_z[[s]][[t]] <- z.test_s(
-      powerTransform(
-        c(
-          measures_s_16p[[1]][[s]][[t]],
-          measures_s_16p[[2]][[s]][[t]],
-          measures_s_16p[[3]][[s]][[t]],
-          measures_s_16p[[4]][[s]][[t]],
-          measures_s_16p[[5]][[s]][[t]],
-          measures_s_16p[[6]][[s]][[t]],
-          measures_s_16p[[7]][[s]][[t]],
-          measures_s_16p[[8]][[s]][[t]],
-          measures_s_16p[[9]][[s]][[t]],
-          measures_s_16p[[10]][[s]][[t]],
-          measures_s_16p[[11]][[s]][[t]],
-          measures_s_16p[[12]][[s]][[t]],
-          measures_s_16p[[13]][[s]][[t]],
-          measures_s_16p[[14]][[s]][[t]],
-          measures_s_16p[[15]][[s]][[t]],
-          measures_s_16p[[16]][[s]][[t]]
-        ),
-        lambda_values[[s]][[t]]
-      ),
-      mu = powerTransform(sim_avg_main[[s]][[t]], lambda_values[[s]][[t]]),
-      sd = powerTransform(sim_std_main[[s]][[t]], lambda_values[[s]][[t]])
-    )
-  }
-}
 
-# NA 1 p ----
+# Measures 1 p ----
+tikz(file = paste0(path_to_sims, 'RegularGrid1p.tex'))
 plot(
-  timesteps[1:15],
-  measures_s_1p_na[[1]],
-  ylim = c(0, 100),
+  timesteps[1:length(measures_s_1p[[1]])],
+  measures_s_1p[[1]],
+  ylim = range(measures_s_1p, na.rm = T),
   xlim = range(timesteps),
   col = emission_col[3],
   pch = wind_pch[1],
-  lty = 3,
   type = 'b',
   xlab = 'Time ($s$)',
-  ylab = 'Probability of ethylene existing in the sample',
+  ylab = 'Ethylene concentration ($ppb$)',
   main = '$n=1$',
   lwd = 3
 )
@@ -1647,39 +1625,29 @@ for (i in 2:15) {
   if (i %in% c(4, 5, 9, 10, 14, 15)) {
     p_ch <- wind_pch[3]
   }
-  if (i %in% c(11, 6)) {
-    points(
-      timesteps[1:15],
-      measures_s_1p_na[[i]],
+  points(
+      timesteps[1:length(measures_s_1p[[i]])],
+      measures_s_1p[[i]],
       col = p_t,
       pch = p_ch,
       type = 'b',
       lwd = 3
     )
-  }
-  else{
-    points(
-      timesteps,
-      measures_s_1p_na[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
 }
-# NA 4 p ----
+dev.off()
+
+# Measure 4 p ----
+tikz(file = paste0(path_to_sims, 'RegularGrid4p.tex'))
 plot(
-  timesteps[1:15],
+  timesteps[1:length(measures_s_4p_na[[1]])],
   measures_s_4p_na[[1]],
-  ylim = c(0, 100),
+  ylim = range(measures_s_4p_na, na.rm = T),
   xlim = range(timesteps),
   col = emission_col[3],
   pch = wind_pch[1],
-  lty = 3,
   type = 'b',
   xlab = 'Time ($s$)',
-  ylab = 'Probability of ethylene existing in the sample',
+  ylab = 'Ethylene concentration ($ppb$)',
   main = '$n=4$',
   lwd = 3
 )
@@ -1703,40 +1671,29 @@ for (i in 2:15) {
   if (i %in% c(4, 5, 9, 10, 14, 15)) {
     p_ch <- wind_pch[3]
   }
-  if (i %in% c(11, 6)) {
-    points(
-      timesteps[1:15],
-      measures_s_4p_na[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
-  else{
-    points(
-      timesteps,
-      measures_s_4p_na[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
+  points(
+    timesteps[1:length(measures_s_4p_na[[i]])],
+    measures_s_4p_na[[i]],
+    col = p_t,
+    pch = p_ch,
+    type = 'b',
+    lwd = 3
+  )
 }
+dev.off()
 
-# NA 16 p ----
+# Measures 16 p ----
+tikz(file = paste0(path_to_sims, 'RegularGrid16p.tex'))
 plot(
-  timesteps[1:15],
+  timesteps[1:length(measures_s_16p_na[[1]])],
   measures_s_16p_na[[1]],
-  ylim = c(0, 100),
+  ylim = range(measures_s_16p_na, na.rm = T),
   xlim = range(timesteps),
   col = emission_col[3],
   pch = wind_pch[1],
-  lty = 3,
   type = 'b',
   xlab = 'Time ($s$)',
-  ylab = 'Probability of ethylene existing in the sample',
+  ylab = 'Ethylene concentration ($ppb$)',
   main = '$n=16$',
   lwd = 3
 )
@@ -1760,212 +1717,32 @@ for (i in 2:15) {
   if (i %in% c(4, 5, 9, 10, 14, 15)) {
     p_ch <- wind_pch[3]
   }
-  if (i %in% c(11, 6)) {
     points(
-      timesteps[1:15],
+      timesteps[1:length(measures_s_16p_na[[i]])],
       measures_s_16p_na[[i]],
       col = p_t,
       pch = p_ch,
       type = 'b',
       lwd = 3
     )
-  }
-  else{
-    points(
-      timesteps,
-      measures_s_16p_na[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
 }
-
-
-
-# Z 1 p ----
-tikz(file = paste0(path_to_sims, 'RegularGrid1p_Z.tex'))
-plot(
-  timesteps[1:15],
-  measures_s_1p_z[[1]],
-  ylim = range(measures_s_1p_z, na.rm = T),
-  xlim = range(timesteps),
-  col = emission_col[3],
-  pch = wind_pch[1],
-  lty = 3,
-  type = 'b',
-  xlab = 'Time ($s$)',
-  ylab = '$z$-score',
-  main = '$n=1$',
-  lwd = 3
-)
-for (i in 2:15) {
-  if (i %in% 2:5) {
-    p_t <- emission_col[3]
-  }
-  if (i %in% 6:10) {
-    p_t <- emission_col[2]
-  }
-  if (i %in% 11:15) {
-    p_t <- emission_col[1]
-  }
-  
-  if (i %in% c(6, 11)) {
-    p_ch <- wind_pch[1]
-  }
-  if (i %in% c(2, 3, 7, 8, 12, 13)) {
-    p_ch <- wind_pch[2]
-  }
-  if (i %in% c(4, 5, 9, 10, 14, 15)) {
-    p_ch <- wind_pch[3]
-  }
-  if (i %in% c(11, 6)) {
-    points(
-      timesteps[1:15],
-      measures_s_1p_z[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
-  else{
-    points(
-      timesteps,
-      measures_s_1p_z[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
-}
-abline(h = 1.96, lty = 3)
-abline(h = -1.96, lty = 3)
 dev.off()
 
-# Z 4 p ----
-tikz(file = paste0(path_to_sims, 'RegularGrid4p_Z.tex'))
-plot(
-  timesteps[1:15],
-  measures_s_4p_z[[1]],
-  ylim = range(measures_s_4p_z, na.rm = T),
-  xlim = range(timesteps),
-  col = emission_col[3],
-  pch = wind_pch[1],
-  lty = 3,
-  type = 'b',
-  xlab = 'Time ($s$)',
-  ylab = '$z$-score',
-  main = '$n=4$',
-  lwd = 3
-)
-for (i in 2:15) {
-  if (i %in% 2:5) {
-    p_t <- emission_col[3]
-  }
-  if (i %in% 6:10) {
-    p_t <- emission_col[2]
-  }
-  if (i %in% 11:15) {
-    p_t <- emission_col[1]
-  }
-  
-  if (i %in% c(6, 11)) {
-    p_ch <- wind_pch[1]
-  }
-  if (i %in% c(2, 3, 7, 8, 12, 13)) {
-    p_ch <- wind_pch[2]
-  }
-  if (i %in% c(4, 5, 9, 10, 14, 15)) {
-    p_ch <- wind_pch[3]
-  }
-  if (i %in% c(11, 6)) {
-    points(
-      timesteps[1:15],
-      measures_s_4p_z[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
-  else{
-    points(
-      timesteps,
-      measures_s_4p_z[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
-}
-abline(h = 1.96, lty = 3)
-abline(h = -1.96, lty = 3)
-dev.off()
 
-# Z 16 p ----
-tikz(file = paste0(path_to_sims, 'RegularGrid16p_Z.tex'))
-plot(
-  timesteps[1:15],
-  measures_s_16p_z[[1]],
-  ylim = range(measures_s_16p_z, na.rm = T),
-  xlim = range(timesteps),
-  col = emission_col[3],
-  pch = wind_pch[1],
-  lty = 3,
-  type = 'b',
-  xlab = 'Time ($s$)',
-  ylab = '$z$-score',
-  main = '$n=16$',
-  lwd = 3
-)
-for (i in 2:15) {
-  if (i %in% 2:5) {
-    p_t <- emission_col[3]
-  }
-  if (i %in% 6:10) {
-    p_t <- emission_col[2]
-  }
-  if (i %in% 11:15) {
-    p_t <- emission_col[1]
-  }
-  
-  if (i %in% c(6, 11)) {
-    p_ch <- wind_pch[1]
-  }
-  if (i %in% c(2, 3, 7, 8, 12, 13)) {
-    p_ch <- wind_pch[2]
-  }
-  if (i %in% c(4, 5, 9, 10, 14, 15)) {
-    p_ch <- wind_pch[3]
-  }
-  if (i %in% c(11, 6)) {
-    points(
-      timesteps[1:15],
-      measures_s_16p_z[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
-  else{
-    points(
-      timesteps,
-      measures_s_16p_z[[i]],
-      col = p_t,
-      pch = p_ch,
-      type = 'b',
-      lwd = 3
-    )
-  }
-}
-abline(h = 1.96, lty = 3)
-abline(h = -1.96, lty = 3)
-dev.off()
+
+regular_grid_error <- data.frame(table_avg[4], table_avg[5], sapply(measures_s_1p, mean), (sapply(measures_s_1p, mean)-table_avg[4])/table_avg[4]*100, sapply(measures_s_4p_na, mean),(sapply(measures_s_4p_na, mean)-table_avg[4])/table_avg[4]*100, sapply(measures_s_16p_na, mean), (sapply(measures_s_16p_na, mean)-table_avg[4])/table_avg[4]*100)
+
+regular_grid_error <- rbind(regular_grid_error,apply(abs(regular_grid_error),MARGIN = 2, mean))
+
+print(
+  xtable(
+    regular_grid_error,
+    type = "latex",
+    digits = 3,
+    label = 'tbl:regular_grid'
+  ),
+  file = paste0(path_to_sims, "RegularGrid.tex")
+)                                  
 
 
 # Scatter plot of average emission/average concentration ----
@@ -2409,11 +2186,6 @@ dev.off()
 # Plot basic stats drone ----
 # For position around the drone, average concentration
 
-for (i in 1:length(sims_drone)) {
-  is.na(sims_drone[[i]]) <- !sims_drone[[i]]
-}
-rm(i)
-
 point1 <- c(s_1p[1:2], 40)
 point1_zone <-
   list(((point1[1] - 2):(point1[1] + 2)), ((point1[2] - 2):(point1[2] + 2)), ((point1[3] -
@@ -2820,11 +2592,43 @@ t_table_avg <- as.data.frame(t(table_avg))
 
 diff_table <- data.frame(
   c((t_table_avg$`6`-t_table_avg$`11`)[c(1,4,7,10)], (t_table_avg$`1`-t_table_avg$`6`)[c(1,4,7,10)]),
+  c((t_table_avg$`6`-t_table_avg$`11`)[c(1,4,7,10)]/t_table_avg$`11`[c(1,4,7,10)]*100,((t_table_avg$`1`-t_table_avg$`6`)[c(1,4,7,10)]/t_table_avg$`6`[c(1,4,7,10)])*100),
 c((t_table_avg$`7`-t_table_avg$`12`)[c(1,4,7,10)], (t_table_avg$`2`-t_table_avg$`7`)[c(1,4,7,10)]),
+c((t_table_avg$`7`-t_table_avg$`12`)[c(1,4,7,10)]/t_table_avg$`12`[c(1,4,7,10)]*100,((t_table_avg$`2`-t_table_avg$`7`)[c(1,4,7,10)]/t_table_avg$`7`[c(1,4,7,10)])*100),
 c((t_table_avg$`8`-t_table_avg$`13`)[c(1,4,7,10)], (t_table_avg$`3`-t_table_avg$`8`)[c(1,4,7,10)]),
+c((t_table_avg$`8`-t_table_avg$`13`)[c(1,4,7,10)]/t_table_avg$`13`[c(1,4,7,10)]*100,((t_table_avg$`3`-t_table_avg$`8`)[c(1,4,7,10)]/t_table_avg$`8`[c(1,4,7,10)])*100),
 c((t_table_avg$`9`-t_table_avg$`14`)[c(1,4,7,10)], (t_table_avg$`4`-t_table_avg$`9`)[c(1,4,7,10)]),
-c((t_table_avg$`10`-t_table_avg$`15`)[c(1,4,7,10)], (t_table_avg$`5`-t_table_avg$`10`)[c(1,4,7,10)]), row.names = c(paste(zones,'E2-E1'), paste(zones,'E3-E2')))
-colnames(diff_table) <- c('0ms','2msX','2msY','5msX','5msY')
+c((t_table_avg$`9`-t_table_avg$`14`)[c(1,4,7,10)]/t_table_avg$`14`[c(1,4,7,10)]*100,((t_table_avg$`4`-t_table_avg$`9`)[c(1,4,7,10)]/t_table_avg$`9`[c(1,4,7,10)])*100),
+
+c((t_table_avg$`10`-t_table_avg$`15`)[c(1,4,7,10)], (t_table_avg$`5`-t_table_avg$`10`)[c(1,4,7,10)]), 
+c((t_table_avg$`10`-t_table_avg$`15`)[c(1,4,7,10)]/t_table_avg$`15`[c(1,4,7,10)]*100,((t_table_avg$`5`-t_table_avg$`10`)[c(1,4,7,10)]/t_table_avg$`10`[c(1,4,7,10)])*100),
+row.names = c(paste(zones,'E2-E1'), paste(zones,'E3-E2')))
+colnames(diff_table) <- rep(c('0ms','2msX','2msY','5msX','5msY'), each=2)
+
+print(
+  xtable(
+    diff_table,
+    type = "latex",
+    digits = 2,
+    label = 'tbl:diff_table'
+  ),
+  file = paste0(path_to_sims, "DiffTable.tex")
+)
+
+diff_table_rev <- data.frame(
+  c((t_table_avg$`11`-t_table_avg$`6`)[c(1,4,7,10)], (t_table_avg$`6`-t_table_avg$`1`)[c(1,4,7,10)]),
+  c((t_table_avg$`11`-t_table_avg$`6`)[c(1,4,7,10)]/t_table_avg$`6`[c(1,4,7,10)]*100,((t_table_avg$`6`-t_table_avg$`1`)[c(1,4,7,10)]/t_table_avg$`1`[c(1,4,7,10)])*100),
+  c((t_table_avg$`12`-t_table_avg$`7`)[c(1,4,7,10)], (t_table_avg$`7`-t_table_avg$`2`)[c(1,4,7,10)]),
+  c((t_table_avg$`12`-t_table_avg$`7`)[c(1,4,7,10)]/t_table_avg$`7`[c(1,4,7,10)]*100,((t_table_avg$`7`-t_table_avg$`2`)[c(1,4,7,10)]/t_table_avg$`2`[c(1,4,7,10)])*100),
+  c((t_table_avg$`13`-t_table_avg$`8`)[c(1,4,7,10)], (t_table_avg$`8`-t_table_avg$`3`)[c(1,4,7,10)]),
+  c((t_table_avg$`13`-t_table_avg$`8`)[c(1,4,7,10)]/t_table_avg$`8`[c(1,4,7,10)]*100,((t_table_avg$`8`-t_table_avg$`3`)[c(1,4,7,10)]/t_table_avg$`3`[c(1,4,7,10)])*100),
+  c((t_table_avg$`14`-t_table_avg$`9`)[c(1,4,7,10)], (t_table_avg$`9`-t_table_avg$`4`)[c(1,4,7,10)]),
+  c((t_table_avg$`14`-t_table_avg$`9`)[c(1,4,7,10)]/t_table_avg$`9`[c(1,4,7,10)]*100,((t_table_avg$`9`-t_table_avg$`4`)[c(1,4,7,10)]/t_table_avg$`4`[c(1,4,7,10)])*100),
+  
+  c((t_table_avg$`15`-t_table_avg$`10`)[c(1,4,7,10)], (t_table_avg$`10`-t_table_avg$`5`)[c(1,4,7,10)]),
+  c((t_table_avg$`15`-t_table_avg$`10`)[c(1,4,7,10)]/t_table_avg$`10`[c(1,4,7,10)]*100,((t_table_avg$`10`-t_table_avg$`5`)[c(1,4,7,10)]/t_table_avg$`5`[c(1,4,7,10)])*100),
+  row.names = c(paste(zones,'E2-E1'), paste(zones,'E3-E2')))
+colnames(diff_table) <- rep(c('0ms','2msX','2msY','5msX','5msY'), each=2)
 
 
 
@@ -2853,11 +2657,50 @@ table_SME$Inbet_PE <- 100*((table_SME$Inbet4*qt((1-0.05/2),df=4-1))/unlist(table
 table_SME$Inbet16 <- unlist(table_avg[11])/sqrt(16)
 table_SME$Inbet16_PE <- 100*((table_SME$Inbet16*qt((1-0.05/2),df=16-1))/unlist(table_avg[10]))
 
+table_SME$Allowed <- rep(c(144,174,180,188,188),3)
+
+table_SME$AllowedHalfwidth <- c(44,
+                                    49,
+                                    44,
+                                    44,
+                                    42,
+                                    35,
+                                    34,
+                                    46,
+                                    52,
+                                    44,
+                                    59,
+                                    58,
+                                    68,
+                                    72,
+                                    67)
+table_SME$AllowedAbs <- rep(c(4.69,0.33,0.40,0.40,0.17),3)
+
+
 table_SME$EnvN <- ((qt((1-0.05/2),df=30)*unlist(table_avg[2]))/rep(unlist(diff_table[1,]),3))^2
 table_SME$MainN <- ((qt((1-0.05/2),df=30)*unlist(table_avg[5]))/rep(unlist(diff_table[2,]),3))^2
-table_SME$InrowN <- ((qt((1-0.05/2),df=30)*unlist(table_avg[8]))/rep(unlist(diff_table[3,]),3))^2
+table_SME$InrowN <- ((1.97*unlist(table_avg[9]))/(table_SME$Allowed*0.5))^2
+table_SME$AllowedHalfwidthN <- ((1.97*unlist(table_avg[9]))/(35))^2
+table_SME$InrowNAbs <- ((1.97*unlist(table_avg[8]))/(table_SME$AllowedAbs*0.5))^2
 table_SME$InbetN <- ((qt((1-0.05/2),df=30)*unlist(table_avg[11]))/rep(unlist(diff_table[4,]),3))^2
 
+table_SME$ErrorNmaxHalf <- unlist(table_avg[8])/sqrt(round(table_SME$AllowedHalfwidthN))
+table_SME$ConfNmaxHalf <- (table_SME$ErrorNmaxHalf*1.97)
+
+
+table_SME$ErrorNmax <- unlist(table_avg[8])/sqrt(144)
+table_SME$PENmax <- 100*(table_SME$ErrorNmax*1.97)/unlist(table_avg[7])
+table_SME$ConfNmax <- (table_SME$ErrorNmax*1.97)
+
+table_SME$ErrorNmax50 <- unlist(table_avg[8])/sqrt(188)
+table_SME$PENmax50 <- 100*(table_SME$ErrorNmax50*1.97)/unlist(table_avg[7])
+table_SME$ConfNmax50 <- (table_SME$ErrorNmax50*1.97)
+
+table_SME$ErrorNmaxAbs <- unlist(table_avg[8])/sqrt(486)
+table_SME$PENmaxAbs <- 100*(table_SME$ErrorNmaxAbs*1.97)/unlist(table_avg[7])
+table_SME$ConfNmaxAbs <- (table_SME$ErrorNmaxAbs*1.97)
+
+mean(table_SME$InrowNAbs)
 mean(table_SME$EnvN)
 mean(table_SME$MainN)
 mean(table_SME$InrowN)
@@ -2868,10 +2711,163 @@ mean((table_SME$Main16_PE-table_SME$Inrow16_PE)/table_SME$Inrow16_PE)
 
 mean((table_SME$Inbet_PE-table_SME$Inrow_PE)/table_SME$Inrow_PE)
 
+InrowN <- data.frame(table_SME$Allowed, table_SME$Allowed*0.5,table_avg[7]*table_SME$Allowed*0.5/100,table_SME$InrowN,table_SME$ErrorNmax,table_avg[7],table_SME$ConfNmax,table_SME$PENmax, table_SME$ErrorNmaxHalf, table_SME$ConfNmaxHalf,row.names=1:15)
 
+
+InrowN50 <- data.frame(table_SME$ErrorNmax50,table_avg[7],table_SME$ConfNmax50,table_SME$PENmax50,  row.names=1:15)
+
+reasonable_samples1 <- data.frame( unlist(table_avg[2])/sqrt(4),
+                                  (unlist(table_avg[2])/sqrt(4))*1.97/table_avg[1]*100,
+                                  unlist(table_avg[2])/sqrt(16),
+                                  (unlist(table_avg[2])/sqrt(16))*1.97/table_avg[1]*100,
+                                  unlist(table_avg[2+3])/sqrt(4),
+                                  (unlist(table_avg[2+3])/sqrt(4))*1.97/table_avg[1+3]*100,
+                                  unlist(table_avg[2+3])/sqrt(16),
+                                  (unlist(table_avg[2+3])/sqrt(16))*1.97/table_avg[1+3]*100,
+                                  row.names = 1:15)
+reasonable_samples1 <- rbind(reasonable_samples1, apply(reasonable_samples1, 2,mean))
+
+reasonable_samples2 <- data.frame(unlist(table_avg[2+6])/sqrt(4),
+(unlist(table_avg[2+6])/sqrt(4))*1.97/table_avg[1+6]*100,
+unlist(table_avg[2+6])/sqrt(16),
+(unlist(table_avg[2+6])/sqrt(16))*1.97/table_avg[1+6]*100,
+unlist(table_avg[2+9])/sqrt(4),
+(unlist(table_avg[2+9])/sqrt(4))*1.97/table_avg[1+9]*100,
+unlist(table_avg[2+9])/sqrt(16),
+(unlist(table_avg[2+9])/sqrt(16))*1.97/table_avg[1+9]*100,
+row.names = 1:15)
+
+reasonable_samples2 <- rbind(reasonable_samples2, apply(reasonable_samples2, 2,mean))
+                                  
+print(
+  xtable(
+    reasonable_samples1,
+    type = "latex",
+    digits = 2,
+    label = 'tbl:reasonable_samples'
+  ),
+  file = paste0(path_to_sims, "ReasonableSamples1.tex")
+)           
+print(
+  xtable(
+    reasonable_samples2,
+    type = "latex",
+    digits = 2,
+    label = 'tbl:reasonable_samples'
+  ),
+  file = paste0(path_to_sims, "ReasonableSamples2.tex")
+) 
+                                  
+
+print(
+  xtable(
+    InrowN,
+    type = "latex",
+    digits = 2,
+    label = 'tbl:inrow_n'
+  ),
+  file = paste0(path_to_sims, "InrowN.tex")
+)
+
+print(
+  xtable(
+    InrowN50,
+    type = "latex",
+    digits = 2,
+    label = 'tbl:inrow_n50'
+  ),
+  file = paste0(path_to_sims, "InrowN50.tex"))
+
+# Make density plots ----
+wind_scenario <- c('$0ms^{-1}$','$\\vec{x}=2ms^{-1}$', '$\\vec{y}=2ms^{-1}$', '$\\vec{x}=5ms^{-1}$','$\\vec{y}=5ms^{-1}$')
+wind_scenario_file <- c('0ms','2msX', '2msY', '5msX','5msY')
+
+for(iter in 0:4){
+range_values3 <- seq(0,qnorm(0.999,mean=InrowN$In.rows[1+iter], sd=InrowN$table_SME.ErrorNmax[1+iter]),0.01)
+range_values2 <- seq(0,qnorm(0.999,mean=InrowN$In.rows.1[6+iter], sd=InrowN$table_SME.ErrorNmax[6+iter]),0.01)
+range_values1 <- seq(0,qnorm(0.999,mean=InrowN$In.rows.1[11+iter], sd=InrowN$table_SME.ErrorNmax[11+iter]),0.01)
+e3 <- dnorm(range_values3, mean=InrowN$In.rows.1[1+iter], sd=InrowN$table_SME.ErrorNmax[1+iter])
+e2 <- dnorm(range_values2, mean=InrowN$In.rows.1[6+iter], sd=InrowN$table_SME.ErrorNmax[6+iter])
+e1 <- dnorm(range_values1, mean=InrowN$In.rows.1[11+iter], sd=InrowN$table_SME.ErrorNmax[11+iter])
+
+#range_values350 <- seq(0,qnorm(0.999,mean=InrowN50$In.rows[1+iter], sd=InrowN50$table_SME.ErrorNmax50[1+iter]),0.01)
+#range_values250 <- seq(0,qnorm(0.999,mean=InrowN50$In.rows[6+iter], sd=InrowN50$table_SME.ErrorNmax50[6+iter]),0.01)
+#range_values150 <- seq(0,qnorm(0.999,mean=InrowN50$In.rows[11+iter], sd=InrowN50$table_SME.ErrorNmax50[11+iter]),0.01)
+#e350 <- dnorm(range_values350, mean=InrowN50$In.rows[1+iter], sd=InrowN50$table_SME.ErrorNmax50[1+iter])
+#e250 <- dnorm(range_values250, mean=InrowN50$In.rows[6+iter], sd=InrowN50$table_SME.ErrorNmax50[6+iter])
+#e150 <- dnorm(range_values150, mean=InrowN50$In.rows[11+iter], sd=InrowN50$table_SME.ErrorNmax50[11+iter])
+
+tikz(file = paste0(
+  path_to_sims,
+  'DistSample',wind_scenario_file[iter+1],'.tex'
+), height = 4)
+plot(range(c(range_values1,range_values2,range_values3)),range(c(e1,e2,e3)), type='n', main=wind_scenario[iter+1], xlab = '$\\bar{x}$ ($ppb$)', ylab = '$F(\\bar{x})$')
+lines(range_values1,e1, col=emission_col[1], lwd=3)
+lines(range_values2,e2, col=emission_col[2], lwd=3)
+lines(range_values3,e3, col=emission_col[3], lwd=3)
+
+#lines(range_values150,e150, col=emission_col[1], lwd=3, lty=2)
+#lines(range_values250,e250, col=emission_col[2], lwd=3, lty=2)
+#lines(range_values350,e350, col=emission_col[3], lwd=3, lty=2)
+
+polygon(rep(c(InrowN$In.rows.1[11+iter]-InrowN$table_SME.ConfNmax[11+iter], InrowN$In.rows.1[11+iter]+InrowN$table_SME.ConfNmax[11+iter]),each=2),c(-20,20,20,-20), col=adjustcolor(emission_col[1],alpha.f=0.2), border = NA)
+polygon(rep(c(InrowN$In.rows.1[6+iter]-InrowN$table_SME.ConfNmax[6+iter], InrowN$In.rows.1[6+iter]+InrowN$table_SME.ConfNmax[6+iter]),each=2),c(-20,20,20,-20), col=adjustcolor(emission_col[2],alpha.f=0.2), border = NA)
+polygon(rep(c(InrowN$In.rows.1[1+iter]-InrowN$table_SME.ConfNmax[1+iter], InrowN$In.rows.1[1+iter]+InrowN$table_SME.ConfNmax[1+iter]),each=2),c(-20,20,20,-20), col=adjustcolor(emission_col[3],alpha.f=0.2), border = NA)
+
+abline(v= InrowN$In.rows.1[11+iter]+InrowN$table_SME.ConfNmax[11+iter], col=emission_col[1], lwd=3, lty=2)
+abline(v= InrowN$In.rows.1[11+iter]-InrowN$table_SME.ConfNmax[11+iter], col=emission_col[1], lwd=3, lty=2)
+abline(v= InrowN$In.rows.1[6+iter]+InrowN$table_SME.ConfNmax[6+iter], col=emission_col[2], lwd=3, lty=2)
+abline(v= InrowN$In.rows.1[6+iter]-InrowN$table_SME.ConfNmax[6+iter], col=emission_col[2], lwd=3,lty=2)
+abline(v= InrowN$In.rows.1[1+iter]+InrowN$table_SME.ConfNmax[1+iter], col=emission_col[3], lwd=3, lty=2)
+abline(v= InrowN$In.rows.1[1+iter]-InrowN$table_SME.ConfNmax[1+iter], col=emission_col[3], lwd=3, lty=2)
+
+#abline(v= InrowN50$In.rows[11+iter]+InrowN50$table_SME.ConfNmax50[11+iter], col=emission_col[1], lwd=3, lty=2)
+#abline(v= InrowN50$In.rows[6+iter]+InrowN50$table_SME.ConfNmax50[6+iter], col=emission_col[2], lwd=3, lty=2)
+
+e1_e2 <- 1 - round(pnorm(InrowN$In.rows.1[6+iter]-InrowN$table_SME.ConfNmax[6+iter],mean=InrowN$In.rows.1[11+iter], sd=InrowN$table_SME.ErrorNmax[11+iter]),2)
+e2_e1 <- round(pnorm(InrowN$In.rows.1[11+iter]+InrowN$table_SME.ConfNmax[11+iter],mean=InrowN$In.rows.1[6+iter], sd=InrowN$table_SME.ErrorNmax[6+iter]),2)
+e3_e2 <- 1 - round(pnorm(InrowN$In.rows.1[1+iter]-InrowN$table_SME.ConfNmax[1+iter],mean=InrowN$In.rows.1[6+iter], sd=InrowN$table_SME.ErrorNmax[6+iter]),2)
+e2_e3 <- round(pnorm(InrowN$In.rows.1[6+iter]+InrowN$table_SME.ConfNmax[6+iter],mean=InrowN$In.rows.1[1+iter], sd=InrowN$table_SME.ErrorNmax[1+iter]),2)
+
+#e2_e150 <- round(pnorm(InrowN50$In.rows[11+iter]+InrowN50$table_SME.ConfNmax50[11+iter],mean=InrowN50$In.rows[6+iter], sd=InrowN50$table_SME.ErrorNmax50[6+iter]),2)
+#e3_e250 <- round(pnorm(InrowN50$In.rows[6+iter]+InrowN50$table_SME.ConfNmax50[6+iter],mean=InrowN50$In.rows[1+iter], sd=InrowN50$table_SME.ErrorNmax50[1+iter]),2)
+
+legend('top', bty='n',c(paste('$P(E_1>95\\%C.I.\ E_2)=$',e1_e2),paste('$P(E_2<95\\%C.I.\ E_1)=$',e2_e1),paste('$P(E_2>95\\%C.I.\ E_3)=$',e3_e2), paste('$P(E_3<95\\%C.I.\ E_2)=$',e2_e3)), cex = 1.5)
+dev.off()
+}
 # Considering we want a maximum of 50% percent error
 
-table_SME <- table_SME[-c(1:12)]
+table_minN <- data.frame(c(diff_table[3,c(1,3,5,7,9)],diff_table[3,c(1,3,5,7,9)],diff_table[6,c(1,3,5,7,9)]))
+                        
+mean(InrowN$table_SME.PENmax)
+mean(InrowN50$table_SME.PENmax)
+
+# Explain tail issue.
+iter <- 0
+range_values3 <- seq(0,qnorm(0.999,mean=InrowN$In.rows.1[1], sd=table_SME$Inrow16[1]),0.01)
+range_values2 <- seq(0,qnorm(0.999,mean=InrowN$In.rows.1[6], sd=table_SME$Inrow16[6]),0.01)
+range_values1 <- seq(0,qnorm(0.999,mean=InrowN$In.rows.1[11+iter], sd=table_SME$Inrow16[11]),0.01)
+e3 <- dnorm(range_values3, mean=InrowN$In.rows.1[1+iter], sd=table_SME$Inrow16[1])
+e2 <- dnorm(range_values2, mean=InrowN$In.rows.1[6+iter], sd=table_SME$Inrow16[6])
+e1 <- dnorm(range_values1, mean=InrowN$In.rows.1[11+iter], sd=table_SME$Inrow16[11])
+
+plot(range(range_values1,range_values2,range_values3),range(e1,e2,e3), type='n', main=paste(wind_scenario[iter], '$n=16$'), xlab = '$\\bar{x}$ ($ppb$)', ylab = '$F(\\bar{x})$')
+
+#polygon(rep(c(InrowN$In.rows.1[11+iter]-InrowN$table_SME.ConfNmax[11+iter], InrowN$In.rows.1[11+iter]+InrowN$table_SME.ConfNmax[11+iter]),each=2),c(-1,1,1,-1), col=adjustcolor(emission_col[1],alpha.f=0.1), border = NA)
+#polygon(rep(c(InrowN$In.rows.1[6+iter]-InrowN$table_SME.ConfNmax[6+iter], InrowN$In.rows.1[6+iter]+InrowN$table_SME.ConfNmax[6+iter]),each=2),c(-1,1,1,-1), col=adjustcolor(emission_col[2],alpha.f=0.1), border = NA)
+
+lines(range_values1,e1, col=emission_col[1], lwd=3)
+lines(range_values2,e2, col=emission_col[2], lwd=3)
+lines(range_values3,e3, col=emission_col[3], lwd=3)
+
+abline(v= InrowN$In.rows.1[11+iter]+InrowN$table_SME.ConfNmax[11+iter], col=emission_col[1], lwd=3, lty=2)
+abline(v= InrowN$In.rows.1[11+iter]-InrowN$table_SME.ConfNmax[11+iter], col=emission_col[1], lwd=3, lty=2)
+abline(v= InrowN$In.rows.1[6+iter]+InrowN$table_SME.ConfNmax[6+iter], col=emission_col[2], lwd=3,lty=2)
+abline(v= InrowN$In.rows.1[6+iter]-InrowN$table_SME.ConfNmax[6+iter], col=emission_col[2], lwd=3, lty=2)
+
+e2_e1 <- round(pnorm(InrowN$In.rows.1[11+iter]+InrowN$table_SME.ConfNmax[11+iter],mean=InrowN$In.rows.1[6+iter], sd=InrowN$table_SME.ErrorNmax[6+iter]),2)
+e1_e2 <- 1 - round(pnorm(InrowN$In.rows.1[6+iter]-InrowN$table_SME.ConfNmax[6+iter],mean=InrowN$In.rows.1[11+iter], sd=InrowN$table_SME.ErrorNmax[11+iter]),2)
+
 
 
 
