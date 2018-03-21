@@ -169,6 +169,7 @@ sim_std <- list()
 sim_var <- list()
 sim_max <- list()
 sim_n <- list()
+sim_sum <- list()
 
 sim_avg_main <- list()
 sim_std_main <- list()
@@ -193,6 +194,7 @@ for (sim in sims) {
   #is.na(sim) <- !sim
   
   sim_avg <- c(sim_avg, list(apply(sim, 4, mean, na.rm = T)))
+  sim_sum <- c(sim_sum, list(apply(sim, 4, sum, na.rm = T)))
   sim_avg_main <-
     c(sim_avg_main, list(apply(sim[main_volume[[1]], main_volume[[2]], main_volume[[3]], ], 4, mean, na.rm =
                                  T)))
@@ -266,6 +268,7 @@ names(sim_std) <- names(sims)
 names(sim_var) <- names(sims)
 names(sim_max) <- names(sims)
 names(sim_n) <- names(sims)
+names(sim_sum) <- names(sims)
 
 names(sim_avg_in) <- names(sims)
 names(sim_std_in) <- names(sims)
@@ -473,6 +476,57 @@ for (s in list(sim_avg, sim_avg_main, sim_avg_in, sim_avg_inbet)) {
     )
   }
   dev.off()
+}
+
+# Sum of ethylene concentration -----
+
+z <- 1
+for (s in list(sim_sum)) {
+  #tikz(file = paste0(path_to_sims, 'Sum_', zones_files[z], '.tex'))
+  plot(
+    timesteps[1:length(s[[1]])],
+    s[[1]],
+    ylim = range(s),
+    xlim = range(timesteps),
+    col = emission_col[3],
+    pch = wind_pch[1],
+    type = 'b',
+    xlab = 'Time ($s$)',
+    ylab = 'Sum of ethylene concentration ($ppb$)',
+    main = zones[z],
+    lwd = 3
+  )
+  z = z + 1
+  for (i in 2:length(sims)) {
+    if (i %in% 2:5) {
+      p_t <- emission_col[3]
+    }
+    if (i %in% 6:10) {
+      p_t <- emission_col[2]
+    }
+    if (i %in% 11:15) {
+      p_t <- emission_col[1]
+    }
+    
+    if (i %in% c(6, 11)) {
+      p_ch <- wind_pch[1]
+    }
+    if (i %in% c(2, 3, 7, 8, 12, 13)) {
+      p_ch <- wind_pch[2]
+    }
+    if (i %in% c(4, 5, 9, 10, 14, 15)) {
+      p_ch <- wind_pch[3]
+    }
+    points(
+      timesteps[1:length(s[[i]])],
+      s[[i]],
+      col = p_t,
+      pch = p_ch,
+      type = 'b',
+      lwd = 3
+    )
+  }
+  #dev.off()
 }
 
 # Make Boxplots per ethylene stage ----

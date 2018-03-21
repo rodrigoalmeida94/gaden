@@ -8,23 +8,23 @@ library(abind)
 library(RColorBrewer)
 setwd("~/catkin_ws/src/gaden/orchard_demo/demo")
 load("~/catkin_ws/src/gaden/orchard_demo/demo/parameters.RData")
-
+emission_col <- brewer.pal(3, 'Reds')
 plots <- T
 if(plots){
-tikz('e_boxplot.tex')
-boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Lh^{-1}kg^{-1}$)')
+tikz('e_boxplot.tex', height = 3.5)
+boxplot(e_prec, e_entc, e_c, names = c('$e_1$','$e_2$','$e_3$'), ylab = 'Ethylene emission ($\\mu Lh^{-1}kg^{-1}$)', col = emission_col, cex.lab=1.3, cex.axis=1.5)
 dev.off()
 
-tikz('l_boxplot.tex')
-boxplot(fruit_load, names= '$l$', ylab= "Fruit load (kg per tree)")
+tikz('l_boxplot.tex', height = 3.5)
+boxplot(fruit_load, names= '$l$', ylab= "Fruit load per tree ($kg$)", col = 'firebrick4', cex.lab=1.3, cex.axis=1.5)
 dev.off()
 
-tikz('ee_boxplot.tex')
-boxplot(emission_prec,emission_entc,emission_c, names = c('$E_1$','$E_2$','$E_3$'), ylab = 'Emission per tree ($\\mu Ls^{-1}\ per\ tree$)')
+tikz('ee_boxplot.tex', height = 3.5)
+boxplot(emission_prec,emission_entc,emission_c, names = c('$E_1$','$E_2$','$E_3$'), ylab = 'Emission per tree ($ppms^{-1}$)', col=emission_col, cex.lab=1.3, cex.axis=1.5)
 dev.off()
 
-tikz('h_boxplot.tex')
-boxplot(fruit_position, names = '$h$', ylab='Height ($m$)')
+tikz('h_boxplot.tex', height = 3.5)
+boxplot(fruit_position, names = '$h$', ylab='Height ($m$)', col='green4', cex.lab=1.3, cex.axis=1.5)
 dev.off()
 }
 
