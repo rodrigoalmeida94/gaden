@@ -7,6 +7,8 @@ including some of the processes described in the next section.
 
 ## Figure 1
 
+![figure1](flow_chart_gaden.png)
+
 The first step is the creation of the simulation environment, in this case using an online CAD
 tool (OnShape). With the orchard model, using SimScale, an online
 CFD simulator, an internal volume mesh was generated with 0.1 m resolution and with that,
