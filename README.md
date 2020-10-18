@@ -1,20 +1,35 @@
-# GADEN
-**A 3D Gas Dispersion Simulator for Mobile Robot Olfaction in Realistic Environments**
+# GADEN steps and configuration
 
-This ROS pkg presents a simulation framework to enable the validation of robotics systems and gas sensing algorithms 
-under realistic environments. The framework is rooted in the principles of computational fluid dynamics and filament 
-dispersion theory, modeling wind flow and gas dispersion in 3D real-world scenarios (i.e. accounting for walls, furniture, etc.). 
-Moreover, it integrates the simulation of different environmental sensors, such as metal oxide gas sensors, photo ionization 
-detectors, or anemometers. For further information, please see the prject webpage at [http://mapir.isa.uma.es/work/gaden](http://mapir.isa.uma.es/work/gaden)
+Table 1 summarizes the scenarios and numeric parameters used for modeling the environment.
+Other general parameters necessary for the GADEN simulations are described in detail in Table
+In Fig. 1 a general overview of the necessary steps of the simulation process is illustrated
+including some of the processes described in the next section.
 
-## DEMO
-To enable a fast testing we include a "gaden_demo" pkg containing the necessary files to run a 3D demo. Concretelly, we have set two different demo.launch to test both, the simulator and the player pkgs. Notice that the player pkg requires to first execute the filament demo in order to have some data to plot, so we recomend to test both demos in the given oder:
+## Figure 1
 
-1. **gaden_simulator_demo.launch**:
-In this demo we simulate withing a 3D environment a single gas source at a given location. We can visualize (using Rviz) the filaments dispersing in the environment, and save the results for its later processing with the gaden_player pkg. All parameters have been commented in order to be self explained.
+The first step is the creation of the simulation environment, in this case using an online CAD
+tool (OnShape). With the orchard model, using SimScale, an online
+CFD simulator, an internal volume mesh was generated with 0.1 m resolution and with that,
+several wind simulations were computed. ParaView is then used in conjunction with a Matlab
+script to convert the wind simulations in OpenFOAM format to GADEN wind simulation files.
+With an R script, 15 XML simulator launch files where generated with the parameters in Table 1
+and the general settings in Table 4. The launch files are then used in the ROS GADEN simulator, 
+that outputs the simulator results with ethylene concentration in ppm for each (x, y, z) and time step (t).
 
-2. **gaden_player_demo.launch**:
-After the simulation of the gas dispersal is done, we can run the gaden_player pkg in order to visualize the gas dispersion (we use a point cloud proportional to the gas concentration at each cell of the 3D environment). We also provide examples for some  gas sensors and an anemometer, which will provide the readings (visulized for example with rqt_plot tool).
+## Table 1
 
-## olfaction_msgs
-Although GADEN is a self contained pkg, the also included "simulated_sensor_pkgs" (anemometer and gas sensors) depends on an external pkg defining some "olfaction" related msgs. This pkg is available in a different repository [olfaction_msgs](https://github.com/MAPIRlab/olfaction_msgs)
+| Parameter                       | Description                                                                         | Unit          | Value  |
+|---------------------------------|-------------------------------------------------------------------------------------|---------------|--------|
+| specific_gravity             | Ethylene specific gravity                                                           | -        | 0.974 |
+| sim_time                     | Total time of the gas dispersion simulation                                         | s          | 301    |
+| time_step                    | Time increment between snapshots\. Set to cell size divided by maximum wind speed\. | s           | 0.1   |
+| num_filaments_sec         | Number of filaments released each second\.                                          |               | 10     |
+| filament_initial_std      | Sigma of the filament at t=0                                                        | cm          | 10     |
+| filament_growth_gamma     | Growth ratio of the filament                                                        | cms^{-1} | 10     |
+| filament_noise_std        | Range of the white noise added on each iteration                                    | m          | 0.02  |
+| gas_type                     | Gas type Ethylene                                                                   |               | 10     |
+| temperature                     | Air temperature                                                                     | K       | 298    |
+| pressure                        | Atmospheric pressure                                                                | Pa          | 101325 |
+| concentration_unit_choice | 0= molecules*cm^{-3}, 1=mg/L                                                |               | 1      |
+| restuls_time_step         | Time increment between saving state to file                                         | s          | 15     |
+
